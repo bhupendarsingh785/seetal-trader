@@ -1,7 +1,14 @@
 {
- "generated_at": "2026-11-09T03:16:09+00:00",
- "generated_epoch": 1794194169,
- "source": "Yahoo Finance public chart API (free, can lag)",
+ "generated_at": "2026-11-09T03:20:52+00:00",
+ "generated_epoch": 1794194452,
+ "source": "multi-provider: Yahoo q1/q2, Moneycontrol, Stooq (+ purana cache)",
+ "providers": {
+  "yahoo-q1": {
+   "ok": 18,
+   "fail": 0,
+   "last_error": ""
+  }
+ },
  "rules": {
   "opening_range_minutes": 15,
   "entry": "pehli bar jo range high ke upar CLOSE ho",
@@ -49,7 +56,7 @@
     24726.5996,
     24744.6992,
     24751.8496,
-    24780.0996,
+    24780.0508,
     24795.9004,
     24808.0996,
     24823.5,
@@ -60,7 +67,7 @@
     24814.3008,
     24829.4492,
     24853.5,
-    24863.6504,
+    24863.5996,
     24856.5508,
     24867.25,
     24883.4492,
@@ -74,8 +81,11 @@
     24986.4004
    ],
    "bars": 76,
-   "last_bar_age_sec": 234962,
-   "market_time": 1794132195
+   "last_bar_age_sec": 235247,
+   "market_time": 1794132195,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "^NSEBANK",
@@ -115,7 +125,7 @@
     58367.3984,
     58375.4492,
     58303.0508,
-    58351.3516,
+    58352.3008,
     58379.4492,
     58489.4492,
     58545.8984,
@@ -125,7 +135,7 @@
     58564.6016,
     58602.0,
     58623.1016,
-    58632.3008,
+    58637.5,
     58657.5508,
     58746.5508,
     58753.4492,
@@ -142,8 +152,11 @@
     58850.6484
    ],
    "bars": 76,
-   "last_bar_age_sec": 234963,
-   "market_time": 1794132195
+   "last_bar_age_sec": 235247,
+   "market_time": 1794132195,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "^BSESN",
@@ -210,8 +223,11 @@
     80999.3984
    ],
    "bars": 76,
-   "last_bar_age_sec": 234963,
-   "market_time": 1794132136
+   "last_bar_age_sec": 235247,
+   "market_time": 1794132136,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "^GSPC",
@@ -278,8 +294,11 @@
     7376.8599
    ],
    "bars": 79,
-   "last_bar_age_sec": 195363,
-   "market_time": 1794001029
+   "last_bar_age_sec": 195648,
+   "market_time": 1794001029,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "^IXIC",
@@ -346,8 +365,11 @@
     24579.4238
    ],
    "bars": 79,
-   "last_bar_age_sec": 195364,
-   "market_time": 1794003359
+   "last_bar_age_sec": 195648,
+   "market_time": 1794003359,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "RELIANCE.NS",
@@ -414,8 +436,11 @@
     1324.0
    ],
    "bars": 75,
-   "last_bar_age_sec": 234964,
-   "market_time": 1794131969
+   "last_bar_age_sec": 235248,
+   "market_time": 1794131969,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "HDFCBANK.NS",
@@ -482,8 +507,11 @@
     784.1
    ],
    "bars": 75,
-   "last_bar_age_sec": 234965,
-   "market_time": 1794131969
+   "last_bar_age_sec": 235248,
+   "market_time": 1794131969,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "TCS.NS",
@@ -550,8 +578,11 @@
     2498.8
    ],
    "bars": 74,
-   "last_bar_age_sec": 234965,
-   "market_time": 1794131969
+   "last_bar_age_sec": 235249,
+   "market_time": 1794131969,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "SBIN.NS",
@@ -618,8 +649,11 @@
     1016.0
    ],
    "bars": 75,
-   "last_bar_age_sec": 234965,
-   "market_time": 1794131970
+   "last_bar_age_sec": 235249,
+   "market_time": 1794131970,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "INFY.NS",
@@ -686,8 +720,11 @@
     1171.6
    ],
    "bars": 74,
-   "last_bar_age_sec": 234966,
-   "market_time": 1794131970
+   "last_bar_age_sec": 235249,
+   "market_time": 1794131970,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "ICICIBANK.NS",
@@ -754,8 +791,11 @@
     1565.0
    ],
    "bars": 75,
-   "last_bar_age_sec": 234966,
-   "market_time": 1794131976
+   "last_bar_age_sec": 235250,
+   "market_time": 1794131976,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "BAJFINANCE.NS",
@@ -822,8 +862,11 @@
     1081.75
    ],
    "bars": 75,
-   "last_bar_age_sec": 234966,
-   "market_time": 1794131976
+   "last_bar_age_sec": 235250,
+   "market_time": 1794131976,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "ADANIENT.NS",
@@ -890,8 +933,11 @@
     2731.0
    ],
    "bars": 75,
-   "last_bar_age_sec": 234967,
-   "market_time": 1794131977
+   "last_bar_age_sec": 235250,
+   "market_time": 1794131977,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "ITC.NS",
@@ -958,8 +1004,11 @@
     283.45
    ],
    "bars": 75,
-   "last_bar_age_sec": 234967,
-   "market_time": 1794131977
+   "last_bar_age_sec": 235250,
+   "market_time": 1794131977,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "AAPL",
@@ -1026,8 +1075,11 @@
     342.37
    ],
    "bars": 79,
-   "last_bar_age_sec": 195367,
-   "market_time": 1793998801
+   "last_bar_age_sec": 195651,
+   "market_time": 1793998801,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "TSLA",
@@ -1094,8 +1146,11 @@
     358.22
    ],
    "bars": 79,
-   "last_bar_age_sec": 195368,
-   "market_time": 1793998801
+   "last_bar_age_sec": 195651,
+   "market_time": 1793998801,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "NVDA",
@@ -1162,8 +1217,11 @@
     186.64
    ],
    "bars": 79,
-   "last_bar_age_sec": 195368,
-   "market_time": 1793998800
+   "last_bar_age_sec": 195651,
+   "market_time": 1793998800,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   },
   {
    "symbol": "SPY",
@@ -1230,8 +1288,11 @@
     735.29
    ],
    "bars": 79,
-   "last_bar_age_sec": 195369,
-   "market_time": 1793998800
+   "last_bar_age_sec": 195652,
+   "market_time": 1793998800,
+   "src": "yahoo-q1",
+   "has_bars": true,
+   "stale": false
   }
  ],
  "errors": []

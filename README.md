@@ -14,12 +14,24 @@ SWAG Trader pack ke rules par bana hua, ek hi page par.
 - **Hisab** — paper trades browser mein save, P&L aur win rate.
 - **Awaaz** — 🎤 dabao aur bolo ("market kaisa hai", "Reliance kaisa hai"), jawab bol kar sunata hai. Browser ke built-in speech kaam karte hain, koi API key nahi.
 
-## Data kahan se
+## Data kahan se (ek par nirbhar nahi)
 
-`data/live.json` GitHub Action banata hai (`tools/snapshot.py`), Yahoo Finance ke
-free public chart API se. Action har 10 minute chalta hai, aur page khud har
-minute file dobara padhta hai. Yahoo ka data delay ho sakta hai, aur market band
-hone par wohi purana data rehta hai — page par "aakhri update" dikhta hai.
+`data/live.json` GitHub Action banata hai (`tools/snapshot.py`). Har symbol ke
+liye providers ek ke baad ek try hote hain, jo pehla kaam kare wahi data deta hai:
+
+1. **Yahoo query1** — 5-minute bars + last price (opening range aur entry ke liye zaroori)
+2. **Yahoo query2** — wahi API, doosra host (ek block ho to doosra bacha le)
+3. **Moneycontrol** — NSE/BSE ka last price (bars nahi)
+4. **Stooq** — US symbols ka last price (bars nahi)
+
+Sab fail ho jayein to **pichhla accha data** hi rehne deta hai, `stale` mark ke
+saath — page band nahi hota. Page par har card ke neeche uska source likha hota
+hai aur upar providers ki health dikhti hai. Action har 10 minute chalta hai,
+page khud har minute file dobara padhta hai.
+
+Agar kisi source se sirf price mila (bars nahi), card par `PRICE ONLY` likha
+aata hai — us halat mein entry/stop/target nahi nikalti, kyunki opening range
+ke bina woh jhooth hota.
 
 ## Apna watchlist badalna
 

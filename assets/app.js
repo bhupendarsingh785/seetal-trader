@@ -9,6 +9,7 @@ const LS_CFG = "seetal.cfg.v1";
 
 const state = {
   rows: [],
+  providers: {},
   generatedAt: null,
   source: "snapshot",
   capital: 100000,
@@ -61,6 +62,7 @@ async function loadSnapshot() {
   if (!res.ok) throw new Error("snapshot " + res.status);
   const data = await res.json();
   state.rows = data.rows || [];
+  state.providers = data.providers || {};
   state.generatedAt = data.generated_epoch ? data.generated_epoch * 1000 : Date.now();
   state.source = "snapshot";
   applyWatchlistFilter();
@@ -141,6 +143,15 @@ function renderStrip(rows) {
     .join("");
 }
 
+function healthText() {
+  const names = { "yahoo-q1": "Yahoo", "yahoo-q2": "Yahoo-2", moneycontrol: "Moneycontrol", stooq: "Stooq" };
+  const bits = Object.entries(state.providers || {}).map(([k, v]) => {
+    const ok = v.ok > 0;
+    return `${ok ? "✅" : "⚠️"} ${names[k] || k} ${ok ? v.ok : 0}`;
+  });
+  return bits.length ? "Sources: " + bits.join(" · ") : "";
+}
+
 function renderSignalBar(rows) {
   const ready = rows.filter((r) => r.state === "ENTRY" && !r.is_index);
   const close = rows
@@ -159,7 +170,7 @@ function renderSignalBar(rows) {
     line = "⏳ Abhi koi pakki entry nahi. WAIT karo — bar close hone do.";
   }
   const mood = up > rows.length / 2 ? "Market uth raha hai" : up < rows.length / 2 ? "Market gir raha hai" : "Market flat hai";
-  bar.innerHTML = `${line}<br><span class="small">${mood} · ${up}/${rows.length} up · ${ageText()}</span>`;
+  bar.innerHTML = `${line}<br><span class="small">${mood} · ${up}/${rows.length} up · ${ageText()}</span><br><span class="small">${healthText()}</span>`;
 }
 
 function sparkSVG(vals, up) {
@@ -197,6 +208,8 @@ function renderCards(rows) {
       const badge =
         r.state === "ENTRY"
           ? `<span class="badge entry">ENTRY NOW</span>`
+          : r.state === "PRICE_ONLY"
+          ? `<span class="badge priceonly">PRICE ONLY</span>`
           : `<span class="badge wait">WAIT</span>`;
       return `<article class="card ${r.state === "ENTRY" ? "entry" : ""}">
         <div class="hd">
@@ -221,7 +234,7 @@ function renderCards(rows) {
         </div>
         <div class="mom"><i style="width:${momW}%;background:${momCol}"></i></div>
         <div class="foot">
-          <span class="small">${r.state === "ENTRY" ? "Bar close confirm hua" : "Bar close ka wait"}</span>
+          <span class="small">${r.state === "ENTRY" ? "Bar close confirm hua" : r.state === "PRICE_ONLY" ? "Sirf price mila, bars nahi" : "Bar close ka wait"}${r.src ? " · " + r.src : ""}${r.stale ? " · purana" : ""}</span>
           <button class="speak" data-speak="${r.symbol}" type="button">🔊 Suno</button>
         </div>
       </article>`;
@@ -234,7 +247,7 @@ function renderCards(rows) {
 
 function renderScan(rows) {
   const scored = rows
-    .filter((r) => !r.is_index)
+    .filter((r) => !r.is_index && r.or_high !== null)
     .map((r) => {
       const near = r.distance_pct === null ? 0 : Math.max(-6, 6 - Math.abs(r.distance_pct));
       const score = (r.state === "ENTRY" ? 50 : 0) + near + Math.max(-5, Math.min(5, (r.momentum_pct || 0) * 2));
@@ -285,7 +298,10 @@ function cardText(sym) {
   if (r.state === "ENTRY") {
     return `${r.symbol}. ${nf(r.last)} pe chal raha hai, ${nf(Math.abs(r.change_pct))} percent ${dir}. Entry ho gayi ${nf(r.entry)} pe. Stop ${nf(r.stop)}, target ${nf(r.target)}. ${state.maxLoss} rupaye risk pe ${qtyFor(r)} quantity.`;
   }
-  const d = r.distance_points === null ? "" : `Range high se ${nf(Math.abs(r.distance_points))} point door hai.`;
+  if (r.state === "PRICE_ONLY" || r.distance_points === null) {
+    return `${r.symbol}. ${nf(r.last)} pe chal raha hai, ${nf(Math.abs(r.change_pct))} percent ${dir}. Is source se sirf price mila, bars nahi, isliye entry ka signal abhi nahi hai.`;
+  }
+  const d = `Range high se ${nf(Math.abs(r.distance_points))} point door hai.`;
   return `${r.symbol}. ${nf(r.last)} pe chal raha hai, ${nf(Math.abs(r.change_pct))} percent ${dir}. Entry abhi nahi hui. ${d} Bar close ka wait karo.`;
 }
 
