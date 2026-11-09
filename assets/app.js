@@ -8,6 +8,16 @@
 */
 
 const SNAP_URL = "data/live.json";
+
+/* Data ke kai raste - ek host band ho to data phir bhi aata rahe.
+   Har raste se data aata hai, jo sabse taaza ho wahi chunta hai. */
+const DATA_SOURCES = [
+  { name: "yahin (site)", url: "data/live.json" },
+  { name: "GitHub raw", url: "https://raw.githubusercontent.com/bhupendarsingh785/seetal-trader/main/data/live.json" },
+  { name: "jsDelivr CDN", url: "https://cdn.jsdelivr.net/gh/bhupendarsingh785/seetal-trader@main/data/live.json" },
+  { name: "GitLab", url: "https://gitlab.com/Bhuprndar785/bhupendarsingh785/-/raw/main/data/live.json" },
+  { name: "GitHub Pages", url: "https://bhupendarsingh785.github.io/seetal-trader/data/live.json" },
+];
 const LS_WATCH = "seetal.watchlist.v1";
 const LS_TRADES = "seetal.trades.v1";
 const LS_CFG = "seetal.cfg.v1";
@@ -28,6 +38,9 @@ const state = {
   liveOn: true,
   interval: 8,
   liveSrc: null,
+  dataSource: null,
+  dataSourcesUp: [],
+  repairs: [],
   capital: 100000,
   maxLoss: 1000,
   seenEntry: new Set(),
@@ -208,29 +221,53 @@ async function liveRefresh() {
 }
 
 /* ---------------- snapshot ---------------- */
+async function fetchSnapshotFrom(src) {
+  const ctl = new AbortController();
+  const to = setTimeout(() => ctl.abort(), 9000);
+  try {
+    const res = await fetch(src.url + (src.url.includes("?") ? "&" : "?") + "t=" + Date.now(), {
+      cache: "no-store",
+      signal: ctl.signal,
+    });
+    if (!res.ok) throw new Error("http " + res.status);
+    const data = await res.json();
+    if (!data || !Array.isArray(data.rows) || !data.rows.length) throw new Error("khaali data");
+    return data;
+  } finally {
+    clearTimeout(to);
+  }
+}
+
 async function loadSnapshot() {
-  const res = await fetch(SNAP_URL + "?t=" + Date.now(), { cache: "no-store" });
-  if (!res.ok) throw new Error("snapshot " + res.status);
-  const data = await res.json();
+  // sab raste ek saath try karo, sabse taaza jeete
+  const tries = DATA_SOURCES.map((src) =>
+    fetchSnapshotFrom(src).then((d) => ({ src, d })).catch(() => null)
+  );
+  const got = (await Promise.all(tries)).filter(Boolean);
+  if (!got.length) throw new Error("koi data source nahi chala");
+
+  got.sort((a, b) => (b.d.generated_epoch || 0) - (a.d.generated_epoch || 0));
+  const best = got[0];
+  const data = best.d;
+
   const incoming = data.rows || [];
   const bySym = new Map(incoming.map((r) => [r.symbol, r]));
-  // live row ko snapshot purana na kare
   state.rows = state.rows.map((r) => {
-    const s = bySym.get(r.symbol);
-    if (!s) return r;
-    if (r.src === "live" && r.at && s.generated_at === undefined) {
-      // live row newer hai — sirf tab badlo jab live purana ho
-      if (Date.now() - r.at < 120000) return r;
-    }
-    return s;
+    const snap = bySym.get(r.symbol);
+    if (!snap) return r;
+    if (r.src === "live" && r.at && Date.now() - r.at < 120000) return r;
+    return snap;
   });
   const have = new Set(state.rows.map((r) => r.symbol));
-  incoming.forEach((s) => {
-    if (!have.has(s.symbol)) state.rows.push(s);
+  incoming.forEach((r) => {
+    if (!have.has(r.symbol)) state.rows.push(r);
   });
   state.providers = data.providers || {};
   state.probe = data.probe || {};
+  state.repairs = data.repairs || [];
   state.generatedAt = data.generated_epoch ? data.generated_epoch * 1000 : Date.now();
+  state.dataSource = best.src.name;
+  state.dataSourcesUp = got.map((g) => g.src.name);
   applyWatchlist();
   render();
 }
@@ -285,6 +322,7 @@ function healthText() {
     ([k, v]) => `${v.ok > 0 ? "✅" : "⚠️"} ${names[k] || k} ${v.ok || 0}`
   );
   if (state.lastTick) bits.unshift("✅ Browser live");
+  if (state.dataSource) bits.unshift("📡 " + state.dataSource + " (" + (state.dataSourcesUp || []).length + "/" + DATA_SOURCES.length + ")");
   const bk = Object.entries(state.probe || {})
     .filter(([k]) => !["yahoo-q1", "yahoo-q2"].includes(k))
     .map(([k, v]) => `${v.skipped ? "➖" : v.ok ? "✅" : "❌"} ${names[k] || k}`);
@@ -765,7 +803,7 @@ async function runDoctor(manual) {
   let snapOk = true;
   try {
     await loadSnapshot();
-    docItem("Data file (live.json)", "ok", "mil gaya");
+    docItem("Data ke raste", "ok", `${(state.dataSourcesUp || []).length}/${DATA_SOURCES.length} chal rahe — sabse taaza: ${state.dataSource || "?"}`);
   } catch (e) {
     snapOk = false;
     try {
@@ -779,7 +817,7 @@ async function runDoctor(manual) {
       render();
       docItem("Data file (live.json)", "fixed", "dobara kheench kar theek kiya");
     } catch (e2) {
-      docItem("Data file (live.json)", "fail", "nahi mila — net ya GitHub check karo");
+      docItem("Data ke raste", "fail", "koi bhi source nahi chala — net check karo");
     }
   }
 
