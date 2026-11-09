@@ -38,7 +38,7 @@
     <div class="logo">SB</div>
     <div>
       <h1>Seetal Builder</h1>
-      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v4</b></p>
+      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v5</b></p>
     </div>
   </div>
   <a class="btn" href="index.html">← Wapas Trader</a>
@@ -68,9 +68,11 @@
     </select>
 
     <div class="row">
-      <button class="btn primary" id="build">⚡ App banao</button>
+      <button class="btn primary" id="build">⚡ App banao (ek file)</button>
+      <button class="btn" id="buildProject">🏗️ Poora project banao</button>
       <button class="btn" id="clear">Saaf karo</button>
     </div>
+    <div id="fileList" style="margin-top:10px;font-size:13px;color:var(--dim);line-height:1.6"></div>
 
     <p class="note" id="status">Kuch nahi hua abhi.</p>
   </section>
@@ -395,6 +397,24 @@ $("ghSave").onclick = () => {
   }catch(e){ $("ghOut").textContent = "Yaad nahi rakh paya."; }
 };
 
+async function ghDeployAll(owner, name, token, out){
+  const files = Object.keys(state.files || {});
+  if (!files.length) return false;
+  let done = 0;
+  for (const f of files){
+    const api = "https://api.github.com/repos/" + owner + "/" + name + "/contents/" + encodeURIComponent(f);
+    const headers = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json", "Content-Type": "application/json" };
+    let sha = null;
+    try{ const r = await fetch(api + "?ref=main", { headers }); if (r.ok) sha = (await r.json()).sha; }catch(e){}
+    const body = { message: "Builder: " + f, content: btoa(unescape(encodeURIComponent(state.files[f]))), branch: "main" };
+    if (sha) body.sha = sha;
+    const res = await fetch(api, { method: "PUT", headers, body: JSON.stringify(body) });
+    if (!res.ok){ const j = await res.json().catch(()=>({})); throw new Error(f + ": " + (j.message || res.status)); }
+    done++; out.textContent = "Deploy: " + done + "/" + files.length + " file…";
+  }
+  return true;
+}
+
 async function ghDeploy(){
   const token = ($("ghToken").value || "").trim();
   const repo = ($("ghRepo").value || "").trim();
@@ -405,6 +425,13 @@ async function ghDeploy(){
 
   out.textContent = "Deploy kar raha hoon…";
   const [owner, name] = repo.split("/");
+  if (Object.keys(state.files || {}).length > 1){
+    try{
+      await ghDeployAll(owner, name, token, out);
+      out.innerHTML = "✅ " + Object.keys(state.files).length + " file deploy! Live (1-2 min): <b>https://" + owner.toLowerCase() + ".github.io/" + name + "/</b>";
+    }catch(e){ out.textContent = "❌ Deploy nahi hua: " + (e.message || e); }
+    return;
+  }
   const api = "https://api.github.com/repos/" + owner + "/" + name + "/contents/" + encodeURIComponent(path);
   const headers = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json", "Content-Type": "application/json" };
 
@@ -434,6 +461,81 @@ async function ghDeploy(){
   }
 }
 $("ghDeploy").onclick = ghDeploy;
+
+/* ================= POORA PROJECT (multi-file) ================= */
+state.files = {};
+
+function parsePlan(txt){
+  const m = String(txt).match(/\[[\s\S]*\]/);
+  if (!m) return null;
+  try{
+    const arr = JSON.parse(m[0]);
+    if (!Array.isArray(arr) || !arr.length) return null;
+    return arr.filter(x => x && x.file).slice(0, 6)
+      .map(x => ({ file: String(x.file).replace(/[^a-zA-Z0-9._\/-]/g, ""), kaam: String(x.kaam || "") }));
+  }catch(e){ return null; }
+}
+
+async function buildProject(){
+  const idea = ($("idea").value || "").trim();
+  if (idea.length < 12){ setStatus("Thoda aur likho — kam se kam ek line.", "bad"); return; }
+  const theme = $("theme").value;
+  const btn = $("buildProject");
+  btn.disabled = true;
+  state.files = {};
+  $("fileList").innerHTML = "";
+
+  try{
+    setStatus("Pehle plan bana rahi hoon…");
+    const planPrompt = 'Ek app ka idea: "' + idea + '". Isko chhote files me todo (2 se 6). '
+      + 'Sirf JSON array do, har item me "file" aur "kaam". index.html zaroor ho. CSS/JS alag rakho. Koi explanation nahi.';
+    const planTxt = await Brain.ask(planPrompt, { task: "code" });
+    let plan = planTxt.ok ? parsePlan(planTxt.text) : null;
+    if (!plan) plan = [{ file: "index.html", kaam: "poora app" }];
+    $("fileList").innerHTML = "📁 " + plan.map(p => p.file).join(" · ");
+
+    for (let i = 0; i < plan.length; i++){
+      const f = plan[i];
+      setStatus("Bana rahi hoon: " + f.file + " (" + (i + 1) + "/" + plan.length + ")…");
+      const isCss = /\.css$/i.test(f.file);
+      const isJs = /\.js$/i.test(f.file);
+      let p2 = 'Tum expert developer ho. App idea: "' + idea + '". Theme: ' + THEME_HINT[theme] + '. '
+        + 'Files: ' + plan.map(x => x.file).join(", ") + '. Ab sirf is file ka content do: "' + f.file + '" (' + f.kaam + '). ';
+      if (isCss) p2 += 'Sirf CSS. ';
+      if (isJs) p2 += 'Sirf JavaScript. ';
+      if (!isCss && !isJs) p2 += 'Poora HTML, style.css aur app.js ko link karo agar plan me hain. ';
+      p2 += 'Hinglish UI, mobile pehle, data localStorage me. Sirf code, koi explanation nahi.';
+      const r = await Brain.ask(p2, { task: "code" });
+      let content = r.ok ? String(r.text).trim() : "";
+      content = content.replace(/^```[a-z]*\n?/i, "").replace(/```$/, "").trim();
+      if (!content) throw new Error(f.file + " khaali aayi");
+      state.files[f.file] = content;
+    }
+
+    let idx = state.files["index.html"] || Object.values(state.files)[0] || "";
+    const css = state.files["style.css"];
+    const js = state.files["app.js"];
+    if (css) idx = idx.replace(/<link[^>]*style\.css[^>]*>/i, "<style>" + css + "</style>");
+    if (js){
+      const open = "<script src=\"app.js\"></" + "script>";
+      const inline = "<script>" + js + "</" + "script>";
+      idx = idx.split(open).join(inline);
+    }
+
+    lastHTML = idx;
+    $("frame").srcdoc = idx;
+    if (lastUrl) URL.revokeObjectURL(lastUrl);
+    lastUrl = URL.createObjectURL(new Blob([idx], { type: "text/html" }));
+    ["download","copyCode","openNew","adviceBtn","rebuildBtn","ghDeploy"].forEach(i => $(i).disabled = false);
+    $("fileList").innerHTML = "✅ " + Object.keys(state.files).length + " file ban gayi:<br>• " + Object.keys(state.files).join("<br>• ");
+    setStatus("✅ Project ban gaya — preview dekho, phir GitHub par deploy karo.", "ok");
+  }catch(e){
+    setStatus("❌ Project nahi bana: " + (e.message || e) + " — dobara try karo.", "bad");
+  }finally{
+    btn.disabled = false;
+  }
+}
+$("buildProject").onclick = buildProject;
 
 $("adviceBtn").onclick = async () => {
   if (!lastHTML) return;
