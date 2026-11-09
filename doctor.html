@@ -89,6 +89,7 @@
   <p class="sub" style="margin-top:6px">Doctor har cheez ko khud chala kar dekhta hai. Jo toota mile, use pehle khud theek karta hai — phir batata hai kya kiya. Jo theek na ho paye, uski saaf wajah likhta hai.</p>
 </main>
 
+<script src="assets/brain.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const ERRORS = [];
@@ -106,32 +107,13 @@ function item(name, state, detail, fix){
 function paint(box, rows){ $(box).innerHTML = rows.join(""); }
 
 /* ---------- AI: 3 raste ---------- */
-async function tryAI(prompt){
-  const base = "https://text.pollinations.ai/" + encodeURIComponent(prompt) + "?model=openai";
-  const routes = [
-    ["seedha", base],
-    ["allorigins proxy", "https://api.allorigins.win/raw?url=" + encodeURIComponent(base)],
-    ["corsproxy proxy", "https://corsproxy.io/?" + encodeURIComponent(base)],
-  ];
-  const log = [];
-  for (const [name, url] of routes){
-    const t0 = performance.now();
-    try{
-      const ctl = new AbortController();
-      const to = setTimeout(()=>ctl.abort(), 25000);
-      const res = await fetch(url, { cache:"no-store", signal: ctl.signal });
-      clearTimeout(to);
-      const txt = (await res.text() || "").trim();
-      const ms = Math.round(performance.now() - t0);
-      if (!res.ok) throw new Error("http " + res.status);
-      if (txt.length < 5) throw new Error("khaali jawab");
-      log.push({ name, ok:true, ms, txt });
-      return { ok:true, via:name, ms, txt, log };
-    }catch(e){
-      log.push({ name, ok:false, err:String(e.message||e).slice(0,60) });
-    }
+async function tryAI(prompt, task){
+  if (window.Brain){
+    const r = await Brain.ask(prompt, { task: task || "any" });
+    if (r.ok) return { ok:true, via:r.model + "/" + r.via, ms:r.ms, txt:r.text, log:[] };
+    return { ok:false, log: (r.tried || []).map(x => ({ name:"raste", ok:false, err:x })) };
   }
-  return { ok:false, log };
+  return { ok:false, log: [{ name:"brain.js", ok:false, err:"file nahi mili" }] };
 }
 
 /* ---------- tests ---------- */

@@ -98,9 +98,11 @@
   </section>
 </main>
 
+<script src="assets/brain.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 let lastHTML = "";
+let lastModel = "";
 let lastUrl = null;
 
 const FILL = {
@@ -152,23 +154,16 @@ Ab poora HTML likho.`;
 }
 
 async function generate(prompt){
-  const base = "https://text.pollinations.ai/" + encodeURIComponent(prompt) + "?model=openai";
-  const tries = [
-    base,
-    "https://api.allorigins.win/raw?url=" + encodeURIComponent(base),
-    "https://corsproxy.io/?" + encodeURIComponent(base),
-  ];
-  let lastErr = null;
-  for (const u of tries){
-    try{
-      const res = await fetch(u, { cache: "no-store" });
-      if (!res.ok) throw new Error("http " + res.status);
-      const t = await res.text();
-      if (t && t.length > 40) return t;
-      throw new Error("khaali jawab");
-    }catch(e){ lastErr = e; }
+  // Brain: kai free AI ko jodta hai, jo chale wahi use karta hai
+  if (window.Brain){
+    const r = await Brain.code(prompt);
+    if (r.ok) { lastModel = r.model + " · " + r.via; return r.text; }
+    throw new Error("koi AI nahi chala");
   }
-  throw lastErr || new Error("AI se baat nahi hui");
+  const base = "https://text.pollinations.ai/" + encodeURIComponent(prompt) + "?model=openai";
+  const res = await fetch(base);
+  if (!res.ok) throw new Error("AI: http " + res.status);
+  return await res.text();
 }
 
 function cleanHTML(txt){
@@ -200,7 +195,7 @@ $("build").onclick = async () => {
     lastUrl = URL.createObjectURL(new Blob([html], { type: "text/html" }));
     $("code").textContent = html;
     ["download","copyCode","openNew","adviceBtn","rebuildBtn"].forEach(i => $(i).disabled = false);
-    setStatus("✅ App ban gaya — neeche preview dekho.", "ok");
+    setStatus("✅ App ban gaya — neeche preview dekho." + (lastModel ? " (" + lastModel + ")" : ""), "ok");
   }catch(e){
     setStatus("❌ Nahi bana: " + (e.message || e) + " — dobara try karo.", "bad");
   }finally{
@@ -253,6 +248,11 @@ micBtn.onclick = () => {
 
 /* ---------- Seetal ka mashwara ---------- */
 async function askAI(prompt){
+  if (window.Brain){
+    const r = await Brain.ask(prompt, { task: "advice" });
+    if (r.ok) return r.text;
+    throw new Error("koi AI nahi chala");
+  }
   const base = "https://text.pollinations.ai/" + encodeURIComponent(prompt) + "?model=openai";
   const tries = [base,
     "https://api.allorigins.win/raw?url=" + encodeURIComponent(base),
