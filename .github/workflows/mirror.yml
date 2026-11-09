@@ -43,7 +43,7 @@ jobs:
           REPO: ${{ steps.chk.outputs.target }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          set -u
+          set -uo pipefail
           LOG=/tmp/mirror.log
           : > "$LOG"
           git clone --mirror "https://github.com/${{ github.repository }}.git" repo.git
