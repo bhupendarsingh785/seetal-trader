@@ -26,7 +26,8 @@ jobs:
           TOKEN: ${{ secrets.GITLAB_TOKEN }}
           REPO: ${{ secrets.GITLAB_REPO }}
         run: |
-          REPO="${REPO:-Bhuprndar785/bhupendarsingh785}"
+          REPO="$(printf '%s' "${REPO:-Bhuprndar785/bhupendarsingh785}" | tr -d '[:space:]')"
+          TOKEN="$(printf '%s' "${TOKEN:-}" | tr -d '[:space:]')"
           echo "target=$REPO" >> "$GITHUB_OUTPUT"
           if [ -z "$TOKEN" ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
@@ -44,6 +45,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -uo pipefail
+          # secret mein kabhi kabhi space/newline aa jaata hai - woh URL ko tod deta hai
+          TOKEN="$(printf '%s' "${TOKEN}" | tr -d '[:space:]')"
+          REPO="$(printf '%s' "${REPO}" | tr -d '[:space:]')"
           LOG=/tmp/mirror.log
           : > "$LOG"
           git clone --mirror "https://github.com/${{ github.repository }}.git" repo.git
