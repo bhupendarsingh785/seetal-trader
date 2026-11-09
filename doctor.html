@@ -51,6 +51,16 @@
 <main>
   <div class="sum" id="sum">Abhi jaanch nahi hui.</div>
 
+  <div class="card" style="border-color:rgba(139,92,246,.45)">
+    <h2 style="font-size:14px;margin:0 0 6px">🤖 AI Doctor — poori report padh kar ilaaj batata hai</h2>
+    <p class="sub" style="margin:0 0 10px">Jaanch ke baad ye button dabao — main saari report AI ko dikha kar Hinglish mein bataungi: kya toota, kyun toota, aur kya karna hai.</p>
+    <div class="row">
+      <button class="btn primary" id="aiDoc">🤖 AI Doctor se ilaaj batao</button>
+      <button class="btn" id="fixAll">🔧 Jo ho sake khud theek karo</button>
+    </div>
+    <div id="aiDocOut" style="margin-top:12px"></div>
+  </div>
+
   <div class="card">
     <h2 style="font-size:14px;margin:0 0 6px">1 · Dimaag (AI) — Builder aur Suno isi par chalte hain</h2>
     <div id="aiBox"><p class="sub">Jaanch baaki hai.</p></div>
@@ -84,7 +94,9 @@ const $ = (id) => document.getElementById(id);
 const ERRORS = [];
 window.addEventListener("error", e => ERRORS.push(String(e.message || e.error || "error").slice(0,120)));
 
+const RESULTS = [];
 function item(name, state, detail, fix){
+  RESULTS.push({ name, state, detail: detail || "", fix: fix || "" });
   const badge = state === "ok" ? ["b-ok","✅ theek"] : state === "bad" ? ["b-bad","❌ toota"] : state === "warn" ? ["b-warn","⚠️ dhyan"] : ["b-wait","…"];
   return `<div class="item"><div class="hd"><div><div class="nm">${name}</div>
     ${detail ? `<div class="dt">${detail}</div>` : ""}
@@ -247,9 +259,75 @@ function testErrors(){
   paint("errBox", rows);
 }
 
+/* ---------- AI Doctor: report padh kar ilaaj ---------- */
+$("aiDoc").onclick = async () => {
+  const box = $("aiDocOut");
+  if (!RESULTS.length){ box.innerHTML = '<p class="sub bad">Pehle "Poori jaanch karo" dabao.</p>'; return; }
+  const broken = RESULTS.filter(r => r.state === "bad" || r.state === "warn");
+  const summary = RESULTS.map(r => `${r.state.toUpperCase()} | ${r.name} | ${r.detail}`).join("\n");
+  const prompt = 'Tum "Seetal Doctor" ho — Swag ke system ka AI daktar. System ke hisse: '
+    + 'Seetal Trader (GitHub Pages, Netlify, Vercel par), data 5 raste (GitHub raw, jsDelivr, GitLab, Pages, Supabase), '
+    + 'Builder (AI se app banata hai, free pollinations API), Suno voice app, Vault (password), Discord alerts, Sentry errors. '
+    + 'Jaanch ki report:\n' + summary + '\n\n'
+    + 'Ab Hinglish me jawab do, is format me:\n'
+    + '1) Sabse badi dikkat kya hai (ek line)\n'
+    + '2) Kyun hui (ek line)\n'
+    + '3) Ab kya karo — 2-3 saaf steps\n'
+    + '4) Jo theek chal raha hai (ek line)\n'
+    + 'Chhota rakho, lecture mat do, sirf kaam ki baat.';
+  box.innerHTML = '<p class="sub">Doctor soch raha hai…</p>';
+  const r = await tryAI(prompt);
+  if (r.ok){
+    box.innerHTML = '<div class="dt" style="font-size:13.5px;color:var(--txt);line-height:1.6">'
+      + String(r.txt).trim().replace(/\n/g, "<br>") + '</div>'
+      + '<p class="sub" style="margin-top:8px">(' + r.via + ' se aaya · ' + r.ms + 'ms)</p>';
+  } else {
+    box.innerHTML = '<p class="sub bad">AI se baat nahi hui — report to upar maujood hai, usse kaam chalao.</p>';
+  }
+};
+
+/* ---------- auto-fix jo browser kar sakta hai ---------- */
+$("fixAll").onclick = async () => {
+  const box = $("aiDocOut");
+  const done = [];
+  // 1) purana cache hatao
+  try{
+    if ('caches' in window){
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+      done.push("Purana cache saaf kiya (" + keys.length + " entry)");
+    }
+  }catch(e){}
+  // 2) service worker refresh
+  try{
+    if ('serviceWorker' in navigator){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.update()));
+      done.push("Service worker ko update kiya");
+    }
+  }catch(e){}
+  // 3) kharab storage saaf
+  try{
+    const bad = [];
+    for (let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      try{ JSON.parse(localStorage.getItem(k)); }catch(e){ bad.push(k); }
+    }
+    bad.forEach(k => localStorage.removeItem(k));
+    if (bad.length) done.push(bad.length + " kharab storage entry hatayi");
+  }catch(e){}
+  // 4) dobara jaanch
+  done.push("Ab dobara jaanch chal rahi hai…");
+  box.innerHTML = '<p class="sub">' + done.join("<br>") + '</p>';
+  RESULTS.length = 0;
+  await runAll();
+  box.innerHTML += '<p class="sub ok" style="margin-top:8px">✅ Doctor ne jo ho saka theek kar diya — upar ki report ab nayi hai.</p>';
+};
+
 async function runAll(){
   const btn = $("run");
   btn.disabled = true;
+  RESULTS.length = 0;
   $("sum").textContent = "Jaanch chal rahi hai… (AI test mein 20-30 second lag sakte hain)";
   ["aiBox","buildBox","dataBox","siteBox","errBox"].forEach(b => $(b).innerHTML = '<p class="sub">…</p>');
 
