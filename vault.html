@@ -169,7 +169,7 @@ async function renderList() {
     .map(
       (i, idx) => `<div class="entry">
       <div>
-        <div class="n">${escapeHtml(i.name)}</div>
+        <div class="n"><span style="color:#8b5cf6">#${(state.data.items.indexOf(i) + 1)}</span> ${escapeHtml(i.name)}</div>
         <div class="u">${escapeHtml(i.user || "")}</div>
         <div class="pw" data-pw="${idx}">••••••••</div>
         ${i.note ? `<div class="u">${escapeHtml(i.note)}</div>` : ""}
@@ -262,7 +262,7 @@ $("#saveEntry").addEventListener("click", async () => {
   });
   await persist();
   $("#eName").value = $("#eUser").value = $("#ePass").value = $("#eNote").value = "";
-  $("#vaultMsg").textContent = "Save ho gaya ✅";
+  $("#vaultMsg").textContent = `Save ho gaya ✅ — iska number #${state.data.items.length} hai`;
   renderList();
 });
 
