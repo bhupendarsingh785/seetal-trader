@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   mirror:
@@ -40,8 +41,11 @@ jobs:
         env:
           TOKEN: ${{ secrets.GITLAB_TOKEN }}
           REPO: ${{ steps.chk.outputs.target }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -u
+          LOG=/tmp/mirror.log
+          : > "$LOG"
           git clone --mirror "https://github.com/${{ github.repository }}.git" repo.git
           cd repo.git
 
@@ -49,7 +53,7 @@ jobs:
           try_push () {
             local url="$1"
             echo "-> try: ${url%%@*}@gitlab.com/..."
-            if git push --mirror "$url" 2>&1; then
+            if git push --mirror "$url" 2>&1 | tee -a "$LOG"; then
               echo "MIRROR OK"
               return 0
             fi
@@ -62,4 +66,12 @@ jobs:
           done
 
           echo "Sab tarike fail hue. Check: (1) token mein repository write permission, (2) repo path ${REPO}, (3) token expire na hua ho."
+          # error ko issue mein likho taki chat se padha ja sake
+          {
+            echo "Mirror to ${REPO} fail hua.\n"
+            echo '```'
+            tail -c 3000 "$LOG"
+            echo '```'
+          } > /tmp/body.md
+          gh issue create --title "Mirror failed $(date -u +%FT%TZ)" --body-file /tmp/body.md || true
           exit 1
