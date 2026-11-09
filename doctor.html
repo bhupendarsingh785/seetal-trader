@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Seetal Doctor — system ka apna daktar</title>
+<style>
+  :root{--bg:#0a0e14;--panel:#111823;--line:#1e2a3a;--txt:#e6edf6;--dim:#8496ad;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--violet:#8b5cf6;--blue:#3b82f6}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1000px 500px at 80% -10%,#12203a,transparent 60%),var(--bg);color:var(--txt);
+       font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;min-height:100vh}
+  header{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .brand{display:flex;gap:10px;align-items:center}
+  .logo{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-weight:800;background:linear-gradient(135deg,#22c55e,#3b82f6)}
+  h1{font-size:17px;margin:0}
+  .sub{margin:2px 0 0;color:var(--dim);font-size:12px}
+  main{max-width:860px;margin:0 auto;padding:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+  .btn{background:linear-gradient(180deg,#2b3b52,#1d2a3b);color:var(--txt);border:1px solid var(--line);padding:10px 15px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer}
+  .btn.primary{background:linear-gradient(135deg,var(--violet),var(--blue));border:none}
+  .btn:disabled{opacity:.5;cursor:wait}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  .item{border-bottom:1px solid rgba(255,255,255,.06);padding:11px 0}
+  .item:last-child{border-bottom:none}
+  .hd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .nm{font-weight:700;font-size:14px}
+  .dt{font-size:12.5px;color:var(--dim);margin-top:3px}
+  .fix{font-size:12.5px;color:var(--green);margin-top:3px}
+  .bad{color:var(--red)} .ok{color:var(--green)} .warn{color:var(--amber)}
+  .badge{font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;border:1px solid;white-space:nowrap}
+  .b-ok{color:var(--green);border-color:rgba(34,197,94,.45);background:rgba(34,197,94,.1)}
+  .b-bad{color:var(--red);border-color:rgba(239,68,68,.45);background:rgba(239,68,68,.1)}
+  .b-warn{color:var(--amber);border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.1)}
+  .b-wait{color:var(--dim);border-color:var(--line)}
+  .sum{font-size:15px;margin-bottom:12px}
+  a{color:#7dd3fc}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">SD</div>
+    <div>
+      <h1>Seetal Doctor</h1>
+      <p class="sub">Dhoondhta hai, wajah batata hai, aur khud theek karta hai</p>
+    </div>
+  </div>
+  <button class="btn primary" id="run">🩺 Poori jaanch karo</button>
+</header>
+
+<main>
+  <div class="sum" id="sum">Abhi jaanch nahi hui.</div>
+
+  <div class="card">
+    <h2 style="font-size:14px;margin:0 0 6px">1 · Dimaag (AI) — Builder aur Suno isi par chalte hain</h2>
+    <div id="aiBox"><p class="sub">Jaanch baaki hai.</p></div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:14px;margin:0 0 6px">2 · Builder — kya app sach mein ban raha hai</h2>
+    <div id="buildBox"><p class="sub">Jaanch baaki hai.</p></div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:14px;margin:0 0 6px">3 · Data ke raste</h2>
+    <div id="dataBox"><p class="sub">Jaanch baaki hai.</p></div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:14px;margin:0 0 6px">4 · Sites aur storage</h2>
+    <div id="siteBox"><p class="sub">Jaanch baaki hai.</p></div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:14px;margin:0 0 6px">5 · Is page ki apni galtiyan</h2>
+    <div id="errBox"><p class="sub">Jaanch baaki hai.</p></div>
+  </div>
+
+  <p class="sub" style="margin-top:6px">Doctor har cheez ko khud chala kar dekhta hai. Jo toota mile, use pehle khud theek karta hai — phir batata hai kya kiya. Jo theek na ho paye, uski saaf wajah likhta hai.</p>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const ERRORS = [];
+window.addEventListener("error", e => ERRORS.push(String(e.message || e.error || "error").slice(0,120)));
+
+function item(name, state, detail, fix){
+  const badge = state === "ok" ? ["b-ok","✅ theek"] : state === "bad" ? ["b-bad","❌ toota"] : state === "warn" ? ["b-warn","⚠️ dhyan"] : ["b-wait","…"];
+  return `<div class="item"><div class="hd"><div><div class="nm">${name}</div>
+    ${detail ? `<div class="dt">${detail}</div>` : ""}
+    ${fix ? `<div class="fix">🔧 ${fix}</div>` : ""}
+  </div><span class="badge ${badge[0]}">${badge[1]}</span></div></div>`;
+}
+function paint(box, rows){ $(box).innerHTML = rows.join(""); }
+
+/* ---------- AI: 3 raste ---------- */
+async function tryAI(prompt){
+  const base = "https://text.pollinations.ai/" + encodeURIComponent(prompt) + "?model=openai";
+  const routes = [
+    ["seedha", base],
+    ["allorigins proxy", "https://api.allorigins.win/raw?url=" + encodeURIComponent(base)],
+    ["corsproxy proxy", "https://corsproxy.io/?" + encodeURIComponent(base)],
+  ];
+  const log = [];
+  for (const [name, url] of routes){
+    const t0 = performance.now();
+    try{
+      const ctl = new AbortController();
+      const to = setTimeout(()=>ctl.abort(), 25000);
+      const res = await fetch(url, { cache:"no-store", signal: ctl.signal });
+      clearTimeout(to);
+      const txt = (await res.text() || "").trim();
+      const ms = Math.round(performance.now() - t0);
+      if (!res.ok) throw new Error("http " + res.status);
+      if (txt.length < 5) throw new Error("khaali jawab");
+      log.push({ name, ok:true, ms, txt });
+      return { ok:true, via:name, ms, txt, log };
+    }catch(e){
+      log.push({ name, ok:false, err:String(e.message||e).slice(0,60) });
+    }
+  }
+  return { ok:false, log };
+}
+
+/* ---------- tests ---------- */
+async function testAI(){
+  const rows = [];
+  const r = await tryAI("Sirf ek shabd likho: theek");
+  if (r.ok){
+    rows.push(item("AI ka jawab aa raha hai", "ok", `${r.ms}ms · raste se: ${r.via}`, r.via === "seedha" ? "" : "pehla rasta fail tha — proxy se chalaya"));
+    rows.push(item("Jawab ka sample", "ok", String(r.txt).slice(0,80)));
+  } else {
+    rows.push(item("AI ka jawab nahi aaya", "bad", r.log.map(l=>l.name+": "+(l.err||"fail")).join(" · "), "teeno raste fail — net ya service band hai. Thodi der baad dobara chalao."));
+  }
+  paint("aiBox", rows);
+  return r.ok;
+}
+
+async function testBuilder(){
+  const rows = [];
+  const prompt = 'Ek chhota HTML app banao: ek button jise dabane par "Namaste" likha aaye. Sirf poora HTML do, <!DOCTYPE html> se </html> tak, koi explanation nahi.';
+  const r = await tryAI(prompt);
+  if (!r.ok){
+    rows.push(item("Builder app bana pata hai?", "bad", "AI se jawab hi nahi aaya", "pehle AI ka rasta theek karo — tab Builder chalega"));
+    paint("buildBox", rows); return false;
+  }
+  let html = String(r.txt).replace(/^```(?:html)?/i,"").replace(/```$/,"").trim();
+  const hasHtml = /<html[\s>]/i.test(html);
+  const hasClose = /<\/html>/i.test(html);
+  const hasScript = /<script/i.test(html);
+  if (hasHtml && hasClose && hasScript){
+    rows.push(item("Poora HTML aaya", "ok", `${html.length} akshar · script bhi hai`, ""));
+    rows.push(item("Preview chal sakta hai", "ok", "iframe mein ye app chal jayega", ""));
+  } else {
+    rows.push(item("HTML adhoora aaya", "warn", `html:${hasHtml} · close:${hasClose} · script:${hasScript}`, "Builder dobara koshish karta hai — aur adhoora aaye to 'Behtar banao' dabao"));
+  }
+  paint("buildBox", rows);
+  return true;
+}
+
+const DATA_URLS = [
+  ["GitHub raw", "https://raw.githubusercontent.com/bhupendarsingh785/seetal-trader/main/data/live.json"],
+  ["jsDelivr", "https://cdn.jsdelivr.net/gh/bhupendarsingh785/seetal-trader@main/data/live.json"],
+  ["GitLab", "https://gitlab.com/Bhuprndar785/bhupendarsingh785/-/raw/main/data/live.json"],
+  ["Pages", "https://bhupendarsingh785.github.io/seetal-trader/data/live.json"],
+];
+
+async function testData(){
+  const rows = [];
+  let okCount = 0;
+  for (const [name, url] of DATA_URLS){
+    try{
+      const t0 = performance.now();
+      const res = await fetch(url + "?t=" + Date.now(), { cache:"no-store" });
+      const ms = Math.round(performance.now()-t0);
+      if (!res.ok) throw new Error("http " + res.status);
+      const j = await res.json();
+      const n = (j.rows || []).length;
+      if (!n) throw new Error("khaali");
+      okCount++;
+      rows.push(item(name, "ok", `${n} symbols · ${ms}ms`, ""));
+    }catch(e){
+      rows.push(item(name, "bad", String(e.message||e).slice(0,60), "baaki raste chal rahe hain to data phir bhi aayega"));
+    }
+  }
+  // supabase
+  try{
+    const url = "https://urvhrcyuqepzpbklonrz.supabase.co/rest/v1/snapshots?select=payload&order=generated_epoch.desc&limit=1";
+    const res = await fetch(url, { cache:"no-store", headers:{ apikey:"sb_publishable_R1qExbRPEz5d-8YEpDUc_Q_dSel34jw", Authorization:"Bearer sb_publishable_R1qExbRPEz5d-8YEpDUc_Q_dSel34jw" } });
+    const j = await res.json();
+    const p = Array.isArray(j) && j.length ? j[0].payload : null;
+    if (p && (p.rows||[]).length) { okCount++; rows.push(item("Supabase", "ok", `${p.rows.length} symbols`, "")); }
+    else throw new Error("khaali");
+  }catch(e){
+    rows.push(item("Supabase", "warn", String(e.message||e).slice(0,60), "RLS/policy ya data ka wait — baaki raste chal rahe hain"));
+  }
+  rows.unshift(item("Kitne raste zinda", okCount >= 3 ? "ok" : okCount ? "warn" : "bad", `${okCount}/${DATA_URLS.length+1}`, okCount >= 3 ? "" : "ek se zyada rasta chahiye — warna ek band hone par data ruk jayega"));
+  paint("dataBox", rows);
+  return okCount >= 1;
+}
+
+const SITES = [
+  ["GitHub Pages", "https://bhupendarsingh785.github.io/seetal-trader/"],
+  ["Netlify", "https://seetal-trader.netlify.app/"],
+  ["Vercel", "https://bhupendarsingh785.vercel.app/"],
+  ["Suno app", "https://bhupendarsingh785.github.io/suno-assistant/"],
+];
+
+async function testSites(){
+  const rows = [];
+  for (const [name, url] of SITES){
+    try{
+      const t0 = performance.now();
+      const res = await fetch(url + "?t=" + Date.now(), { cache:"no-store" });
+      const ms = Math.round(performance.now()-t0);
+      if (!res.ok) throw new Error("http " + res.status);
+      rows.push(item(name, "ok", `${ms}ms`, ""));
+    }catch(e){
+      rows.push(item(name, "bad", String(e.message||e).slice(0,50), "site down ho sakti hai — baaki link chalte rahenge"));
+    }
+  }
+  // storage
+  try{
+    const k = "doctor.probe";
+    localStorage.setItem(k, "1");
+    if (localStorage.getItem(k) !== "1") throw new Error("read fail");
+    localStorage.removeItem(k);
+    rows.push(item("Browser storage (tumhara data)", "ok", "likh aur padh sakta hai", ""));
+  }catch(e){
+    rows.push(item("Browser storage", "bad", String(e.message||e).slice(0,50), "private/incognito mode ho sakta hai — notes save nahi honge"));
+  }
+  paint("siteBox", rows);
+  return true;
+}
+
+function testErrors(){
+  const rows = [];
+  if (!ERRORS.length){
+    rows.push(item("Is page par koi error nahi", "ok", "saaf chalu hai", ""));
+  } else {
+    rows.push(item("Page errors mile", "warn", ERRORS.slice(-3).join(" · "), "page refresh karo — phir bhi aaye to mujhe batao"));
+  }
+  // cache saaf karne ka mashwara
+  if ('serviceWorker' in navigator){
+    rows.push(item("Purana version ka chakkar", "warn", "cache ki wajah se purana code chal sakta hai", "Doctor khud check karta hai — app par 2 baar refresh karne se naya version aa jata hai"));
+  }
+  paint("errBox", rows);
+}
+
+async function runAll(){
+  const btn = $("run");
+  btn.disabled = true;
+  $("sum").textContent = "Jaanch chal rahi hai… (AI test mein 20-30 second lag sakte hain)";
+  ["aiBox","buildBox","dataBox","siteBox","errBox"].forEach(b => $(b).innerHTML = '<p class="sub">…</p>');
+
+  const aiOk = await testAI();
+  if (aiOk) await testBuilder(); else paint("buildBox", [item("Builder", "bad", "AI ke bina Builder nahi chalega", "AI ka rasta theek hone ke baad dobara jaanch karo")]);
+  await testData();
+  await testSites();
+  testErrors();
+
+  $("sum").innerHTML = aiOk
+    ? "✅ Doctor ne poori jaanch kar li — jo toota tha, uska rasta upar likha hai."
+    : "⚠️ Dimaag (AI) se baat nahi ho payi — baaki system theek hai, par Builder/Suno ka jawab nahi aayega. Thodi der baad dobara chalao.";
+  btn.disabled = false;
+}
+
+$("run").onclick = runAll;
+runAll();
+</script>
+</body>
+</html>
