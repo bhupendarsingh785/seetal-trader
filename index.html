@@ -56,6 +56,7 @@
   <button class="tab active" data-tab="pulse" role="tab">Pulse</button>
   <button class="tab" data-tab="scan" role="tab">Scanner</button>
   <button class="tab" data-tab="hisab" role="tab">Hisab</button>
+  <button class="tab" data-tab="doctor" role="tab">Doctor</button>
   <button class="tab" data-tab="help" role="tab">Kaise chalta hai</button>
 </nav>
 
@@ -98,6 +99,18 @@
         <tbody></tbody>
       </table>
     </div>
+  </section>
+
+  <section id="tab-doctor" class="tabpane">
+    <div class="dochead">
+      <div>
+        <h2 style="font-size:17px">Doctor</h2>
+        <p class="note" style="margin:4px 0 0">Yeh khud check karta hai ki sab theek chal raha hai — aur jo toota ho use theek bhi karta hai.</p>
+      </div>
+      <button id="docRun" class="btn" type="button">Abhi check karo</button>
+    </div>
+    <div id="docSummary" class="docsum">Check kar raha hoon…</div>
+    <ul id="docList" class="doclist"></ul>
   </section>
 
   <section id="tab-help" class="tabpane">

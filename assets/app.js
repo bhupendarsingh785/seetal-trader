@@ -699,6 +699,9 @@ function init() {
     toast("Trade likh liya");
   });
 
+  const docBtn = $("#docRun");
+  if (docBtn) docBtn.addEventListener("click", () => runDoctor(true));
+
   initVoice();
   renderHisab();
   loadSnapshot()
@@ -707,6 +710,10 @@ function init() {
       $("#srcText").textContent = "snapshot nahi mila — " + err.message;
       $("#srcDot").className = "dot dead";
     });
+
+  // doctor: page khulte hi ek baar, phir har 5 minute - khud theek karta rahe
+  setTimeout(() => runDoctor(false), 3000);
+  setInterval(() => runDoctor(false), 5 * 60 * 1000);
 
   setInterval(() => loadSnapshot().catch(() => {}), 60000);
   setInterval(() => liveRefresh(), Math.max(5, state.interval) * 1000);
@@ -729,3 +736,176 @@ function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
+
+/* ================= DOCTOR =================
+   Sirf dikhata nahi - jo toota ho use theek bhi karta hai.
+   Har check ka ek fix hota hai. Jo fix nahi ho sakta, woh saaf-saaf "fail" likha jaata hai. */
+
+const doc = { items: [], errors: [], lastRun: 0, reloaded: false };
+
+window.addEventListener("error", (e) => {
+  doc.errors.push(String((e && (e.message || e.error)) || "error").slice(0, 200));
+  if (doc.errors.length > 20) doc.errors.shift();
+});
+window.addEventListener("unhandledrejection", (e) => {
+  doc.errors.push("promise: " + String((e && e.reason) || "").slice(0, 160));
+});
+
+function docItem(name, status, note) {
+  doc.items.push({ name, status, note: note || "" });
+}
+
+async function runDoctor(manual) {
+  doc.items = [];
+  doc.lastRun = Date.now();
+  const sum = $("#docSummary");
+  if (sum) sum.textContent = "Check kar raha hoon…";
+
+  /* 1. snapshot mila ya nahi, aur kitna purana hai */
+  let snapOk = true;
+  try {
+    await loadSnapshot();
+    docItem("Data file (live.json)", "ok", "mil gaya");
+  } catch (e) {
+    snapOk = false;
+    try {
+      const res = await fetch(SNAP_URL + "?doctor=" + Date.now(), { cache: "no-store" });
+      if (!res.ok) throw new Error("http " + res.status);
+      const data = await res.json();
+      state.rows = data.rows || [];
+      state.providers = data.providers || {};
+      state.probe = data.probe || {};
+      state.generatedAt = data.generated_epoch ? data.generated_epoch * 1000 : Date.now();
+      render();
+      docItem("Data file (live.json)", "fixed", "dobara kheench kar theek kiya");
+    } catch (e2) {
+      docItem("Data file (live.json)", "fail", "nahi mila — net ya GitHub check karo");
+    }
+  }
+
+  /* 2. data purana hai to dobara kheencho */
+  const ageMin = state.generatedAt ? (Date.now() - state.generatedAt) / 60000 : 999;
+  if (snapOk && ageMin > 15) {
+    try {
+      await loadSnapshot();
+      docItem("Data taaza hai", "fixed", `purana tha (${Math.round(ageMin)} min), dobara kheench liya`);
+    } catch {
+      docItem("Data taaza hai", "warn", `purana hai (${Math.round(ageMin)} min) — Action ruka ho sakta hai`);
+    }
+  } else if (snapOk) {
+    docItem("Data taaza hai", "ok", `${Math.round(ageMin)} min purana`);
+  }
+
+  /* 3. live layer chal raha hai? */
+  if (state.liveOn) {
+    const before = state.lastTick;
+    try {
+      await liveRefresh();
+    } catch {}
+    if (state.lastTick && state.lastTick !== before) {
+      docItem("Browser live layer", "ok", "chal raha hai");
+    } else if (state.lastTick) {
+      docItem("Browser live layer", "ok", "pehle se chal raha hai");
+    } else {
+      docItem("Browser live layer", "warn", "proxy se live nahi mila — snapshot par chal raha hai");
+    }
+  } else {
+    docItem("Browser live layer", "ok", "band hai (tumne band kiya)");
+  }
+
+  /* 4. khaali ya galat rows ko theek karo */
+  const bad = state.rows.filter(
+    (r) => r.last === null || r.last === undefined || r.last <= 0 || r.state === "NODATA"
+  );
+  let fixedRows = 0;
+  for (const r of bad) {
+    try {
+      const row = await fetchLive(r.symbol);
+      const i = state.rows.findIndex((x) => x.symbol === r.symbol);
+      if (i >= 0) state.rows[i] = row;
+      fixedRows++;
+    } catch {}
+  }
+  if (bad.length === 0) docItem("Sab symbols ka data", "ok", `${state.rows.length} symbols theek`);
+  else if (fixedRows > 0) docItem("Sab symbols ka data", "fixed", `${fixedRows} symbol ka data dobara laaya`);
+  else docItem("Sab symbols ka data", "warn", `${bad.length} symbol ka data nahi mila (market band?)`);
+
+  /* 5. duplicate symbols hatao */
+  const seen = new Set();
+  const beforeLen = state.rows.length;
+  state.rows = state.rows.filter((r) => (seen.has(r.symbol) ? false : seen.add(r.symbol)));
+  if (state.rows.length !== beforeLen) docItem("Duplicate entries", "fixed", `${beforeLen - state.rows.length} duplicate hataye`);
+  else docItem("Duplicate entries", "ok", "koi duplicate nahi");
+
+  /* 6. galat signal (entry hai par stop nahi) */
+  const brokenSignals = state.rows.filter(
+    (r) => r.state === "ENTRY" && (!r.entry || !r.stop || (r.target && r.target <= r.entry))
+  );
+  if (brokenSignals.length) {
+    brokenSignals.forEach((r) => {
+      r.state = "WAIT";
+      r.entry = null;
+      r.target = null;
+    });
+    docItem("Signals ki jaanch", "fixed", `${brokenSignals.length} galat signal hata diya`);
+  } else {
+    docItem("Signals ki jaanch", "ok", "sab entry, stop aur target meel rahe hain");
+  }
+
+  /* 7. browser ka apna storage toota hai? */
+  let storageFixed = 0;
+  [LS_TRADES, LS_WATCH, LS_CFG].forEach((k) => {
+    try {
+      const raw = localStorage.getItem(k);
+      if (raw) JSON.parse(raw);
+    } catch {
+      localStorage.removeItem(k);
+      storageFixed++;
+    }
+  });
+  if (storageFixed) docItem("Browser storage", "fixed", `${storageFixed} kharab entry saaf ki`);
+  else docItem("Browser storage", "ok", "sahi hai");
+
+  /* 8. page ki errors */
+  if (doc.errors.length) {
+    docItem("Page errors", "warn", `${doc.errors.length} error dikhe (neeche list)`);
+  } else {
+    docItem("Page errors", "ok", "koi error nahi");
+  }
+
+  render();
+  renderDoctor(manual);
+}
+
+function renderDoctor(manual) {
+  const list = $("#docList");
+  const sum = $("#docSummary");
+  if (!list || !sum) return;
+  const fixed = doc.items.filter((i) => i.status === "fixed").length;
+  const failed = doc.items.filter((i) => i.status === "fail").length;
+  const warns = doc.items.filter((i) => i.status === "warn").length;
+
+  sum.className = "docsum " + (failed ? "bad" : fixed ? "good" : "");
+  sum.innerHTML = failed
+    ? `❌ ${failed} cheez theek nahi hui — neeche dekho`
+    : fixed
+    ? `✅ Doctor ne ${fixed} cheez khud theek kar di${warns ? `, ${warns} par nazar rakhni hai` : ""}`
+    : `✅ Sab theek chal raha hai${warns ? ` (${warns} par nazar)` : ""}`;
+
+  const icon = { ok: "✅", fixed: "🔧", warn: "⚠️", fail: "❌" };
+  list.innerHTML = doc.items
+    .map(
+      (i) => `<li><span>${icon[i.status] || "•"} ${i.name}</span>
+      <span class="${i.status === "fixed" ? "fix" : i.status === "fail" ? "bad" : "ok"}">${i.note}</span></li>`
+    )
+    .join("");
+
+  if (doc.errors.length) {
+    list.innerHTML += doc.errors
+      .slice(-5)
+      .map((e) => `<li><span>⚠️ ${e}</span><span class="ok">error</span></li>`)
+      .join("");
+  }
+
+  if (fixed && !manual) toast(`🔧 Doctor ne ${fixed} cheez theek ki`);
+}

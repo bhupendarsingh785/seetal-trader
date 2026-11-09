@@ -245,6 +245,25 @@ def probe_backups() -> dict:
     return out
 
 
+def sanity(row: dict) -> tuple[bool, str]:
+    """Ek row ko check karta hai. Jhootha ya toota data aage nahi jaata."""
+    last = row.get("last")
+    if last is None or last <= 0:
+        return False, "price khaali/zero"
+    prev = row.get("prev_close") or 0
+    if prev > 0:
+        chg = abs(last - prev) / prev * 100
+        # 60% se zyada ek din mein = galat tick ya split, signal ke liye khatarnak
+        if chg > 60 and not row.get("is_index"):
+            return False, f"price sanity fail ({chg:.0f}% jump)"
+    if row.get("has_bars") and row.get("or_high") is not None:
+        if row["or_high"] <= 0 or row.get("or_low") is None or row["or_low"] > row["or_high"]:
+            return False, "opening range galat"
+    if row.get("state") == "ENTRY" and (not row.get("entry") or not row.get("stop")):
+        return False, "entry hai par stop nahi"
+    return True, ""
+
+
 def main() -> int:
     symbols = DEFAULT_SYMBOLS
     if os.path.exists(CONFIG):
@@ -265,10 +284,25 @@ def main() -> int:
         except Exception:  # noqa: BLE001
             pass
 
-    rows, errors = [], []
+    rows, errors, repairs = [], [], []
     for sym in symbols:
         try:
-            rows.append(build_row(sym, previous_rows.get(sym)))
+            row = build_row(sym, previous_rows.get(sym))
+            ok, why = sanity(row)
+            if not ok:
+                # doctor: galat row ko cache se badlo, warna hata do
+                cached = previous_rows.get(sym)
+                if cached and sanity(cached)[0]:
+                    cached = dict(cached)
+                    cached["stale"] = True
+                    cached["src"] = (cached.get("src") or "?") + " (doctor)"
+                    rows.append(cached)
+                    repairs.append({"symbol": sym, "fix": f"{why} -> purana accha data lagaya"})
+                else:
+                    repairs.append({"symbol": sym, "fix": f"{why} -> row hata di"})
+                print(f"  ~ doctor {sym}: {why}", file=sys.stderr)
+            else:
+                rows.append(row)
         except Exception as exc:  # noqa: BLE001
             errors.append({"symbol": sym, "error": str(exc)[:200]})
             print(f"  ! {sym}: {exc}", file=sys.stderr)
@@ -288,6 +322,7 @@ def main() -> int:
             "target": "2R",
         },
         "rows": rows,
+        "repairs": repairs,
         "errors": errors,
     }
 
