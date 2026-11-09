@@ -87,6 +87,23 @@
     <pre id="code" style="display:none"></pre>
 
     <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:12px">
+      <h2 style="font-size:15px;margin:0 0 6px">🔌 Apni API (optional — par sabse behtar)</h2>
+      <p class="note" style="margin:0 0 8px">Key daal do to app tumhari API se banegi (tez + behtar). Na ho to free AI se chalega — power kam nahi hogi.</p>
+      <select id="apiProv" style="margin-bottom:6px">
+        <option value="none">Free AI (koi key nahi)</option>
+        <option value="gemini">Google Gemini</option>
+        <option value="openai">OpenAI</option>
+      </select>
+      <input id="apiKey" placeholder="API key" style="margin-bottom:6px" autocomplete="off" />
+      <input id="apiModel" placeholder="model (optional, jaise gemini-2.0-flash)" style="margin-bottom:6px" />
+      <div class="row" style="margin-top:0">
+        <button class="btn" id="apiSave">Key yaad rakho</button>
+        <button class="btn" id="apiTest2">🔌 Test karo</button>
+      </div>
+      <div id="apiOut2" class="note" style="margin-top:8px"></div>
+    </div>
+
+    <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:12px">
       <h2 style="font-size:15px;margin:0 0 6px">🚀 GitHub par deploy karo</h2>
       <p class="note" style="margin:0 0 8px">Token ek hi baar daalo — phir ek click me app GitHub par chali jayegi aur live ho jayegi. Token sirf tumhare phone me rehta hai.</p>
       <input id="ghToken" placeholder="GitHub token (ghp_... ya github_pat_...)" style="margin-bottom:6px" />
@@ -289,6 +306,42 @@ async function askAI(prompt){
   }
   throw lastErr || new Error("AI se baat nahi hui");
 }
+
+/* ---------- API key ---------- */
+try{
+  const c = (window.Brain && Brain.getKey && Brain.getKey()) || null;
+  if (c){
+    if (c.provider) $("apiProv").value = c.provider;
+    if (c.key) $("apiKey").value = c.key;
+    if (c.model) $("apiModel").value = c.model;
+  }
+}catch(e){}
+
+$("apiSave").onclick = () => {
+  const prov = $("apiProv").value;
+  const key = ($("apiKey").value || "").trim();
+  const model = ($("apiModel").value || "").trim();
+  if (window.Brain && Brain.setKey) Brain.setKey(prov, key, model);
+  $("apiOut2").textContent = prov === "none" ? "Free AI par set — koi key nahi." : "Key yaad rakh li (sirf is phone me).";
+};
+
+$("apiTest2").onclick = async () => {
+  const out = $("apiOut2");
+  out.textContent = "Test kar raha hoon…";
+  const prov = $("apiProv").value;
+  const key = ($("apiKey").value || "").trim();
+  const model = ($("apiModel").value || "").trim();
+  if (window.Brain && Brain.setKey) Brain.setKey(prov, key, model);
+
+  if (prov !== "none" && key){
+    const ok = await Brain.ownKeyWorking();
+    if (ok){ out.textContent = "✅ Tumhari API chal rahi hai (" + prov + ") — ab app usi se banegi."; return; }
+    out.textContent = "⚠️ Tumhari key se jawab nahi aaya — free AI par chala jaunga. Key/model check karo.";
+    return;
+  }
+  const r = await Brain.ask("Sirf ek shabd: theek", { task:"any" });
+  out.textContent = r.ok ? ("✅ Free AI chal rahi hai (" + r.model + ")") : "❌ Free AI se bhi jawab nahi aaya — net check karo.";
+};
 
 /* ---------- GitHub deploy ---------- */
 const GH = "seetal.gh.v1";

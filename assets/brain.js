@@ -148,5 +148,67 @@
     return x;
   }
 
+
+  /* ---------- apni API key (optional, par best) ---------- */
+  Brain.getKey = function(){
+    try{ return JSON.parse(localStorage.getItem("seetal.apikey.v1") || "null"); }catch(e){ return null; }
+  };
+  Brain.setKey = function(provider, key, model){
+    try{ localStorage.setItem("seetal.apikey.v1", JSON.stringify({ provider, key, model })); }catch(e){}
+  };
+
+  async function callOwn(cfg, prompt, timeout){
+    const ctl = new AbortController();
+    const to = setTimeout(() => ctl.abort(), timeout || 20000);
+    try{
+      if (cfg.provider === "gemini"){
+        const url = "https://generativelanguage.googleapis.com/v1beta/models/" + (cfg.model || "gemini-2.0-flash") + ":generateContent?key=" + encodeURIComponent(cfg.key);
+        const r = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] }), signal: ctl.signal });
+        const j = await r.json();
+        if (j.error) throw new Error(j.error.message || "gemini error");
+        const t = j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts[0].text;
+        if (!t) throw new Error("khaali");
+        return t.trim();
+      }
+      if (cfg.provider === "openai"){
+        const r = await fetch("https://api.openai.com/v1/chat/completions", {
+          method:"POST",
+          headers:{ "Content-Type":"application/json", "Authorization":"Bearer " + cfg.key },
+          body: JSON.stringify({ model: cfg.model || "gpt-4o-mini", temperature:0.5, messages:[{ role:"user", content: prompt }] }),
+          signal: ctl.signal });
+        const j = await r.json();
+        if (j.error) throw new Error(j.error.message || "openai error");
+        const t = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+        if (!t) throw new Error("khaali");
+        return t.trim();
+      }
+      throw new Error("provider nahi");
+    } finally { clearTimeout(to); }
+  }
+
+  /* apni key pehle, phir free models */
+  const _ask = Brain.ask.bind(Brain);
+  Brain.ask = async function(prompt, opts){
+    opts = opts || {};
+    const cfg = Brain.getKey();
+    if (cfg && cfg.key && cfg.provider && cfg.provider !== "none"){
+      try{
+        const t = await callOwn(cfg, prompt, opts.timeout || 25000);
+        if (t && t.length > 2) return { ok:true, text:t, ms:0, model: cfg.provider, via:"apni key", tried:[] };
+      }catch(e){ /* chup-chaap free par gir jao */ }
+    }
+    return _ask(prompt, opts);
+  };
+
+  Brain.ownKeyWorking = async function(){
+    const cfg = Brain.getKey();
+    if (!cfg || !cfg.key) return false;
+    try{
+      const t = await callOwn(cfg, "Sirf ek shabd: theek", 12000);
+      return !!(t && t.length);
+    }catch(e){ return false; }
+  };
+
   window.Brain = Brain;
 })();
