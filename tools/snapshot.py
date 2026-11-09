@@ -203,6 +203,45 @@ def build_row(symbol: str, previous: dict | None) -> dict:
     raise RuntimeError(" | ".join(errors)[:300])
 
 
+
+PROBE_SYMBOLS = {
+    "moneycontrol": "RELIANCE.NS",
+    "nse": "RELIANCE.NS",
+    "stooq": "AAPL",
+    "nasdaq": "AAPL",
+    "twelvedata": "AAPL",
+    "finnhub": "AAPL",
+}
+
+
+def probe_backups() -> dict:
+    """Backup providers ko chup-chaap check karta hai - jo chain mein aage hai
+    woh chal jaata hai, isliye backup kabhi test hi nahi hote. Yeh unhe test
+    karta hai taki pata rahe kaun zinda hai."""
+    out = {}
+    for name, fn in providers.QUOTE_PROVIDERS + providers.BAR_PROVIDERS:
+        sym = PROBE_SYMBOLS.get(name)
+        if not sym:
+            continue
+        if name in ("twelvedata", "finnhub") and not (
+            os.environ.get("TWELVEDATA_KEY") or os.environ.get("FINNHUB_KEY")
+        ):
+            out[name] = {"ok": False, "skipped": True, "note": "key nahi hai"}
+            continue
+        try:
+            r = fn(sym)
+            price = r.get("last") if isinstance(r, dict) and "last" in r else None
+            if price is None and isinstance(r, dict):
+                try:
+                    price = r["chart"]["result"][0]["meta"]["regularMarketPrice"]
+                except Exception:  # noqa: BLE001
+                    price = None
+            out[name] = {"ok": True, "symbol": sym, "price": price}
+        except Exception as exc:  # noqa: BLE001
+            out[name] = {"ok": False, "symbol": sym, "note": str(exc)[:100]}
+    return out
+
+
 def main() -> int:
     symbols = DEFAULT_SYMBOLS
     if os.path.exists(CONFIG):
@@ -238,6 +277,7 @@ def main() -> int:
         "generated_epoch": int(now.timestamp()),
         "source": "multi-provider: Yahoo q1/q2, Moneycontrol, Stooq (+ purana cache)",
         "providers": HEALTH,
+        "probe": probe_backups(),
         "rules": {
             "opening_range_minutes": 15,
             "entry": "pehli bar jo range high ke upar CLOSE ho",

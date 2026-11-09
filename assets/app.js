@@ -22,6 +22,7 @@ const PROXIES = [
 const state = {
   rows: [],
   providers: {},
+  probe: {},
   generatedAt: null,
   lastTick: null,
   liveOn: true,
@@ -228,6 +229,7 @@ async function loadSnapshot() {
     if (!have.has(s.symbol)) state.rows.push(s);
   });
   state.providers = data.providers || {};
+  state.probe = data.probe || {};
   state.generatedAt = data.generated_epoch ? data.generated_epoch * 1000 : Date.now();
   applyWatchlist();
   render();
@@ -282,7 +284,12 @@ function healthText() {
     ([k, v]) => `${v.ok > 0 ? "✅" : "⚠️"} ${names[k] || k} ${v.ok || 0}`
   );
   if (state.lastTick) bits.unshift("✅ Browser live");
-  return bits.length ? "Sources: " + bits.join(" · ") : "";
+  const bk = Object.entries(state.probe || {})
+    .filter(([k]) => !["yahoo-q1", "yahoo-q2"].includes(k))
+    .map(([k, v]) => `${v.skipped ? "➖" : v.ok ? "✅" : "❌"} ${names[k] || k}`);
+  const line1 = bits.length ? "Sources: " + bits.join(" · ") : "";
+  const line2 = bk.length ? "Backup: " + bk.join(" · ") : "";
+  return [line1, line2].filter(Boolean).join(" — ");
 }
 
 function renderStrip(rows) {
