@@ -22,24 +22,19 @@ Run:  python3 tools/snapshot.py
 
 from __future__ import annotations
 
-import csv
-import io
 import json
 import os
 import sys
 import time
-import urllib.parse
-import urllib.request
 from datetime import datetime, timezone
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import providers  # noqa: E402
+from providers import HEALTH, note  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG = os.path.join(ROOT, "config.json")
 OUT = os.path.join(ROOT, "data", "live.json")
-
-UA = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-)
 
 DEFAULT_SYMBOLS = [
     "^NSEI", "^NSEBANK", "^BSESN", "^GSPC", "^IXIC",
@@ -50,37 +45,6 @@ DEFAULT_SYMBOLS = [
 
 INDEX_SET = {"^NSEI", "^NSEBANK", "^BSESN", "^GSPC", "^IXIC", "^DJI"}
 
-HEALTH: dict = {}
-
-
-def _note(provider: str, ok: bool, err: str = "") -> None:
-    h = HEALTH.setdefault(provider, {"ok": 0, "fail": 0, "last_error": ""})
-    if ok:
-        h["ok"] += 1
-    else:
-        h["fail"] += 1
-        h["last_error"] = err[:120]
-
-
-def http_get(url: str, tries: int = 2, timeout: int = 18, headers: dict | None = None) -> str:
-    last = None
-    hdrs = {
-        "User-Agent": UA,
-        "Accept": "*/*",
-        "Accept-Language": "en-US,en;q=0.9",
-    }
-    if headers:
-        hdrs.update(headers)
-    for i in range(tries):
-        try:
-            req = urllib.request.Request(url, headers=hdrs)
-            with urllib.request.urlopen(req, timeout=timeout) as r:
-                return r.read().decode("utf-8", "replace")
-        except Exception as exc:  # noqa: BLE001
-            last = exc
-            time.sleep(1.0 * (i + 1))
-    raise RuntimeError(str(last))
-
 
 def _num(x):
     try:
@@ -90,62 +54,6 @@ def _num(x):
         return None if v != v else v
     except (TypeError, ValueError):
         return None
-
-
-# ---------------------------------------------------------------- providers
-def yahoo_bars(symbol: str, host: str = "query1") -> dict:
-    s = urllib.parse.quote(symbol, safe="")
-    url = (
-        f"https://{host}.finance.yahoo.com/v8/finance/chart/{s}"
-        f"?range=1d&interval=5m&includePrePost=false"
-    )
-    return json.loads(http_get(url))
-
-
-def stooq_quote(symbol: str) -> dict:
-    """Sirf US symbols. Delayed quote, koi bars nahi."""
-    if symbol.startswith("^") or symbol.endswith((".NS", ".BO")):
-        raise RuntimeError("stooq: yeh symbol support nahi")
-    st = symbol.lower() + ".us"
-    url = f"https://stooq.com/q/l/?s={st}&f=sd2t2ohlcv&h&e=csv"
-    text = http_get(url, headers={"Accept": "text/csv"})
-    rows = list(csv.DictReader(io.StringIO(text)))
-    if not rows:
-        raise RuntimeError("stooq: khaali jawab")
-    r = rows[0]
-    close = _num(r.get("Close"))
-    if close is None:
-        raise RuntimeError("stooq: close nahi mila")
-    return {
-        "last": close,
-        "prev": _num(r.get("Open")) or close,
-        "name": symbol,
-        "currency": "USD",
-        "exchange": "Stooq",
-        "ts": None,
-    }
-
-
-def moneycontrol_quote(symbol: str) -> dict:
-    """NSE (.NS) symbols ke liye. Sirf last price."""
-    if not symbol.endswith(".NS"):
-        raise RuntimeError("moneycontrol: sirf .NS")
-    code = symbol[:-3]
-    url = f"https://priceapi.moneycontrol.com/pricefeed/nse/equitycash/{code}"
-    data = json.loads(http_get(url, headers={"Accept": "application/json"}))
-    d = data.get("data") or {}
-    last = _num(d.get("pricecurrent") or d.get("lastvalue"))
-    prev = _num(d.get("pricepreviousclose") or d.get("prevclose"))
-    if last is None:
-        raise RuntimeError("moneycontrol: price nahi mila")
-    return {
-        "last": last,
-        "prev": prev or last,
-        "name": d.get("company") or code,
-        "currency": "INR",
-        "exchange": "NSE (Moneycontrol)",
-        "ts": None,
-    }
 
 
 # ---------------------------------------------------------------- analysis
@@ -261,14 +169,8 @@ def quote_row(symbol: str, q: dict, provider: str) -> dict:
     }
 
 
-BAR_PROVIDERS = [
-    ("yahoo-q1", lambda s: yahoo_bars(s, "query1")),
-    ("yahoo-q2", lambda s: yahoo_bars(s, "query2")),
-]
-QUOTE_PROVIDERS = [
-    ("moneycontrol", moneycontrol_quote),
-    ("stooq", stooq_quote),
-]
+BAR_PROVIDERS = providers.BAR_PROVIDERS
+QUOTE_PROVIDERS = providers.QUOTE_PROVIDERS
 
 
 def build_row(symbol: str, previous: dict | None) -> dict:
@@ -276,19 +178,19 @@ def build_row(symbol: str, previous: dict | None) -> dict:
     for name, fn in BAR_PROVIDERS:
         try:
             row = analyse_bars(symbol, fn(symbol), name)
-            _note(name, True)
+            note(name, True)
             return row
         except Exception as exc:  # noqa: BLE001
-            _note(name, False, str(exc))
+            note(name, False, str(exc))
             errors.append(f"{name}: {exc}")
 
     for name, fn in QUOTE_PROVIDERS:
         try:
             row = quote_row(symbol, fn(symbol), name)
-            _note(name, True)
+            note(name, True)
             return row
         except Exception as exc:  # noqa: BLE001
-            _note(name, False, str(exc))
+            note(name, False, str(exc))
             errors.append(f"{name}: {exc}")
 
     if previous:

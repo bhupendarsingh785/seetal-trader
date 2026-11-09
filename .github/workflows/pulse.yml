@@ -2,8 +2,8 @@ name: Seetal Trader pulse
 
 on:
   schedule:
-    # har 10 minute (GitHub ka minimum 5 hai; 10 zyada bharosemand hai)
-    - cron: "*/10 * * * *"
+    # har 5 minute - GitHub ka minimum
+    - cron: "*/5 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
@@ -24,6 +24,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: Build data/live.json
+        env:
+          TWELVEDATA_KEY: ${{ secrets.TWELVEDATA_KEY }}
+          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
         run: python3 tools/snapshot.py
       - name: Commit if changed
         run: |

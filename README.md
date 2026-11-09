@@ -16,22 +16,35 @@ SWAG Trader pack ke rules par bana hua, ek hi page par.
 
 ## Data kahan se (ek par nirbhar nahi)
 
-`data/live.json` GitHub Action banata hai (`tools/snapshot.py`). Har symbol ke
-liye providers ek ke baad ek try hote hain, jo pehla kaam kare wahi data deta hai:
+`data/live.json` GitHub Action banata hai (`tools/snapshot.py` + `tools/providers.py`).
+Har symbol ke liye providers ek ke baad ek try hote hain — jo pehla sahi jawab de,
+wahi data deta hai. Sab fail ho jayein to **pichhla accha data** rehne deta hai,
+`stale` mark ke saath.
 
-1. **Yahoo query1** — 5-minute bars + last price (opening range aur entry ke liye zaroori)
-2. **Yahoo query2** — wahi API, doosra host (ek block ho to doosra bacha le)
-3. **Moneycontrol** — NSE/BSE ka last price (bars nahi)
-4. **Stooq** — US symbols ka last price (bars nahi)
+**Bars (opening range + entry ke liye zaroori):**
+1. Yahoo query1
+2. Yahoo query2 (doosra host)
+3. Twelve Data — *optional, apni free key daalo to chalta hai*
+4. Finnhub — *optional, apni free key daalo to chalta hai*
 
-Sab fail ho jayein to **pichhla accha data** hi rehne deta hai, `stale` mark ke
-saath — page band nahi hota. Page par har card ke neeche uska source likha hota
-hai aur upar providers ki health dikhti hai. Action har 10 minute chalta hai,
-page khud har minute file dobara padhta hai.
+**Sirf price (bars nahi → card par `PRICE ONLY`, signal nahi):**
+1. Moneycontrol (NSE/BSE)
+2. NSE ka apna API
+3. Stooq (US)
+4. Nasdaq (US)
 
-Agar kisi source se sirf price mila (bars nahi), card par `PRICE ONLY` likha
-aata hai — us halat mein entry/stop/target nahi nikalti, kyunki opening range
-ke bina woh jhooth hota.
+**Browser live layer:** page khud bhi Yahoo se seedha data kheenchta hai, 4 CORS
+proxy ke raste, har 5–30 second. Woh chal gaya to card par `live` likha aata hai,
+warna snapshot dikhta hai.
+
+**Jo chain mein nahi hai:** Google Finance — NSE par isne 1295 dikhaya jab last
+1324 tha. Galat price, price na hone se bura hai.
+
+### Apni key add karna (optional)
+
+Repo → Settings → Secrets and variables → Actions → New repository secret:
+`TWELVEDATA_KEY` ya `FINNHUB_KEY`. Dono ki free tier hai. Key daalne ke baad
+agla run unhe bhi chain mein try karega — koi code badalne ki zaroorat nahi.
 
 ## Apna watchlist badalna
 
