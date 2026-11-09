@@ -38,7 +38,7 @@
     <div class="logo">SB</div>
     <div>
       <h1>Seetal Builder</h1>
-      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v5</b></p>
+      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v6</b></p>
     </div>
   </div>
   <a class="btn" href="index.html">← Wapas Trader</a>
@@ -471,9 +471,28 @@ function parsePlan(txt){
   try{
     const arr = JSON.parse(m[0]);
     if (!Array.isArray(arr) || !arr.length) return null;
-    return arr.filter(x => x && x.file).slice(0, 6)
+    return arr.filter(x => x && x.file).slice(0, 8)
       .map(x => ({ file: String(x.file).replace(/[^a-zA-Z0-9._\/-]/g, ""), kaam: String(x.kaam || "") }));
   }catch(e){ return null; }
+}
+
+function checkFile(name, code){
+  if (/\.js$/i.test(name)){
+    try{ new Function(code); return { ok: true }; }
+    catch(e){ return { ok: false, why: "JS error: " + String(e.message).slice(0, 60) }; }
+  }
+  if (/\.html$/i.test(name)){
+    if (!/<html[\s>]/i.test(code)) return { ok: false, why: "html tag nahi mila" };
+    if (!/<\/html>/i.test(code)) return { ok: false, why: "html band nahi hua" };
+    if (!/<body/i.test(code)) return { ok: false, why: "body nahi mila" };
+    return { ok: true };
+  }
+  if (/\.css$/i.test(name)){
+    const opens = (code.match(/{/g) || []).length, closes = (code.match(/}/g) || []).length;
+    if (Math.abs(opens - closes) > 2) return { ok: false, why: "CSS braces mel nahi kha rahe" };
+    return { ok: true };
+  }
+  return { ok: true };
 }
 
 async function buildProject(){
@@ -487,7 +506,7 @@ async function buildProject(){
 
   try{
     setStatus("Pehle plan bana rahi hoon…");
-    const planPrompt = 'Ek app ka idea: "' + idea + '". Isko chhote files me todo (2 se 6). '
+    const planPrompt = 'Ek app ka idea: "' + idea + '". Isko chhote files me todo (3 se 8). '
       + 'Sirf JSON array do, har item me "file" aur "kaam". index.html zaroor ho. CSS/JS alag rakho. Koi explanation nahi.';
     const planTxt = await Brain.ask(planPrompt, { task: "code" });
     let plan = planTxt.ok ? parsePlan(planTxt.text) : null;
@@ -505,10 +524,21 @@ async function buildProject(){
       if (isJs) p2 += 'Sirf JavaScript. ';
       if (!isCss && !isJs) p2 += 'Poora HTML, style.css aur app.js ko link karo agar plan me hain. ';
       p2 += 'Hinglish UI, mobile pehle, data localStorage me. Sirf code, koi explanation nahi.';
-      const r = await Brain.ask(p2, { task: "code" });
-      let content = r.ok ? String(r.text).trim() : "";
-      content = content.replace(/^```[a-z]*\n?/i, "").replace(/```$/, "").trim();
-      if (!content) throw new Error(f.file + " khaali aayi");
+      let content = "";
+      let lastErr = "";
+      for (let attempt = 0; attempt < 3; attempt++){
+        const ask = attempt === 0 ? p2
+          : p2 + "\n\nPichhli koshish me ye dikkat thi: " + lastErr + ". Is baar theek karo, poora code do.";
+        const r = await Brain.ask(ask, { task: "code" });
+        content = r.ok ? String(r.text).trim() : "";
+        content = content.replace(/^```[a-z]*\n?/i, "").replace(/```$/, "").trim();
+        if (!content){ lastErr = "khaali jawab aaya"; continue; }
+        const chk = checkFile(f.file, content);
+        if (chk.ok){ lastErr = ""; break; }
+        lastErr = chk.why;
+        setStatus("Sudhaar rahi hoon: " + f.file + " (" + chk.why + ")");
+      }
+      if (lastErr) throw new Error(f.file + " theek nahi hui — " + lastErr);
       state.files[f.file] = content;
     }
 
