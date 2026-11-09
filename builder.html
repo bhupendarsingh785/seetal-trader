@@ -115,6 +115,13 @@ const FILL = {
 
 function setStatus(txt, cls){ $("status").textContent = txt; $("status").className = "note " + (cls || ""); }
 
+/* hub se aaya idea pehle se bhar do */
+try{
+  const u = new URLSearchParams(location.search);
+  const pre = u.get("idea");
+  if (pre) $("idea").value = pre;
+}catch(e){}
+
 document.querySelectorAll(".chip").forEach(c => c.onclick = () => {
   $("idea").value = FILL[c.dataset.fill] || "";
 });

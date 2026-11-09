@@ -175,18 +175,86 @@ async function recheck(){
   }
 }
 
-/* ek hi jagah se poochho — dimaag khud tool chunega */
+/* ek hi jagah se poochho — dimaag khud tool chunega aur kaam bhi karega */
+const nf = (n) => (n===null||n===undefined||isNaN(n)) ? "—" : Number(n).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+
+async function marketAnswer(text){
+  const urls = [
+    "https://raw.githubusercontent.com/bhupendarsingh785/seetal-trader/main/data/live.json",
+    "https://cdn.jsdelivr.net/gh/bhupendarsingh785/seetal-trader@main/data/live.json",
+    "https://bhupendarsingh785.github.io/seetal-trader/data/live.json",
+  ];
+  let d = null;
+  for (const u of urls){
+    try{
+      const res = await fetch(u + "?t=" + Date.now(), { cache:"no-store" });
+      if (!res.ok) continue;
+      const j = await res.json();
+      if (j && Array.isArray(j.rows) && j.rows.length){ d = j; break; }
+    }catch(e){}
+  }
+  if (!d) return "Market ka data abhi nahi mil raha — Trader kholo, wahan Doctor bata dega kya dikkat hai.";
+  const t = text.toLowerCase();
+  const alias = { "nifty":"^NSEI", "banknifty":"^NSEBANK", "sensex":"^BSESN", "reliance":"RELIANCE.NS",
+    "tcs":"TCS.NS", "sbi":"SBIN.NS", "infosys":"INFY.NS", "hdfc":"HDFCBANK.NS", "icici":"ICICIBANK.NS",
+    "adani":"ADANIENT.NS", "itc":"ITC.NS", "tesla":"TSLA", "apple":"AAPL", "nvidia":"NVDA" };
+  let hit = null;
+  for (const [w, sym] of Object.entries(alias)){
+    if (t.includes(w)) { hit = d.rows.find(r => r.symbol === sym); if (hit) break; }
+  }
+  if (hit){
+    let out = hit.symbol.replace(".NS","").replace("^","") + ": " + nf(hit.last) + " (" + (hit.change_pct>0?"+":"") + nf(hit.change_pct) + "%)";
+    if (hit.state === "ENTRY") out += "\n⚡ ENTRY signal — entry " + nf(hit.entry) + ", stop " + nf(hit.stop) + ", target " + nf(hit.target);
+    else if (hit.or_high) out += "\nEntry abhi nahi — range high " + nf(hit.or_high) + " se " + nf(Math.abs(hit.distance_points)) + " point door.";
+    return out;
+  }
+  const idx = d.rows.filter(r => r.is_index);
+  const up = d.rows.filter(r => r.change_pct > 0).length;
+  const mood = up > d.rows.length/2 ? "Market uth raha hai" : up < d.rows.length/2 ? "Market gir raha hai" : "Market flat hai";
+  return mood + ".\n" + idx.map(r => r.symbol.replace("^","") + ": " + nf(r.last) + " (" + (r.change_pct>0?"+":"") + nf(r.change_pct) + "%)").join("\n")
+    + "\n\nPoora chart, scanner aur hisab Trader mein hai.";
+}
+
 $("go").onclick = async () => {
   const text = ($("q").value || "").trim();
   if (text.length < 3) return;
   const box = $("ans");
   box.classList.add("on");
-  box.textContent = "Soch rahi hoon…";
-  const prompt = 'Tum "Seetal" ho — Swag ke is system ka dimaag. System ke hisse: '
-    + 'Trader (market/paisa), Builder (naya app banana), Doctor (system ki jaanch), Gyan (sehat/robot/padhai/paisa/zindagi), Vault (passwords), Suno (phone assistant). '
-    + 'User ne kaha: "' + text + '"\n\n'
-    + 'Hinglish me 2-4 line me jawab do. Agar kaam kisi tool ka hai to saaf batao kaunsa kholna hai (jaise "Trader kholo"). '
-    + 'Sehat/paise ke sawal ho to salah ke saath doctor/CA se milne ko bhi kaho. Chhota rakho.';
+  box.textContent = "Dekh rahi hoon…";
+  const t = text.toLowerCase();
+
+  /* 1. market / trading */
+  if (/(market|nifty|bank ?nifty|sensex|share|stock|bhav|bhaav|reliance|tcs|sbi|infosys|hdfc|icici|adani|itc|tesla|apple|nvidia|मार्केट|निफ्टी|सेंसेक्स)/.test(t)){
+    box.textContent = await marketAnswer(text);
+    return;
+  }
+
+  /* 2. app banwana */
+  if (/(app banao|app banado|application banao|builder|naya app)/.test(t)){
+    box.innerHTML = 'Builder khol rahi hoon…<br><a href="builder.html?idea=' + encodeURIComponent(text) + '" style="color:#7dd3fc">Yahan dabao (idea pehle se bhara hua)</a>';
+    setTimeout(() => { location.href = "builder.html?idea=" + encodeURIComponent(text); }, 700);
+    return;
+  }
+
+  /* 3. system ki jaanch */
+  if (/(doctor|theek karo|dikkat|error|kaam nahi|toota)/.test(t)){
+    box.innerHTML = 'Doctor khol rahi hoon…<br><a href="doctor.html" style="color:#7dd3fc">Yahan dabao</a>';
+    setTimeout(() => { location.href = "doctor.html"; }, 700);
+    return;
+  }
+
+  /* 4. sehat / dawai */
+  if (/(dawai|bimari|bukhar|dard|doctor ke paas|sugar|bp |tabiyat|medicine|health)/.test(t)){
+    box.textContent = "Soch rahi hoon…";
+    const p = 'Tum health-guide ho, Hinglish me samjhao. SIRF general jaankari — KABHI dawai ka naam, dose ya prescription mat do. KABHI "aapko ye bimari hai" mat bolo. 5-6 line. Aakhir me: "doctor se milna zaroori hai".\n\nSawal: ' + text;
+    const r = await Brain.ask(p, { task:"advice" });
+    box.textContent = (r.ok ? r.text.trim() : "Jawab nahi aaya.") + "\n\n⚠️ Ye jaankari hai, ilaaj nahi — doctor se milo.";
+    return;
+  }
+
+  /* 5. baaki sab — dimaag */
+  const prompt = 'Tum "Seetal" ho — Swag ke system ka dimaag. Hisse: Trader (market), Builder (app banana), Doctor (system jaanch), Gyan (sehat/robot/padhai/paisa), Vault (passwords), Suno (phone). '
+    + 'User ne kaha: "' + text + '"\n\nHinglish me 2-4 line me jawab do. Kaam kisi tool ka ho to batao kaunsa kholna hai. Chhota rakho.';
   try{
     const r = await Brain.ask(prompt, { task:"advice" });
     box.textContent = r.ok ? r.text.trim() : "Jawab nahi aaya — thodi der baad try karo.";
@@ -194,6 +262,7 @@ $("go").onclick = async () => {
     box.textContent = "Jawab nahi aaya (" + (e.message||e) + ").";
   }
 };
+
 $("q").addEventListener("keydown", (e) => { if (e.key === "Enter") $("go").click(); });
 
 $("recheck").onclick = recheck;
