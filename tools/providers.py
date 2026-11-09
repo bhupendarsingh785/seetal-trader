@@ -277,6 +277,92 @@ def nse_quote(symbol: str) -> dict:
             "currency": "INR", "exchange": "NSE"}
 
 
+# ------------------------------------------------------- China (no key)
+def _cn_code(symbol: str) -> str:
+    """"600519.SS" -> "sh600519", "000001.SZ" -> "sz000001"."""
+    m = re.match(r"^(\d{6})\.(SS|SZ)$", symbol.upper())
+    if not m:
+        raise RuntimeError("cn: sirf .SS/.SZ")
+    return ("sh" if m.group(2) == "SS" else "sz") + m.group(1)
+
+
+def _get_bytes(url: str, headers: dict | None = None, tries: int = 2) -> bytes:
+    hdrs = {"User-Agent": UA, "Accept": "*/*"}
+    if headers:
+        hdrs.update(headers)
+    last = None
+    for i in range(tries):
+        try:
+            req = urllib.request.Request(url, headers=hdrs)
+            with urllib.request.urlopen(req, timeout=15) as r:
+                return r.read()
+        except Exception as exc:  # noqa: BLE001
+            last = exc
+            time.sleep(0.8 * (i + 1))
+    raise RuntimeError(str(last))
+
+
+def _gbk(b: bytes) -> str:
+    for enc in ("gbk", "gb18030", "utf-8"):
+        try:
+            return b.decode(enc)
+        except Exception:  # noqa: BLE001
+            continue
+    return b.decode("utf-8", "replace")
+
+
+def tencent_quote(symbol: str) -> dict:
+    """Tencent (qt.gtimg.cn) - China A-shares. GBK, ~ se separated."""
+    code = _cn_code(symbol)
+    text = _gbk(_get_bytes(f"https://qt.gtimg.cn/q={code}",
+                           headers={"Referer": "https://gu.qq.com/"}))
+    if "~" not in text:
+        raise RuntimeError("tencent: format nahi mila")
+    f = text.split('"')[1].split("~")
+    if len(f) < 35:
+        raise RuntimeError("tencent: kam fields")
+    last, prev = _num(f[3]), _num(f[4])
+    if not last or not prev:
+        raise RuntimeError("tencent: price khaali")
+    return {"last": last, "prev": prev, "name": f[1] or code,
+            "currency": "CNY", "exchange": "Tencent (CN)"}
+
+
+def sina_quote(symbol: str) -> dict:
+    """Sina (hq.sinajs.cn) - China A-shares. Referer zaroori hai warna 403."""
+    code = _cn_code(symbol)
+    text = _gbk(_get_bytes(f"https://hq.sinajs.cn/list={code}",
+                           headers={"Referer": "https://finance.sina.com.cn"}))
+    if '="' not in text:
+        raise RuntimeError("sina: format nahi mila")
+    f = text.split('="')[1].split('"')[0].split(",")
+    if len(f) < 6:
+        raise RuntimeError("sina: kam fields")
+    last, prev = _num(f[3]), _num(f[2])
+    if not last or not prev:
+        raise RuntimeError("sina: price khaali")
+    return {"last": last, "prev": prev, "name": f[0] or code,
+            "currency": "CNY", "exchange": "Sina (CN)"}
+
+
+def eastmoney_quote(symbol: str) -> dict:
+    """Eastmoney (push2) - China A-shares + indices. JSON."""
+    m = re.match(r"^(\d{6})\.(SS|SZ)$", symbol.upper())
+    if not m:
+        raise RuntimeError("eastmoney: sirf .SS/.SZ")
+    secid = ("1." if m.group(2) == "SS" else "0.") + m.group(1)
+    url = ("https://push2.eastmoney.com/api/qt/stock/get?fltt=2&invt=2"
+           f"&secid={secid}&fields=f43,f44,f45,f46,f57,f58,f60,f169,f170")
+    d = json.loads(_get(url, headers={"Referer": "https://quote.eastmoney.com/",
+                                      "Accept": "application/json"}))
+    data = d.get("data") or {}
+    last, prev = _num(data.get("f43")), _num(data.get("f60"))
+    if not last or not prev:
+        raise RuntimeError("eastmoney: price nahi")
+    return {"last": last, "prev": prev, "name": str(data.get("f58") or m.group(1)),
+            "currency": "CNY", "exchange": "Eastmoney (CN)"}
+
+
 # ------------------------------------------------------------------ chains
 BAR_PROVIDERS = [
     ("yahoo-q1", lambda s: yahoo_bars(s, "query1")),
@@ -286,6 +372,9 @@ BAR_PROVIDERS = [
 ]
 
 QUOTE_PROVIDERS = [
+    ("tencent", tencent_quote),
+    ("sina", sina_quote),
+    ("eastmoney", eastmoney_quote),
     ("moneycontrol", moneycontrol_quote),
     ("nse", nse_quote),
     ("nasdaq", nasdaq_quote),

@@ -205,6 +205,9 @@ def build_row(symbol: str, previous: dict | None) -> dict:
 
 
 PROBE_SYMBOLS = {
+    "tencent": "600519.SS",
+    "sina": "600519.SS",
+    "eastmoney": "600519.SS",
     "moneycontrol": "RELIANCE.NS",
     "nse": "RELIANCE.NS",
     "stooq": "AAPL",
