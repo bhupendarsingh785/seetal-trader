@@ -1,8 +1,8 @@
 name: Mirror to GitLab (backup)
 
 # GitHub band ho jaye to bhi code GitLab par zinda rahe.
-# Chahiye: repo secrets mein GITLAB_TOKEN (GitLab personal access token, scope: write_repository)
-#          aur GITLAB_REPO (jaise bhupendarsingh785/seetal-trader)
+# Chahiye: repo secret GITLAB_TOKEN (GitLab personal access token, scope: write_repository)
+# GITLAB_REPO optional hai - na do to neeche wala default chalta hai.
 # Secret na ho to yeh workflow chup-chaap skip ho jaata hai - kuch tootta nahi.
 
 on:
@@ -25,18 +25,21 @@ jobs:
           TOKEN: ${{ secrets.GITLAB_TOKEN }}
           REPO: ${{ secrets.GITLAB_REPO }}
         run: |
-          if [ -z "$TOKEN" ] || [ -z "$REPO" ]; then
+          REPO="${REPO:-Bhuprndar785/bhupendarsingh785}"
+          echo "target=$REPO" >> "$GITHUB_OUTPUT"
+          if [ -z "$TOKEN" ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "GITLAB_TOKEN / GITLAB_REPO nahi hai - mirror skip"
+            echo "GITLAB_TOKEN nahi hai - mirror skip"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "mirror chalega: $REPO"
           fi
 
       - name: Mirror
         if: steps.chk.outputs.ready == 'true'
         env:
           TOKEN: ${{ secrets.GITLAB_TOKEN }}
-          REPO: ${{ secrets.GITLAB_REPO }}
+          REPO: ${{ steps.chk.outputs.target }}
         run: |
           git clone --mirror "https://github.com/${{ github.repository }}.git" repo.git
           cd repo.git
