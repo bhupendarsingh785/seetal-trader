@@ -340,6 +340,7 @@ def main() -> int:
     # Supabase mein bhi daal do (agar secret diya ho) - data ka chheva rasta
     supabase_url = os.environ.get("SUPABASE_URL", "").strip()
     supabase_key = os.environ.get("SUPABASE_SERVICE_KEY", "").strip()
+    supabase_status = "skip: secret nahi hai"
     if supabase_url and supabase_key and rows:
         try:
             import urllib.request as _r
@@ -356,11 +357,24 @@ def main() -> int:
                 method="POST",
             )
             with _r.urlopen(req, timeout=20) as resp:
+                supabase_status = f"saved ({resp.status})"
                 print("supabase: saved", resp.status)
         except Exception as exc:  # noqa: BLE001
+            supabase_status = f"error: {str(exc)[:120]}"
             print(f"supabase: nahi gaya ({exc})", file=sys.stderr)
     else:
         print("supabase: secret nahi hai - skip")
+
+    # status ko live.json mein likho taki bahar se dikhe
+    try:
+        with open(OUT, "r", encoding="utf-8") as fh:
+            payload = json.load(fh)
+        payload["supabase"] = supabase_status
+        with open(OUT, "w", encoding="utf-8") as fh:
+            json.dump(payload, fh, ensure_ascii=False, indent=1)
+    except Exception:  # noqa: BLE001
+        pass
+    print("supabase status:", supabase_status)
 
     return 0 if rows else 1
 
