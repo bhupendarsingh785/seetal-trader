@@ -65,10 +65,14 @@ def _get(url: str, tries: int = 2, timeout: int = 15, headers: dict | None = Non
 
 
 def _num(x):
+    """'$338.73', '₹1,324.00', '1,32,4.5' - sab se number nikaal deta hai."""
     try:
         if x is None:
             return None
-        v = float(str(x).replace(",", ""))
+        t = re.sub(r"[^0-9.\-]", "", str(x))
+        if t in ("", "-", ".", "-."):
+            return None
+        v = float(t)
         return None if v != v else v
     except (TypeError, ValueError):
         return None
@@ -146,9 +150,18 @@ def moneycontrol_quote(symbol: str) -> dict:
         raise RuntimeError("moneycontrol: sirf .NS/.BO")
     code, ex = m.group(1), ("nse" if m.group(2) == "NS" else "bse")
     url = f"https://priceapi.moneycontrol.com/pricefeed/{ex}/equitycash/{code}"
-    d = (json.loads(_get(url, headers={"Accept": "application/json"})).get("data") or {})
-    last = _num(d.get("pricecurrent") or d.get("lastvalue"))
-    prev = _num(d.get("pricepreviousclose") or d.get("prevclose"))
+    d = (json.loads(_get(url, headers={"Accept": "application/json",
+                                       "Referer": "https://www.moneycontrol.com/"})).get("data") or {})
+    last = None
+    for k in ("pricecurrent", "lastvalue", "lastprice", "price", "LTP"):
+        last = _num(d.get(k))
+        if last:
+            break
+    prev = None
+    for k in ("pricepreviousclose", "prevclose", "previousclose", "close"):
+        prev = _num(d.get(k))
+        if prev:
+            break
     if last is None:
         raise RuntimeError("moneycontrol: price nahi")
     return {"last": last, "prev": prev or last, "name": d.get("company") or code,
@@ -158,8 +171,23 @@ def moneycontrol_quote(symbol: str) -> dict:
 def stooq_quote(symbol: str) -> dict:
     if symbol.startswith("^") or symbol.endswith((".NS", ".BO")):
         raise RuntimeError("stooq: yeh symbol nahi")
-    url = f"https://stooq.com/q/l/?s={symbol.lower()}.us&f=sd2t2ohlcv&h&e=csv"
-    rows = list(csv.DictReader(io.StringIO(_get(url, headers={"Accept": "text/csv"}))))
+    forms = [
+        f"https://stooq.com/q/l/?s={symbol.lower()}.us&f=sd2t2ohlcv&h&e=csv",
+        f"https://stooq.com/q/l/?s={symbol.lower()}.us&f=sd2t2ohlcv&e=csv",
+        f"https://stooq.pl/q/l/?s={symbol.lower()}.us&f=sd2t2ohlcv&h&e=csv",
+    ]
+    text = ""
+    err = None
+    for u in forms:
+        try:
+            text = _get(u, headers={"Accept": "text/csv"})
+            if "Close" in text or "," in text:
+                break
+        except Exception as exc:  # noqa: BLE001
+            err = exc
+    if not text:
+        raise RuntimeError(f"stooq: {err}")
+    rows = list(csv.DictReader(io.StringIO(text)))
     if not rows:
         raise RuntimeError("stooq: khaali")
     close = _num(rows[0].get("Close"))
@@ -175,7 +203,11 @@ def nasdaq_quote(symbol: str) -> dict:
     url = f"https://api.nasdaq.com/api/quote/{urllib.parse.quote(symbol)}/info?assetclass=stocks"
     d = json.loads(_get(url, headers={"Accept": "application/json"}))
     p = (d.get("data") or {}).get("primaryData") or {}
-    last = _num(p.get("lastSalePrice"))
+    last = None
+    for k in ("lastSalePrice", "lastSalePriceRaw", "netChange", "price"):
+        last = _num(p.get(k))
+        if last:
+            break
     prev = _num(p.get("previousClose"))
     if last is None:
         raise RuntimeError("nasdaq: price nahi")
