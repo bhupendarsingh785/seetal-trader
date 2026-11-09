@@ -24,21 +24,32 @@ wahi data deta hai. Sab fail ho jayein to **pichhla accha data** rehne deta hai,
 **Bars (opening range + entry ke liye zaroori):**
 1. Yahoo query1
 2. Yahoo query2 (doosra host)
-3. Twelve Data — *optional, apni free key daalo to chalta hai*
-4. Finnhub — *optional, apni free key daalo to chalta hai*
+3. Twelve Data — *optional, apni free key daalo to chalta hai (NSE bhi cover karta hai)*
+4. Finnhub — *optional, apni free key daalo to chalta hai (US)*
 
 **Sirf price (bars nahi → card par `PRICE ONLY`, signal nahi):**
-1. Moneycontrol (NSE/BSE)
-2. NSE ka apna API
-3. Stooq (US)
-4. Nasdaq (US)
+1. Moneycontrol (NSE/BSE) — best effort
+2. NSE ka apna API — best effort (datacenter IP par aksar 403)
+3. Nasdaq (US) — ✅ chal raha hai
 
 **Browser live layer:** page khud bhi Yahoo se seedha data kheenchta hai, 4 CORS
 proxy ke raste, har 5–30 second. Woh chal gaya to card par `live` likha aata hai,
 warna snapshot dikhta hai.
 
-**Jo chain mein nahi hai:** Google Finance — NSE par isne 1295 dikhaya jab last
-1324 tha. Galat price, price na hone se bura hai.
+**Har run par backup check hota hai.** `data/live.json` ke `probe` mein har backup
+ka sach likha hota hai (✅ / ❌ / ➖ key nahi), aur wahi app ke upar "Backup:" line
+mein dikhta hai. Jo mar gaya, woh chhup nahi sakta.
+
+**Jo chain se hata diye:**
+- **Stooq** — GitHub runner se har URL form par 404.
+- **Google Finance** — NSE par 1295 dikhaya jab last 1324 tha. Galat price, price
+  na hone se bura hai.
+
+### India ke liye sabse asli backup
+
+Yahoo ke baad NSE ka data free mein bharosemand nahi milta. Sabse seedha rasta:
+**Twelve Data ki free key** (800 requests/din, NSE + BSE + US) — repo ke secrets
+mein `TWELVEDATA_KEY` daal do, chain khud use karne lagegi.
 
 ### Apni key add karna (optional)
 

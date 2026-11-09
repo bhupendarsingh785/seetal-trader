@@ -288,8 +288,8 @@ BAR_PROVIDERS = [
 QUOTE_PROVIDERS = [
     ("moneycontrol", moneycontrol_quote),
     ("nse", nse_quote),
-    ("stooq", stooq_quote),
     ("nasdaq", nasdaq_quote),
+    # stooq chain se hata diya: GitHub runner se har form par 404 aaya.
     # google_quote chain mein nahi hai: NSE par isne 1295 dikhaya jab last 1324 tha.
     # Galat price, price na hone se bura hai. Function rakha hai, experiment ke liye.
 ]
