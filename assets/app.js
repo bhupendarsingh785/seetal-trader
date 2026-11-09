@@ -17,6 +17,15 @@ const DATA_SOURCES = [
   { name: "jsDelivr CDN", url: "https://cdn.jsdelivr.net/gh/bhupendarsingh785/seetal-trader@main/data/live.json" },
   { name: "GitLab", url: "https://gitlab.com/Bhuprndar785/bhupendarsingh785/-/raw/main/data/live.json" },
   { name: "GitHub Pages", url: "https://bhupendarsingh785.github.io/seetal-trader/data/live.json" },
+  {
+    name: "Supabase",
+    url: "https://urvhrcyuqepzpbklonrz.supabase.co/rest/v1/snapshots?select=payload&order=generated_epoch.desc&limit=1",
+    headers: {
+      apikey: "sb_publishable_R1qExbRPEz5d-8YEpDUc_Q_dSel34jw",
+      Authorization: "Bearer sb_publishable_R1qExbRPEz5d-8YEpDUc_Q_dSel34jw",
+    },
+    kind: "supabase",
+  },
 ];
 const LS_WATCH = "seetal.watchlist.v1";
 const LS_TRADES = "seetal.trades.v1";
@@ -228,9 +237,14 @@ async function fetchSnapshotFrom(src) {
     const res = await fetch(src.url + (src.url.includes("?") ? "&" : "?") + "t=" + Date.now(), {
       cache: "no-store",
       signal: ctl.signal,
+      headers: src.headers || undefined,
     });
     if (!res.ok) throw new Error("http " + res.status);
-    const data = await res.json();
+    let data = await res.json();
+    if (src.kind === "supabase") {
+      if (!Array.isArray(data) || !data.length) throw new Error("supabase khaali");
+      data = data[0].payload;
+    }
     if (!data || !Array.isArray(data.rows) || !data.rows.length) throw new Error("khaali data");
     return data;
   } finally {

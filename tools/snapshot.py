@@ -336,6 +336,32 @@ def main() -> int:
     for r in rows:
         used[r.get("src", "?")] = used.get(r.get("src", "?"), 0) + 1
     print(f"wrote {OUT}: {len(rows)} symbols, {len(errors)} errors, sources={used}")
+
+    # Supabase mein bhi daal do (agar secret diya ho) - data ka chheva rasta
+    supabase_url = os.environ.get("SUPABASE_URL", "").strip()
+    supabase_key = os.environ.get("SUPABASE_SERVICE_KEY", "").strip()
+    if supabase_url and supabase_key and rows:
+        try:
+            import urllib.request as _r
+            body = json.dumps([{"generated_epoch": payload["generated_epoch"], "payload": payload}]).encode()
+            req = _r.Request(
+                supabase_url.rstrip("/") + "/rest/v1/snapshots",
+                data=body,
+                headers={
+                    "apikey": supabase_key,
+                    "Authorization": "Bearer " + supabase_key,
+                    "Content-Type": "application/json",
+                    "Prefer": "return=minimal",
+                },
+                method="POST",
+            )
+            with _r.urlopen(req, timeout=20) as resp:
+                print("supabase: saved", resp.status)
+        except Exception as exc:  # noqa: BLE001
+            print(f"supabase: nahi gaya ({exc})", file=sys.stderr)
+    else:
+        print("supabase: secret nahi hai - skip")
+
     return 0 if rows else 1
 
 

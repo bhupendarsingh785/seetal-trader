@@ -27,6 +27,8 @@ jobs:
         env:
           TWELVEDATA_KEY: ${{ secrets.TWELVEDATA_KEY }}
           FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+          SUPABASE_URL: https://urvhrcyuqepzpbklonrz.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python3 tools/snapshot.py
       - name: Commit if changed
         run: |
