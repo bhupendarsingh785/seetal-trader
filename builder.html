@@ -49,7 +49,7 @@
     <h2 style="font-size:15px;margin:0 0 4px">Kaisa app chahiye?</h2>
     <p class="note" style="margin:0 0 8px">Simple Hinglish mein likho. Jitna saaf likhoge, utna achha banega.</p>
 
-    <label>App ka idea</label>
+    <label>App ka idea <button class="btn" id="micBtn" type="button" style="padding:5px 10px;font-size:12px;margin-left:6px">🎤 Bolo</button></label>
     <textarea id="idea" placeholder="jaise: ek khatabook app jisme main udhaar diya hua paisa likhun, kisne kitna dena hai dikhe, aur total dikhe. Hindi mein ho."></textarea>
 
     <div>
@@ -85,6 +85,16 @@
     </div>
     <p class="note">Download ki hui file ko GitHub repo mein daal do — GitHub Pages par live ho jayegi. (Deploy ka button agle version mein.)</p>
     <pre id="code" style="display:none"></pre>
+
+    <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:12px">
+      <h2 style="font-size:15px;margin:0 0 6px">🩷 Seetal ka mashwara</h2>
+      <p class="note" style="margin:0 0 8px">Main tumhara AI dost hoon — app ban jaye to main batati hoon kya sudhaarna hai, aur kuch bhi poochh sakte ho.</p>
+      <div class="row">
+        <button class="btn" id="adviceBtn" disabled>💡 Sudhaar batao</button>
+        <button class="btn" id="rebuildBtn" disabled>🔁 Behtar banao</button>
+      </div>
+      <div id="advice" class="note" style="margin-top:10px"></div>
+    </div>
   </section>
 </main>
 
@@ -189,7 +199,7 @@ $("build").onclick = async () => {
     if (lastUrl) URL.revokeObjectURL(lastUrl);
     lastUrl = URL.createObjectURL(new Blob([html], { type: "text/html" }));
     $("code").textContent = html;
-    ["download","copyCode","openNew"].forEach(i => $(i).disabled = false);
+    ["download","copyCode","openNew","adviceBtn","rebuildBtn"].forEach(i => $(i).disabled = false);
     setStatus("✅ App ban gaya — neeche preview dekho.", "ok");
   }catch(e){
     setStatus("❌ Nahi bana: " + (e.message || e) + " — dobara try karo.", "bad");
@@ -214,6 +224,75 @@ $("copyCode").onclick = async () => {
 
 $("openNew").onclick = () => {
   if (lastUrl) window.open(lastUrl, "_blank");
+};
+
+/* ---------- awaaz se idea ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+let rec = null, listening = false;
+const micBtn = $("micBtn");
+micBtn.onclick = () => {
+  if (!SR){ setStatus("Is browser me voice nahi — Chrome try karo.", "bad"); return; }
+  if (listening){ try{ rec.stop(); }catch(e){} return; }
+  rec = new SR();
+  rec.lang = "hi-IN";
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+  rec.onstart = () => { listening = true; micBtn.textContent = "🎤 sun rahi hoon…"; };
+  rec.onerror = () => { listening = false; micBtn.textContent = "🎤 Bolo"; setStatus("Sun nahi payi, dobara bolo.", "bad"); };
+  rec.onend = () => { listening = false; micBtn.textContent = "🎤 Bolo"; };
+  rec.onresult = (ev) => {
+    const said = (ev.results[0][0].transcript || "").trim();
+    if (said){
+      const cur = $("idea").value.trim();
+      $("idea").value = cur ? (cur + " " + said) : said;
+      setStatus("Suna: \"" + said + "\"", "ok");
+    }
+  };
+  try{ rec.start(); }catch(e){ setStatus("Mic nahi chala: " + e.message, "bad"); }
+};
+
+/* ---------- Seetal ka mashwara ---------- */
+async function askAI(prompt){
+  const base = "https://text.pollinations.ai/" + encodeURIComponent(prompt) + "?model=openai";
+  const tries = [base,
+    "https://api.allorigins.win/raw?url=" + encodeURIComponent(base),
+    "https://corsproxy.io/?" + encodeURIComponent(base)];
+  let lastErr = null;
+  for (const u of tries){
+    try{
+      const res = await fetch(u, { cache: "no-store" });
+      if (!res.ok) throw new Error("http " + res.status);
+      const t = await res.text();
+      if (t && t.length > 20) return t;
+      throw new Error("khaali");
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error("AI se baat nahi hui");
+}
+
+$("adviceBtn").onclick = async () => {
+  if (!lastHTML) return;
+  const box = $("advice");
+  box.textContent = "Soch rahi hoon…";
+  const prompt = 'Tum "Seetal" ho — Swag ki Hinglish AI dost, app banane me madad karti hai. '
+    + 'User ne ye app banaya hai: "' + ($("idea").value || "").slice(0,200) + '". '
+    + 'Uske code ka chhota hissa: ' + lastHTML.slice(0, 1500).replace(/\s+/g," ") + ' '
+    + 'Ab Hinglish me 4-5 chhote points me batao: kya achha hai, aur kya sudhaarna chahiye. '
+    + 'Bullet points, har point ek line, seedha baat, tareef kam.';
+  try{
+    const t = await askAI(prompt);
+    box.innerHTML = String(t).trim().replace(/\n/g, "<br>");
+  }catch(e){
+    box.textContent = "Mashwara nahi aa paya: " + (e.message || e);
+  }
+};
+
+$("rebuildBtn").onclick = async () => {
+  const idea = ($("idea").value || "").trim();
+  if (!idea) return;
+  $("advice").textContent = "Behtar version bana rahi hoon…";
+  $("build").click();
+  $("advice").textContent = "Naya version ban gaya — preview dekho.";
 };
 </script>
 </body>
