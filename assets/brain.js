@@ -171,6 +171,24 @@
         if (!t) throw new Error("khaali");
         return t.trim();
       }
+      if (cfg.provider === "anthropic"){
+        const r = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": cfg.key,
+            "anthropic-version": "2023-06-01",
+            "anthropic-dangerous-direct-browser-access": "true"
+          },
+          body: JSON.stringify({ model: cfg.model || "claude-3-5-haiku-20241022", max_tokens: 1200,
+            messages: [{ role: "user", content: prompt }] }),
+          signal: ctl.signal });
+        const j = await r.json();
+        if (j.error) throw new Error(j.error.message || "anthropic error");
+        const t = j.content && j.content[0] && j.content[0].text;
+        if (!t) throw new Error("khaali");
+        return t.trim();
+      }
       if (cfg.provider === "openai"){
         const r = await fetch("https://api.openai.com/v1/chat/completions", {
           method:"POST",
