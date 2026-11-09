@@ -38,7 +38,7 @@
     <div class="logo">SB</div>
     <div>
       <h1>Seetal Builder</h1>
-      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v7</b></p>
+      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v8</b></p>
     </div>
   </div>
   <a class="btn" href="index.html">← Wapas Trader</a>
@@ -97,9 +97,14 @@
         <option value="gemini">Google Gemini</option>
         <option value="anthropic">Anthropic (Claude)</option>
         <option value="openai">OpenAI</option>
+        <option value="deepseek">DeepSeek</option>
+        <option value="grok">Grok / xAI</option>
+        <option value="sarvam">Sarvam</option>
+        <option value="openai_compatible">Custom (OpenAI-compatible)</option>
       </select>
       <input id="apiKey" placeholder="API key" style="margin-bottom:6px" autocomplete="off" />
       <input id="apiModel" placeholder="model (optional, jaise gemini-2.0-flash)" style="margin-bottom:6px" />
+      <input id="apiEndpoint" placeholder="endpoint (sirf Custom ke liye — https://.../v1)" style="margin-bottom:6px" />
       <div class="row" style="margin-top:0">
         <button class="btn" id="apiSave">Key yaad rakho</button>
         <button class="btn" id="apiTest2">🔌 Test karo</button>
@@ -138,6 +143,7 @@
 <script>
 const $ = (id) => document.getElementById(id);
 let lastHTML = "";
+let state = { files: {} };
 let lastModel = "";
 let lastUrl = null;
 
@@ -324,20 +330,24 @@ try{
 }catch(e){}
 
 $("apiSave").onclick = () => {
+  if (!window.Brain || !Brain.setKey){ $("apiOut2").textContent = "Brain load nahi hui — page refresh karo."; return; }
   const prov = $("apiProv").value;
   const key = ($("apiKey").value || "").trim();
   const model = ($("apiModel").value || "").trim();
-  if (window.Brain && Brain.setKey) Brain.setKey(prov, key, model);
+  const ep = ($("apiEndpoint").value || "").trim();
+  try{ Brain.setKey(prov, key, model, ep); }catch(e){ Brain.setKey(prov, key, model); }
   $("apiOut2").textContent = prov === "none" ? "Free AI par set — koi key nahi." : "Key yaad rakh li (sirf is phone me).";
 };
 
 $("apiTest2").onclick = async () => {
   const out = $("apiOut2");
+  if (!window.Brain){ out.textContent = "❌ Brain load nahi hui — page refresh karo."; return; }
   out.textContent = "Test kar raha hoon…";
   const prov = $("apiProv").value;
   const key = ($("apiKey").value || "").trim();
   const model = ($("apiModel").value || "").trim();
-  if (window.Brain && Brain.setKey) Brain.setKey(prov, key, model);
+  const ep = ($("apiEndpoint").value || "").trim();
+  try{ if (Brain.setKey) Brain.setKey(prov, key, model, ep); }catch(e){}
 
   if (prov !== "none" && key){
     const ok = await Brain.ownKeyWorking();
@@ -352,6 +362,7 @@ $("apiTest2").onclick = async () => {
 /* ---------- poora self test ---------- */
 $("selfTest2").onclick = async () => {
   const out = $("selfOut2");
+  if (!window.Brain){ out.textContent = "❌ Brain load nahi hui — assets/brain.js check karo."; return; }
   const rows = [];
   const add = (ok, t) => rows.push((ok ? "✅ " : "❌ ") + t);
   out.textContent = "Check kar raha hoon… (10-20 second)";
