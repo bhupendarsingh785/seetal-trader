@@ -38,7 +38,7 @@
     <div class="logo">SB</div>
     <div>
       <h1>Seetal Builder</h1>
-      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v2</b></p>
+      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v3</b></p>
     </div>
   </div>
   <a class="btn" href="index.html">← Wapas Trader</a>
@@ -101,6 +101,8 @@
         <button class="btn" id="apiTest2">🔌 Test karo</button>
       </div>
       <div id="apiOut2" class="note" style="margin-top:8px"></div>
+      <button class="btn" id="selfTest2" style="margin-top:8px">🧪 Poora check karo</button>
+      <div id="selfOut2" class="note" style="margin-top:8px"></div>
     </div>
 
     <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:12px">
@@ -341,6 +343,35 @@ $("apiTest2").onclick = async () => {
   }
   const r = await Brain.ask("Sirf ek shabd: theek", { task:"any" });
   out.textContent = r.ok ? ("✅ Free AI chal rahi hai (" + r.model + ")") : "❌ Free AI se bhi jawab nahi aaya — net check karo.";
+};
+
+/* ---------- poora self test ---------- */
+$("selfTest2").onclick = async () => {
+  const out = $("selfOut2");
+  const rows = [];
+  const add = (ok, t) => rows.push((ok ? "✅ " : "❌ ") + t);
+  out.textContent = "Check kar raha hoon… (10-20 second)";
+
+  add(!!window.Brain, "Brain load hui (AI ka dimaag)");
+
+  try{ localStorage.setItem("_t","1"); add(localStorage.getItem("_t")==="1", "Storage theek"); localStorage.removeItem("_t"); }
+  catch(e){ add(false, "Storage band hai"); }
+
+  const cfg = (window.Brain && Brain.getKey && Brain.getKey()) || null;
+  add(!!(cfg && cfg.key), cfg && cfg.key ? ("Key lagi hai: " + cfg.provider) : "Apni key nahi lagi (free AI chalega)");
+
+  if (cfg && cfg.key){
+    const ok = await Brain.ownKeyWorking();
+    add(ok, ok ? "Tumhari API jawab de rahi hai" : "Tumhari key se jawab nahi aaya — model/key check karo");
+  }
+
+  const r = await Brain.ask("Sirf ek shabd likho: theek", { task:"any" });
+  add(!!(r && r.ok), r && r.ok ? ("Free AI chal rahi hai (" + r.model + ")") : "Free AI se jawab nahi aaya — net check karo");
+
+  const tok = ($("ghToken").value || "").trim();
+  add(!!tok, tok ? "GitHub token bhara hai (deploy ho sakta hai)" : "GitHub token nahi — deploy nahi hoga");
+
+  out.innerHTML = rows.join("<br>") + "<br><br><b>Bas:</b> pehli do lines ✅ hon to AI theek hai. Aakhri line ✅ ho to deploy theek hai.";
 };
 
 /* ---------- GitHub deploy ---------- */
