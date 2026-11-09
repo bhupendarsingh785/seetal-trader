@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Seetal Trader — live market pulse</title>
+<meta name="description" content="Seetal Trader — live market pulse, opening range breakout signals, stop, target aur quantity. Signal tool, guarantee nahi." />
+<link rel="stylesheet" href="assets/style.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>" />
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <div class="logo">ST</div>
+    <div>
+      <h1>Seetal Trader</h1>
+      <p class="sub">Live market pulse · opening range breakout · entry, stop, target</p>
+    </div>
+  </div>
+  <div class="status">
+    <span id="srcDot" class="dot"></span>
+    <span id="srcText">data load ho raha hai…</span>
+    <button id="refreshBtn" class="btn ghost" type="button">Abhi refresh</button>
+  </div>
+</header>
+
+<section class="controls">
+  <label>Capital (₹)
+    <input id="capital" type="number" min="0" step="1000" value="100000" inputmode="numeric" />
+  </label>
+  <label>Ek trade mein max loss (₹)
+    <input id="maxloss" type="number" min="0" step="100" value="1000" inputmode="numeric" />
+  </label>
+  <label class="grow">Symbol add karo
+    <span class="addrow">
+      <input id="newSym" type="text" placeholder="jaise RELIANCE.NS ya AAPL" autocomplete="off" />
+      <button id="addBtn" class="btn" type="button">Add</button>
+    </span>
+  </label>
+</section>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-tab="pulse" role="tab">Pulse</button>
+  <button class="tab" data-tab="scan" role="tab">Scanner</button>
+  <button class="tab" data-tab="hisab" role="tab">Hisab</button>
+  <button class="tab" data-tab="help" role="tab">Kaise chalta hai</button>
+</nav>
+
+<main>
+  <section id="tab-pulse" class="tabpane active">
+    <div id="indexStrip" class="strip"></div>
+    <div id="signalBar" class="signalbar">Signal dhoondh raha hoon…</div>
+    <div id="cards" class="cards"></div>
+  </section>
+
+  <section id="tab-scan" class="tabpane">
+    <p class="note">Ranking: range high ke kitna kareeb hai + momentum. Sabse upar wala sabse tayyar chart.</p>
+    <div class="tablewrap">
+      <table id="scanTable">
+        <thead>
+          <tr><th>#</th><th>Symbol</th><th>Last</th><th>% din</th><th>OR high</th><th>Doori</th><th>Momentum</th><th>State</th><th>Score</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tab-hisab" class="tabpane">
+    <div class="hisabhead">
+      <div class="stat"><span>Total trades</span><strong id="hTrades">0</strong></div>
+      <div class="stat"><span>Jeete</span><strong id="hWins">0</strong></div>
+      <div class="stat"><span>Win rate</span><strong id="hRate">—</strong></div>
+      <div class="stat"><span>Net P&amp;L</span><strong id="hPnl">₹0</strong></div>
+    </div>
+    <form id="tradeForm" class="tradeform">
+      <input id="tSym" placeholder="Symbol" required />
+      <input id="tEntry" type="number" step="0.01" placeholder="Entry" required />
+      <input id="tExit" type="number" step="0.01" placeholder="Exit" required />
+      <input id="tQty" type="number" step="1" placeholder="Qty" required />
+      <button class="btn" type="submit">Trade likho</button>
+    </form>
+    <div class="tablewrap">
+      <table id="tradeTable">
+        <thead><tr><th>Din</th><th>Symbol</th><th>Entry</th><th>Exit</th><th>Qty</th><th>P&amp;L</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tab-help" class="tabpane">
+    <h2>Seetal Trader kaise chalta hai</h2>
+    <p><strong>1. Opening range.</strong> Session ke pehle 15 minute (NSE 09:15–09:30, US 09:30–09:45) ka high aur low nikalta hoon. Wahi din ka pehla lakshman rekha hai.</p>
+    <p><strong>2. Entry.</strong> Jab koi 5-minute bar us range high ke <em>upar close</em> karta hai — tab ENTRY. Sirf wick upar nikalna entry nahi hai. Us se pehle state WAIT rehta hai aur main batati hoon price level se kitna door hai.</p>
+    <p><strong>3. Stop aur target.</strong> Stop = opening range ka midpoint. Target = 2R, matlab jitna risk utna double reward. Dono entry se pehle hi tay.</p>
+    <p><strong>4. Quantity.</strong> Tumhari max loss ₹ se quantity nikalta hoon: (entry − stop) per share risk hai, isliye qty = max loss ÷ risk. Stop hit ho to tumhara loss tumhare limit se zyada nahi.</p>
+    <p><strong>5. Hisab.</strong> Paper trades apne aap browser mein save hote hain — P&amp;L aur win rate dikhta hai. Koi order kahin nahi jaata, sab tumhare haath mein hai.</p>
+    <h2>Saaf baat</h2>
+    <p>Yeh ek signal tool hai, guarantee nahi. Data Yahoo Finance ke free public API se aata hai — usme kuch second se minute tak delay ho sakta hai, aur market band hone par wohi purana data dikhta hai. Day trading mein zyadatar log paisa haarte hain; yeh app us sach ko nahi badalta. Koi bhi paisa lagane se pehle apna risk khud socho, aur jo paisa kho sakte ho wahi lagao.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>Data: Yahoo Finance (free, delay ho sakta hai) · Rules: SWAG Trader pack</span>
+  <span>Signal tool hai, guarantee nahi. Paisa lagana tumhara faisla hai.</span>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

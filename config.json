@@ -1,0 +1,22 @@
+{
+ "symbols": [
+  "^NSEI",
+  "^NSEBANK",
+  "^BSESN",
+  "^GSPC",
+  "^IXIC",
+  "RELIANCE.NS",
+  "HDFCBANK.NS",
+  "TCS.NS",
+  "SBIN.NS",
+  "INFY.NS",
+  "ICICIBANK.NS",
+  "BAJFINANCE.NS",
+  "ADANIENT.NS",
+  "ITC.NS",
+  "AAPL",
+  "TSLA",
+  "NVDA",
+  "SPY"
+ ]
+}
