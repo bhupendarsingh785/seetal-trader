@@ -21,6 +21,7 @@
   <div class="status">
     <span id="srcDot" class="dot"></span>
     <span id="srcText">data load ho raha hai…</span>
+    <span id="tickAge" class="small"></span>
     <button id="refreshBtn" class="btn ghost" type="button">Abhi refresh</button>
   </div>
 </header>
@@ -31,6 +32,17 @@
   </label>
   <label>Ek trade mein max loss (₹)
     <input id="maxloss" type="number" min="0" step="100" value="1000" inputmode="numeric" />
+  </label>
+  <label class="chk"><span>Live mode</span>
+    <input id="liveToggle" type="checkbox" checked />
+  </label>
+  <label>Refresh
+    <select id="intervalSel">
+      <option value="5">5 second</option>
+      <option value="8" selected>8 second</option>
+      <option value="15">15 second</option>
+      <option value="30">30 second</option>
+    </select>
   </label>
   <label class="grow">Symbol add karo
     <span class="addrow">
@@ -94,7 +106,8 @@
     <p><strong>2. Entry.</strong> Jab koi 5-minute bar us range high ke <em>upar close</em> karta hai — tab ENTRY. Sirf wick upar nikalna entry nahi hai. Us se pehle state WAIT rehta hai aur main batati hoon price level se kitna door hai.</p>
     <p><strong>3. Stop aur target.</strong> Stop = opening range ka midpoint. Target = 2R, matlab jitna risk utna double reward. Dono entry se pehle hi tay.</p>
     <p><strong>4. Quantity.</strong> Tumhari max loss ₹ se quantity nikalta hoon: (entry − stop) per share risk hai, isliye qty = max loss ÷ risk. Stop hit ho to tumhara loss tumhare limit se zyada nahi.</p>
-    <p><strong>5. Hisab.</strong> Paper trades apne aap browser mein save hote hain — P&amp;L aur win rate dikhta hai. Koi order kahin nahi jaata, sab tumhare haath mein hai.</p>
+    <p><strong>5. Live layer.</strong> Browser khud Yahoo se har kuch second (5–30 second, tum chuno) naya data kheenchta hai — CORS proxy ke raste. Agar woh rasta band ho, page GitHub Action ka snapshot dikhata hai. Jo source chal raha hai woh card ke neeche aur upar "Sources" mein likha hota hai. Free feed par millisecond ka dawa nahi karta koi bhi.</p>
+    <p><strong>6. Hisab.</strong> Paper trades apne aap browser mein save hote hain — P&amp;L aur win rate dikhta hai. Koi order kahin nahi jaata, sab tumhare haath mein hai.</p>
     <h2>Saaf baat</h2>
     <p>Yeh ek signal tool hai, guarantee nahi. Data Yahoo Finance ke free public API se aata hai — usme kuch second se minute tak delay ho sakta hai, aur market band hone par wohi purana data dikhta hai. Day trading mein zyadatar log paisa haarte hain; yeh app us sach ko nahi badalta. Koi bhi paisa lagane se pehle apna risk khud socho, aur jo paisa kho sakte ho wahi lagao.</p>
   </section>
