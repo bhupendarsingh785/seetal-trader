@@ -1,0 +1,43 @@
+name: Mirror to GitLab (backup)
+
+# GitHub band ho jaye to bhi code GitLab par zinda rahe.
+# Chahiye: repo secrets mein GITLAB_TOKEN (GitLab personal access token, scope: write_repository)
+#          aur GITLAB_REPO (jaise bhupendarsingh785/seetal-trader)
+# Secret na ho to yeh workflow chup-chaap skip ho jaata hai - kuch tootta nahi.
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check secrets
+        id: chk
+        env:
+          TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          REPO: ${{ secrets.GITLAB_REPO }}
+        run: |
+          if [ -z "$TOKEN" ] || [ -z "$REPO" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "GITLAB_TOKEN / GITLAB_REPO nahi hai - mirror skip"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Mirror
+        if: steps.chk.outputs.ready == 'true'
+        env:
+          TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          REPO: ${{ secrets.GITLAB_REPO }}
+        run: |
+          git clone --mirror "https://github.com/${{ github.repository }}.git" repo.git
+          cd repo.git
+          git push --mirror "https://oauth2:${TOKEN}@gitlab.com/${REPO}.git"
