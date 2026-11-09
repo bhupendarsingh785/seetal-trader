@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-11-09T03:38:05+00:00",
- "generated_epoch": 1794195485,
+ "generated_at": "2026-11-09T03:41:01+00:00",
+ "generated_epoch": 1794195661,
  "source": "multi-provider: Yahoo q1/q2, Moneycontrol, Stooq (+ purana cache)",
  "providers": {
   "yahoo-q1": {
@@ -23,12 +23,12 @@
   "stooq": {
    "ok": false,
    "symbol": "AAPL",
-   "note": "HTTP Error 404: Not Found"
+   "note": "stooq: HTTP Error 404: Not Found"
   },
   "nasdaq": {
-   "ok": false,
+   "ok": true,
    "symbol": "AAPL",
-   "note": "nasdaq: price nahi"
+   "price": 342.37
   },
   "twelvedata": {
    "ok": false,
@@ -54,10 +54,10 @@
    "currency": "INR",
    "exchange": "NSE",
    "is_index": true,
-   "last": 24986.4,
+   "last": 25076.4,
    "prev_close": 24536.6,
-   "change": 449.8,
-   "change_pct": 1.83,
+   "change": 539.8,
+   "change_pct": 2.2,
    "or_high": 24538.3,
    "or_low": 24388.1,
    "or_mid": 24463.2,
@@ -67,9 +67,9 @@
    "stop": 24463.2,
    "target": 24712.2,
    "rr": 2.0,
-   "distance_points": -448.1,
-   "distance_pct": -1.79,
-   "momentum_pct": 0.18,
+   "distance_points": -538.1,
+   "distance_pct": -2.15,
+   "momentum_pct": 0.54,
    "spark": [
     24665.6992,
     24673.8008,
@@ -110,11 +110,11 @@
     24938.9004,
     24938.9004,
     25030.3496,
-    24986.4004
+    25076.4004
    ],
    "bars": 76,
-   "last_bar_age_sec": 236278,
-   "market_time": 1794132195,
+   "last_bar_age_sec": 236455,
+   "market_time": 1794195655,
    "src": "yahoo-q1",
    "has_bars": true,
    "stale": false
@@ -125,10 +125,10 @@
    "currency": "INR",
    "exchange": "NSE",
    "is_index": true,
-   "last": 58850.65,
+   "last": 59219.95,
    "prev_close": 57773.6,
-   "change": 1077.05,
-   "change_pct": 1.86,
+   "change": 1446.35,
+   "change_pct": 2.5,
    "or_high": 57692.25,
    "or_low": 57333.85,
    "or_mid": 57513.05,
@@ -138,9 +138,9 @@
    "stop": 57513.05,
    "target": 58437.65,
    "rr": 2.0,
-   "distance_points": -1158.4,
-   "distance_pct": -1.97,
-   "momentum_pct": -0.155,
+   "distance_points": -1527.7,
+   "distance_pct": -2.58,
+   "momentum_pct": 0.471,
    "spark": [
     57996.6016,
     58087.75,
@@ -181,11 +181,11 @@
     58946.0,
     58946.0,
     59086.0,
-    58850.6484
+    59219.9492
    ],
    "bars": 76,
-   "last_bar_age_sec": 236279,
-   "market_time": 1794132195,
+   "last_bar_age_sec": 236456,
+   "market_time": 1794195654,
    "src": "yahoo-q1",
    "has_bars": true,
    "stale": false
@@ -255,7 +255,7 @@
     80999.3984
    ],
    "bars": 76,
-   "last_bar_age_sec": 236279,
+   "last_bar_age_sec": 236456,
    "market_time": 1794132136,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -326,7 +326,7 @@
     7376.8599
    ],
    "bars": 79,
-   "last_bar_age_sec": 196679,
+   "last_bar_age_sec": 196856,
    "market_time": 1794001029,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -397,7 +397,7 @@
     24579.4238
    ],
    "bars": 79,
-   "last_bar_age_sec": 196680,
+   "last_bar_age_sec": 196857,
    "market_time": 1794003359,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -468,8 +468,8 @@
     1324.0
    ],
    "bars": 75,
-   "last_bar_age_sec": 236280,
-   "market_time": 1794131969,
+   "last_bar_age_sec": 236457,
+   "market_time": 1794195575,
    "src": "yahoo-q1",
    "has_bars": true,
    "stale": false
@@ -539,8 +539,8 @@
     784.1
    ],
    "bars": 75,
-   "last_bar_age_sec": 236281,
-   "market_time": 1794131969,
+   "last_bar_age_sec": 236457,
+   "market_time": 1794195575,
    "src": "yahoo-q1",
    "has_bars": true,
    "stale": false
@@ -610,8 +610,8 @@
     2498.8
    ],
    "bars": 74,
-   "last_bar_age_sec": 236281,
-   "market_time": 1794131969,
+   "last_bar_age_sec": 236457,
+   "market_time": 1794195576,
    "src": "yahoo-q1",
    "has_bars": true,
    "stale": false
@@ -681,8 +681,8 @@
     1016.0
    ],
    "bars": 75,
-   "last_bar_age_sec": 236281,
-   "market_time": 1794131970,
+   "last_bar_age_sec": 236458,
+   "market_time": 1794195576,
    "src": "yahoo-q1",
    "has_bars": true,
    "stale": false
@@ -752,8 +752,8 @@
     1171.6
    ],
    "bars": 74,
-   "last_bar_age_sec": 236282,
-   "market_time": 1794131970,
+   "last_bar_age_sec": 236458,
+   "market_time": 1794195576,
    "src": "yahoo-q1",
    "has_bars": true,
    "stale": false
@@ -823,8 +823,8 @@
     1565.0
    ],
    "bars": 75,
-   "last_bar_age_sec": 236282,
-   "market_time": 1794131976,
+   "last_bar_age_sec": 236458,
+   "market_time": 1794195576,
    "src": "yahoo-q1",
    "has_bars": true,
    "stale": false
@@ -894,8 +894,8 @@
     1081.75
    ],
    "bars": 75,
-   "last_bar_age_sec": 236282,
-   "market_time": 1794131976,
+   "last_bar_age_sec": 236459,
+   "market_time": 1794195576,
    "src": "yahoo-q1",
    "has_bars": true,
    "stale": false
@@ -965,8 +965,8 @@
     2731.0
    ],
    "bars": 75,
-   "last_bar_age_sec": 236283,
-   "market_time": 1794131977,
+   "last_bar_age_sec": 236459,
+   "market_time": 1794195576,
    "src": "yahoo-q1",
    "has_bars": true,
    "stale": false
@@ -1036,8 +1036,8 @@
     283.45
    ],
    "bars": 75,
-   "last_bar_age_sec": 236283,
-   "market_time": 1794131977,
+   "last_bar_age_sec": 236459,
+   "market_time": 1794195575,
    "src": "yahoo-q1",
    "has_bars": true,
    "stale": false
@@ -1107,7 +1107,7 @@
     342.37
    ],
    "bars": 79,
-   "last_bar_age_sec": 196684,
+   "last_bar_age_sec": 196860,
    "market_time": 1793998801,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1178,7 +1178,7 @@
     358.22
    ],
    "bars": 79,
-   "last_bar_age_sec": 196684,
+   "last_bar_age_sec": 196860,
    "market_time": 1793998801,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1249,7 +1249,7 @@
     186.64
    ],
    "bars": 79,
-   "last_bar_age_sec": 196684,
+   "last_bar_age_sec": 196860,
    "market_time": 1793998800,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1320,7 +1320,7 @@
     735.29
    ],
    "bars": 79,
-   "last_bar_age_sec": 196685,
+   "last_bar_age_sec": 196861,
    "market_time": 1793998800,
    "src": "yahoo-q1",
    "has_bars": true,
