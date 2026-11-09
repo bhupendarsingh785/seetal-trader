@@ -1,0 +1,10 @@
+# Netlify - GitHub repo se seedha judta hai, card nahi maangta.
+# Site static hai, isliye koi build nahi chahiye.
+[build]
+  publish = "."
+  command = ""
+
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "no-store"
