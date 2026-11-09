@@ -38,7 +38,7 @@
     <div class="logo">SB</div>
     <div>
       <h1>Seetal Builder</h1>
-      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v6</b></p>
+      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v7</b></p>
     </div>
   </div>
   <a class="btn" href="index.html">← Wapas Trader</a>
@@ -70,6 +70,7 @@
     <div class="row">
       <button class="btn primary" id="build">⚡ App banao (ek file)</button>
       <button class="btn" id="buildProject">🏗️ Poora project banao</button>
+      <button class="btn" id="buildSystem">🧩 Poora system banao (repo)</button>
       <button class="btn" id="clear">Saaf karo</button>
     </div>
     <div id="fileList" style="margin-top:10px;font-size:13px;color:var(--dim);line-height:1.6"></div>
@@ -495,6 +496,121 @@ function checkFile(name, code){
   return { ok: true };
 }
 
+/* ================= POORA SYSTEM (repo) ================= */
+function sysFiles(idea, theme){
+  const name = "seetal-app";
+  const wf = [
+    "name: data pulse",
+    "",
+    "on:",
+    "  schedule:",
+    '    - cron: "*/10 * * * *"',
+    "  workflow_dispatch:",
+    "  push:",
+    "    branches: [main]",
+    "",
+    "permissions:",
+    "  contents: write",
+    "",
+    "jobs:",
+    "  pulse:",
+    "    runs-on: ubuntu-latest",
+    "    steps:",
+    "      - uses: actions/checkout@v4",
+    "      - uses: actions/setup-node@v4",
+    '        with: { node-version: "20" }',
+    "      - name: data banao",
+    "        run: node tools/fetch.mjs",
+    "      - name: commit karo",
+    "        run: |",
+    '          git config user.name "pulse-bot"',
+    '          git config user.email "bot@users.noreply.github.com"',
+    "          git add data/ || true",
+    '          git diff --quiet && git diff --staged --quiet || git commit -m "data update"',
+    "          git push || true",
+    "",
+  ].join("\n");
+
+  const fetchJs = [
+    "// data laao aur data/live.json me likho",
+    "import fs from 'fs';",
+    "",
+    "const URLS = [",
+    "  // yahan apne data ke raste daalo",
+    "];",
+    "",
+    "async function main(){",
+    "  const out = { generated_at: new Date().toISOString(), rows: [] };",
+    "  for (const u of URLS){",
+    "    try{",
+    "      const r = await fetch(u, { headers: { 'User-Agent': 'Mozilla/5.0' } });",
+    "      if (!r.ok) continue;",
+    "      out.rows.push({ source: u, data: await r.json() });",
+    "    }catch(e){}",
+    "  }",
+    "  fs.mkdirSync('data', { recursive: true });",
+    "  fs.writeFileSync('data/live.json', JSON.stringify(out, null, 1));",
+    "  console.log('rows:', out.rows.length);",
+    "}",
+    "main();",
+    "",
+  ].join("\n");
+
+  const readme = [
+    "# " + name,
+    "",
+    "Idea: " + idea,
+    "",
+    "## Kya hai",
+    "- `index.html` — app",
+    "- `assets/` — style aur logic",
+    "- `tools/fetch.mjs` — data laane wala script",
+    "- `.github/workflows/data.yml` — har 10 minute data update",
+    "- `data/live.json` — data (Action banata hai)",
+    "",
+    "## Live kaise karein",
+    "1. GitHub par repo banao aur ye files daalo",
+    "2. Settings → Pages → main branch → Save",
+    "3. Link: https://<username>.github.io/<repo>/",
+    "",
+  ].join("\n");
+
+  return {
+    ".github/workflows/data.yml": wf,
+    "tools/fetch.mjs": fetchJs,
+    "config.json": JSON.stringify({ app: name, idea, theme, watchlist: [] }, null, 1),
+    "README.md": readme,
+    "data/live.json": JSON.stringify({ generated_at: new Date().toISOString(), rows: [] }, null, 1),
+  };
+}
+
+async function buildSystem(){
+  const idea = ($("idea").value || "").trim();
+  if (idea.length < 12){ setStatus("Thoda aur likho — kam se kam ek line.", "bad"); return; }
+  const btn = $("buildSystem");
+  btn.disabled = true;
+  state.files = {};
+  $("fileList").innerHTML = "";
+  try{
+    setStatus("System ka dhancha bana rahi hoon…");
+
+    // 1) app ke files (AI se)
+    await buildProjectFilesOnly(idea, $("theme").value);
+
+    // 2) infra files (template se — pakka)
+    const infra = sysFiles(idea, $("theme").value);
+    Object.keys(infra).forEach(k => { state.files[k] = infra[k]; });
+
+    $("fileList").innerHTML = "✅ System ready — " + Object.keys(state.files).length + " files:<br>• " + Object.keys(state.files).join("<br>• ");
+    setStatus("✅ Poora system ban gaya (app + data script + Action). Ab GitHub par deploy karo.", "ok");
+  }catch(e){
+    setStatus("❌ System nahi bana: " + (e.message || e) + "", "bad");
+  }finally{
+    btn.disabled = false;
+  }
+}
+$("buildSystem").onclick = buildSystem;
+
 async function buildProject(){
   const idea = ($("idea").value || "").trim();
   if (idea.length < 12){ setStatus("Thoda aur likho — kam se kam ek line.", "bad"); return; }
@@ -561,11 +677,48 @@ async function buildProject(){
     setStatus("✅ Project ban gaya — preview dekho, phir GitHub par deploy karo.", "ok");
   }catch(e){
     setStatus("❌ Project nahi bana: " + (e.message || e) + " — dobara try karo.", "bad");
+    throw e;
   }finally{
     btn.disabled = false;
   }
 }
-$("buildProject").onclick = buildProject;
+$("buildProject").onclick = () => buildProject().catch(()=>{});
+
+/* sirf app files banao (system mode ke liye) */
+async function buildProjectFilesOnly(idea, theme){
+  const planPrompt = 'Ek app ka idea: "' + idea + '". Isko 2-4 files me todo. '
+    + 'Sirf JSON array, har item me "file" aur "kaam". index.html zaroor ho. Koi explanation nahi.';
+  const planTxt = await Brain.ask(planPrompt, { task: "code" });
+  let plan = planTxt.ok ? parsePlan(planTxt.text) : null;
+  if (!plan) plan = [{ file: "index.html", kaam: "poora app" }];
+
+  for (const f of plan){
+    setStatus("Bana rahi hoon: " + f.file + "…");
+    const isCss = /\.css$/i.test(f.file), isJs = /\.js$/i.test(f.file);
+    let p2 = 'Tum expert developer ho. App idea: "' + idea + '". Theme: ' + THEME_HINT[theme] + '. '
+      + 'Files: ' + plan.map(x => x.file).join(", ") + '. Sirf is file ka content: "' + f.file + '". ';
+    if (isCss) p2 += 'Sirf CSS. ';
+    if (isJs) p2 += 'Sirf JavaScript. ';
+    p2 += 'Hinglish UI, mobile pehle, data localStorage me. Sirf code.';
+    const r = await Brain.ask(p2, { task: "code" });
+    let c = r.ok ? String(r.text).trim() : "";
+    c = c.replace(/^```[a-z]*\n?/i, "").replace(/```$/, "").trim();
+    if (c) state.files[f.file] = c;
+  }
+
+  let idx = state.files["index.html"] || Object.values(state.files)[0] || "";
+  const css = state.files["style.css"], js = state.files["app.js"];
+  if (css) idx = idx.replace(/<link[^>]*style\.css[^>]*>/i, "<style>" + css + "</style>");
+  if (js){
+    const open = "<script src=\"app.js\"></" + "script>";
+    idx = idx.split(open).join("<script>" + js + "</" + "script>");
+  }
+  lastHTML = idx;
+  $("frame").srcdoc = idx;
+  if (lastUrl) URL.revokeObjectURL(lastUrl);
+  lastUrl = URL.createObjectURL(new Blob([idx], { type: "text/html" }));
+  ["download","copyCode","openNew","adviceBtn","rebuildBtn","ghDeploy"].forEach(i => $(i).disabled = false);
+}
 
 $("adviceBtn").onclick = async () => {
   if (!lastHTML) return;
