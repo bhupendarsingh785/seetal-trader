@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-11-09T03:20:52+00:00",
- "generated_epoch": 1794194452,
+ "generated_at": "2026-11-09T03:21:18+00:00",
+ "generated_epoch": 1794194478,
  "source": "multi-provider: Yahoo q1/q2, Moneycontrol, Stooq (+ purana cache)",
  "providers": {
   "yahoo-q1": {
@@ -56,7 +56,7 @@
     24726.5996,
     24744.6992,
     24751.8496,
-    24780.0508,
+    24780.0996,
     24795.9004,
     24808.0996,
     24823.5,
@@ -67,7 +67,7 @@
     24814.3008,
     24829.4492,
     24853.5,
-    24863.5996,
+    24863.6504,
     24856.5508,
     24867.25,
     24883.4492,
@@ -81,7 +81,7 @@
     24986.4004
    ],
    "bars": 76,
-   "last_bar_age_sec": 235247,
+   "last_bar_age_sec": 235273,
    "market_time": 1794132195,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -125,7 +125,7 @@
     58367.3984,
     58375.4492,
     58303.0508,
-    58352.3008,
+    58351.3516,
     58379.4492,
     58489.4492,
     58545.8984,
@@ -135,7 +135,7 @@
     58564.6016,
     58602.0,
     58623.1016,
-    58637.5,
+    58632.3008,
     58657.5508,
     58746.5508,
     58753.4492,
@@ -152,7 +152,7 @@
     58850.6484
    ],
    "bars": 76,
-   "last_bar_age_sec": 235247,
+   "last_bar_age_sec": 235274,
    "market_time": 1794132195,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -223,7 +223,7 @@
     80999.3984
    ],
    "bars": 76,
-   "last_bar_age_sec": 235247,
+   "last_bar_age_sec": 235274,
    "market_time": 1794132136,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -294,7 +294,7 @@
     7376.8599
    ],
    "bars": 79,
-   "last_bar_age_sec": 195648,
+   "last_bar_age_sec": 195674,
    "market_time": 1794001029,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -365,7 +365,7 @@
     24579.4238
    ],
    "bars": 79,
-   "last_bar_age_sec": 195648,
+   "last_bar_age_sec": 195674,
    "market_time": 1794003359,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -436,7 +436,7 @@
     1324.0
    ],
    "bars": 75,
-   "last_bar_age_sec": 235248,
+   "last_bar_age_sec": 235275,
    "market_time": 1794131969,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -507,7 +507,7 @@
     784.1
    ],
    "bars": 75,
-   "last_bar_age_sec": 235248,
+   "last_bar_age_sec": 235275,
    "market_time": 1794131969,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -578,7 +578,7 @@
     2498.8
    ],
    "bars": 74,
-   "last_bar_age_sec": 235249,
+   "last_bar_age_sec": 235275,
    "market_time": 1794131969,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -649,7 +649,7 @@
     1016.0
    ],
    "bars": 75,
-   "last_bar_age_sec": 235249,
+   "last_bar_age_sec": 235275,
    "market_time": 1794131970,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -720,7 +720,7 @@
     1171.6
    ],
    "bars": 74,
-   "last_bar_age_sec": 235249,
+   "last_bar_age_sec": 235276,
    "market_time": 1794131970,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -791,7 +791,7 @@
     1565.0
    ],
    "bars": 75,
-   "last_bar_age_sec": 235250,
+   "last_bar_age_sec": 235276,
    "market_time": 1794131976,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -862,7 +862,7 @@
     1081.75
    ],
    "bars": 75,
-   "last_bar_age_sec": 235250,
+   "last_bar_age_sec": 235276,
    "market_time": 1794131976,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -933,7 +933,7 @@
     2731.0
    ],
    "bars": 75,
-   "last_bar_age_sec": 235250,
+   "last_bar_age_sec": 235276,
    "market_time": 1794131977,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1004,7 +1004,7 @@
     283.45
    ],
    "bars": 75,
-   "last_bar_age_sec": 235250,
+   "last_bar_age_sec": 235277,
    "market_time": 1794131977,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1075,7 +1075,7 @@
     342.37
    ],
    "bars": 79,
-   "last_bar_age_sec": 195651,
+   "last_bar_age_sec": 195677,
    "market_time": 1793998801,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1146,7 +1146,7 @@
     358.22
    ],
    "bars": 79,
-   "last_bar_age_sec": 195651,
+   "last_bar_age_sec": 195677,
    "market_time": 1793998801,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1217,7 +1217,7 @@
     186.64
    ],
    "bars": 79,
-   "last_bar_age_sec": 195651,
+   "last_bar_age_sec": 195677,
    "market_time": 1793998800,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1288,7 +1288,7 @@
     735.29
    ],
    "bars": 79,
-   "last_bar_age_sec": 195652,
+   "last_bar_age_sec": 195678,
    "market_time": 1793998800,
    "src": "yahoo-q1",
    "has_bars": true,
