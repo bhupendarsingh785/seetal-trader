@@ -278,7 +278,8 @@ function healthText() {
   const names = {
     "yahoo-q1": "Yahoo", "yahoo-q2": "Yahoo-2", twelvedata: "TwelveData",
     finnhub: "Finnhub", moneycontrol: "Moneycontrol", nse: "NSE",
-    stooq: "Stooq", nasdaq: "Nasdaq",
+    stooq: "Stooq", nasdaq: "Nasdaq", tencent: "Tencent", sina: "Sina",
+    eastmoney: "Eastmoney", google: "Google",
   };
   const bits = Object.entries(state.providers || {}).map(
     ([k, v]) => `${v.ok > 0 ? "✅" : "⚠️"} ${names[k] || k} ${v.ok || 0}`

@@ -24,13 +24,19 @@ wahi data deta hai. Sab fail ho jayein to **pichhla accha data** rehne deta hai,
 **Bars (opening range + entry ke liye zaroori):**
 1. Yahoo query1
 2. Yahoo query2 (doosra host)
-3. Twelve Data — *optional, apni free key daalo to chalta hai (NSE bhi cover karta hai)*
-4. Finnhub — *optional, apni free key daalo to chalta hai (US)*
+3. Twelve Data — *optional key (NSE + BSE + US bhi)*
+4. Finnhub — *optional key (US)*
 
 **Sirf price (bars nahi → card par `PRICE ONLY`, signal nahi):**
-1. Moneycontrol (NSE/BSE) — best effort
-2. NSE ka apna API — best effort (datacenter IP par aksar 403)
-3. Nasdaq (US) — ✅ chal raha hai
+1. Tencent — China A-shares (.SS/.SZ) — ✅ verified
+2. Sina — China A-shares — ✅ verified
+3. Eastmoney — China A-shares — ✅ verified
+4. Nasdaq — US — ✅ verified
+5. Moneycontrol — India — ❌ price nahi
+6. NSE — India — ❌ 403 (datacenter IP block)
+
+Har run par sab backup test hote hain aur `data/live.json` ke `probe` mein
+result aata hai (✅/❌/➖ key nahi) — app ke upar "Backup:" line mein wahi.
 
 **Browser live layer:** page khud bhi Yahoo se seedha data kheenchta hai, 4 CORS
 proxy ke raste, har 5–30 second. Woh chal gaya to card par `live` likha aata hai,
