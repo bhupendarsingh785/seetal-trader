@@ -360,8 +360,14 @@ def main() -> int:
                 supabase_status = f"saved ({resp.status})"
                 print("supabase: saved", resp.status)
         except Exception as exc:  # noqa: BLE001
-            supabase_status = f"error: {str(exc)[:120]}"
-            print(f"supabase: nahi gaya ({exc})", file=sys.stderr)
+            detail = ""
+            try:
+                if hasattr(exc, "read"):
+                    detail = exc.read().decode("utf-8", "replace")[:200]
+            except Exception:  # noqa: BLE001
+                pass
+            supabase_status = f"error: {str(exc)[:80]} {detail}".strip()
+            print(f"supabase: nahi gaya ({exc}) {detail}", file=sys.stderr)
     else:
         print("supabase: secret nahi hai - skip")
 
