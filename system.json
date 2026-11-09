@@ -1,0 +1,165 @@
+{
+ "name": "Seetal",
+ "version": "v1",
+ "generated_at": "2026-11-09",
+ "owner": "Swag (bhupendarsingh785)",
+ "made_by": "Seetal (AI dost)",
+ "pages": [
+  {
+   "file": "index.html",
+   "name": "Trader",
+   "desc": "live market pulse, scanner, hisab, doctor tab",
+   "size_kb": 7.2
+  },
+  {
+   "file": "hub.html",
+   "name": "Hub",
+   "desc": "ek hi darwaza — sab tools, ek indicator",
+   "size_kb": 12.8
+  },
+  {
+   "file": "builder.html",
+   "name": "Builder",
+   "desc": "bol ke app banao, preview, download",
+   "size_kb": 13.3
+  },
+  {
+   "file": "doctor.html",
+   "name": "Doctor",
+   "desc": "system ki jaanch, AI ilaaj, auto-fix, skills",
+   "size_kb": 18.0
+  },
+  {
+   "file": "gyan.html",
+   "name": "Gyan",
+   "desc": "sehat, robot, padhai, paisa, zindagi",
+   "size_kb": 7.8
+  },
+  {
+   "file": "status.html",
+   "name": "System Map",
+   "desc": "har platform ka live haal",
+   "size_kb": 7.8
+  },
+  {
+   "file": "vault.html",
+   "name": "Vault",
+   "desc": "encrypted password tijori",
+   "size_kb": 13.3
+  }
+ ],
+ "repos": {
+  "github": "https://github.com/bhupendarsingh785/seetal-trader",
+  "gitlab_mirror": "https://gitlab.com/Bhuprndar785/bhupendarsingh785",
+  "suno": "https://github.com/bhupendarsingh785/suno-assistant"
+ },
+ "live_sites": [
+  "https://bhupendarsingh785.github.io/seetal-trader/",
+  "https://seetal-trader.netlify.app/",
+  "https://bhupendarsingh785.vercel.app/",
+  "https://bhupendarsingh785.github.io/suno-assistant/"
+ ],
+ "data_routes": [
+  {
+   "name": "GitHub raw",
+   "url": "https://raw.githubusercontent.com/bhupendarsingh785/seetal-trader/main/data/live.json"
+  },
+  {
+   "name": "jsDelivr CDN",
+   "url": "https://cdn.jsdelivr.net/gh/bhupendarsingh785/seetal-trader@main/data/live.json"
+  },
+  {
+   "name": "GitLab raw",
+   "url": "https://gitlab.com/Bhuprndar785/bhupendarsingh785/-/raw/main/data/live.json"
+  },
+  {
+   "name": "GitHub Pages",
+   "url": "https://bhupendarsingh785.github.io/seetal-trader/data/live.json"
+  },
+  {
+   "name": "Supabase",
+   "url": "https://urvhrcyuqepzpbklonrz.supabase.co/rest/v1/snapshots"
+  }
+ ],
+ "providers": {
+  "bars": [
+   "Yahoo q1",
+   "Yahoo q2",
+   "TwelveData (key optional)",
+   "Finnhub (key optional)"
+  ],
+  "quotes": [
+   "Tencent (CN)",
+   "Sina (CN)",
+   "Eastmoney (CN)",
+   "Moneycontrol (IN)",
+   "NSE (IN)",
+   "Nasdaq (US)"
+  ],
+  "brain": [
+   "openai",
+   "openai-fast",
+   "mistral",
+   "qwen-coder",
+   "llama",
+   "deepseek",
+   "gemini"
+  ],
+  "brain_proxies": [
+   "seedha",
+   "allorigins",
+   "corsproxy"
+  ]
+ },
+ "secrets_needed": {
+  "GITLAB_TOKEN": "GitLab mirror ke liye",
+  "SUPABASE_SERVICE_KEY": "Supabase mein data likhne ke liye",
+  "DISCORD_WEBHOOK_URL": "signal phone par bhejne ke liye",
+  "NETLIFY_AUTH_TOKEN": "Netlify par deploy ke liye (90 din mein expire)",
+  "TWELVEDATA_KEY": "optional — India ka backup",
+  "FINNHUB_KEY": "optional — US ka backup"
+ },
+ "known_limits": [
+  "Millisecond data free mein nahi milta — 5 second sabse tez",
+  "India ke liye sirf Yahoo bharosemand (NSE/Moneycontrol datacenter se block)",
+  "Cloudflare nahi juda — connector master key maangta hai",
+  "GitLab Pages nahi chalta — account verification/card chahiye",
+  "Suno ki camera vision ke liye Gemini key chahiye",
+  "Replit paid plan ke bina app build nahi hota",
+  "Browser CORS ki wajah se kuch links JS se check nahi ho sakte"
+ ],
+ "weak_points": [
+  {
+   "area": "Builder deploy",
+   "status": "adhoora",
+   "why": "GitHub token se seedha deploy nahi juda"
+  },
+  {
+   "area": "Suno awaaz",
+   "status": "device par depend",
+   "why": "phone ki TTS quality alag-alag hoti hai"
+  },
+  {
+   "area": "Supabase read",
+   "status": "dhyan mein",
+   "why": "publishable key se 400 aa raha tha, anon key lagayi"
+  },
+  {
+   "area": "Discord alerts",
+   "status": "test baaki",
+   "why": "webhook secret daala, test nahi hua"
+  },
+  {
+   "area": "India data backup",
+   "status": "kamzor",
+   "why": "TwelveData key nahi hai"
+  }
+ ],
+ "how_to_advance": [
+  "Builder mein deploy button (GitHub token)",
+  "TwelveData free key — India ka backup",
+  "Suno ke liye Gemini key — vision + samajh",
+  "YouTube Data API — channel ka dashboard",
+  "Backend chahiye to Render/Vercel serverless (keys chhupane ke liye)"
+ ]
+}
