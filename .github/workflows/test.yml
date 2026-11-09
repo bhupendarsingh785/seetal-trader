@@ -1,0 +1,23 @@
+name: Tests
+
+# Har push par apne aap poora system test hota hai.
+# Kuch toota to yahan laal dikhega - pehle pata chal jayega.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Poora system test karo
+        run: node tests/run-tests.mjs
