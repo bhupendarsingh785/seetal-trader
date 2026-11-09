@@ -1,0 +1,39 @@
+name: Deploy to Netlify
+
+# Har push par site Netlify par bhi publish ho jaye.
+# Chahiye: repo secret NETLIFY_AUTH_TOKEN (Netlify personal access token).
+# Secret na ho to chup-chaap skip - kuch tootta nahi.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check token
+        id: chk
+        env:
+          TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "NETLIFY_AUTH_TOKEN nahi hai - deploy skip"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy
+        if: steps.chk.outputs.ready == 'true'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          SITE_ID: b15d2624-8421-4d97-875e-a0fb702bd678
+        run: |
+          npx --yes netlify-cli@latest deploy --prod --dir . --site "$SITE_ID" --message "GitHub ${GITHUB_SHA::7}"
