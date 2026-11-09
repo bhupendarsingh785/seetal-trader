@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Seetal Builder — bol ke app banao</title>
+<style>
+  :root{--bg:#0a0e14;--panel:#111823;--line:#1e2a3a;--txt:#e6edf6;--dim:#8496ad;--green:#22c55e;--red:#ef4444;--violet:#8b5cf6;--blue:#3b82f6}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1000px 500px at 80% -10%,#12203a,transparent 60%),var(--bg);color:var(--txt);
+       font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;min-height:100vh}
+  header{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .brand{display:flex;gap:10px;align-items:center}
+  .logo{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-weight:800;background:linear-gradient(135deg,var(--violet),var(--blue))}
+  h1{font-size:17px;margin:0}
+  .sub{margin:2px 0 0;color:var(--dim);font-size:12px}
+  main{max-width:1100px;margin:0 auto;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:820px){main{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+  label{display:block;font-size:12px;color:var(--dim);font-weight:700;margin:10px 0 5px}
+  textarea,input,select{width:100%;background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:10px 12px;border-radius:9px;font-size:14px;font-family:inherit}
+  textarea{min-height:110px;resize:vertical}
+  .btn{background:linear-gradient(180deg,#2b3b52,#1d2a3b);color:var(--txt);border:1px solid var(--line);padding:10px 15px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer}
+  .btn.primary{background:linear-gradient(135deg,var(--violet),var(--blue));border:none}
+  .btn:disabled{opacity:.5;cursor:wait}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  iframe{width:100%;height:460px;border:1px solid var(--line);border-radius:12px;background:#fff}
+  .note{color:var(--dim);font-size:12.5px;margin-top:10px}
+  .chip{display:inline-block;font-size:12px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;margin:4px 6px 0 0;cursor:pointer;color:var(--dim)}
+  .chip:hover{color:var(--txt);border-color:#33507a}
+  .ok{color:var(--green)} .bad{color:var(--red)}
+  pre{background:#0b1119;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:11.5px;max-height:220px;overflow:auto;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">SB</div>
+    <div>
+      <h1>Seetal Builder</h1>
+      <p class="sub">Bol ke app banao — code, preview, download</p>
+    </div>
+  </div>
+  <a class="btn" href="index.html">← Wapas Trader</a>
+</header>
+
+<main>
+  <section class="card">
+    <h2 style="font-size:15px;margin:0 0 4px">Kaisa app chahiye?</h2>
+    <p class="note" style="margin:0 0 8px">Simple Hinglish mein likho. Jitna saaf likhoge, utna achha banega.</p>
+
+    <label>App ka idea</label>
+    <textarea id="idea" placeholder="jaise: ek khatabook app jisme main udhaar diya hua paisa likhun, kisne kitna dena hai dikhe, aur total dikhe. Hindi mein ho."></textarea>
+
+    <div>
+      <span class="chip" data-fill="khatabook">Khatabook</span>
+      <span class="chip" data-fill="timer">Pomodoro timer</span>
+      <span class="chip" data-fill="notes">Notes app</span>
+      <span class="chip" data-fill="calc">EMI calculator</span>
+      <span class="chip" data-fill="yt">YouTube video planner</span>
+    </div>
+
+    <label>Rang (theme)</label>
+    <select id="theme">
+      <option value="dark">Dark (professional)</option>
+      <option value="light">Light (simple)</option>
+      <option value="colorful">Colorful (mazedaar)</option>
+    </select>
+
+    <div class="row">
+      <button class="btn primary" id="build">⚡ App banao</button>
+      <button class="btn" id="clear">Saaf karo</button>
+    </div>
+
+    <p class="note" id="status">Kuch nahi hua abhi.</p>
+  </section>
+
+  <section class="card">
+    <h2 style="font-size:15px;margin:0 0 8px">Preview</h2>
+    <iframe id="frame" sandbox="allow-scripts allow-forms allow-modals"></iframe>
+    <div class="row">
+      <button class="btn" id="download" disabled>⬇️ HTML download</button>
+      <button class="btn" id="copyCode" disabled>📋 Code copy</button>
+      <button class="btn" id="openNew" disabled>↗️ Naye tab mein kholo</button>
+    </div>
+    <p class="note">Download ki hui file ko GitHub repo mein daal do — GitHub Pages par live ho jayegi. (Deploy ka button agle version mein.)</p>
+    <pre id="code" style="display:none"></pre>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let lastHTML = "";
+let lastUrl = null;
+
+const FILL = {
+  khatabook: "Ek khatabook app jisme main udhaar diya hua paisa likhun — naam, raashi, tareekh. Kisne kitna dena hai list mein dikhe, total bhi dikhe, aur paid mark kar sakun. Sab phone mein save rahe. Hinglish.",
+  timer: "Ek pomodoro timer — 25 minute ka focus, 5 minute ka break. Start/pause/reset ho, time bade akshar mein dikhe, aur break ke baad awaaz aaye.",
+  notes: "Ek simple notes app — naya note likho, list mein dikhe, delete kar sako, aur sab phone mein save rahe.",
+  calc: "Ek EMI calculator — loan amount, interest rate aur months daalo, monthly EMI, total interest aur total payment dikhaye.",
+  yt: "Ek YouTube video planner — video ka title, status (idea/script/edit/upload), upload date, aur list mein sab dikhe. Sab phone mein save rahe.",
+};
+
+function setStatus(txt, cls){ $("status").textContent = txt; $("status").className = "note " + (cls || ""); }
+
+document.querySelectorAll(".chip").forEach(c => c.onclick = () => {
+  $("idea").value = FILL[c.dataset.fill] || "";
+});
+
+$("clear").onclick = () => {
+  $("idea").value = "";
+  $("frame").srcdoc = "";
+  $("code").textContent = "";
+  $("code").style.display = "none";
+  lastHTML = "";
+  ["download","copyCode","openNew"].forEach(i => $(i).disabled = true);
+  setStatus("Kuch nahi hua abhi.");
+};
+
+const THEME_HINT = {
+  dark: "dark theme (gehra background, halka text, professional)",
+  light: "light theme (safed background, gehra text, saaf-suthra)",
+  colorful: "colorful theme (bright accents, mazedaar par padhne mein aasan)",
+};
+
+function buildPrompt(idea, theme){
+  return `Tum ek expert frontend developer ho. Ek COMPLETE single-file HTML app banao.
+
+APP KA IDEA: "${idea}"
+
+ZAROORI NIYAM (inhe mat todna):
+1. Sirf EK file — poora HTML, CSS aur JS andar hi. Koi external CDN, koi font link, koi image link nahi.
+2. ${THEME_HINT[theme]} rakho.
+3. Mobile pehle — phone par perfect dikhe, touch ke liye bade buttons.
+4. Saara data localStorage me save ho (page band karke kholne par bhi rahe).
+5. Bhasha: Hinglish (Roman Hindi), simple aur saaf.
+6. Koi placeholder nahi, koi TODO nahi — poora chalta hua app.
+7. Ek hi <!DOCTYPE html> se shuru karo aur </html> par khatam.
+8. Sirf code do — koi explanation, koi markdown fence nahi.
+
+Ab poora HTML likho.`;
+}
+
+async function generate(prompt){
+  const base = "https://text.pollinations.ai/" + encodeURIComponent(prompt) + "?model=openai";
+  const tries = [
+    base,
+    "https://api.allorigins.win/raw?url=" + encodeURIComponent(base),
+    "https://corsproxy.io/?" + encodeURIComponent(base),
+  ];
+  let lastErr = null;
+  for (const u of tries){
+    try{
+      const res = await fetch(u, { cache: "no-store" });
+      if (!res.ok) throw new Error("http " + res.status);
+      const t = await res.text();
+      if (t && t.length > 40) return t;
+      throw new Error("khaali jawab");
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error("AI se baat nahi hui");
+}
+
+function cleanHTML(txt){
+  let t = String(txt || "").trim();
+  t = t.replace(/^```(?:html)?/i, "").replace(/```$/,"").trim();
+  const i = t.search(/<!DOCTYPE html>|<html[\s>]/i);
+  if (i > 0) t = t.slice(i);
+  const j = t.toLowerCase().lastIndexOf("</html>");
+  if (j > 0) t = t.slice(0, j + 7);
+  return t;
+}
+
+$("build").onclick = async () => {
+  const idea = ($("idea").value || "").trim();
+  if (idea.length < 12){ setStatus("Thoda aur likho — kam se kam ek line.", "bad"); return; }
+  const theme = $("theme").value;
+  $("build").disabled = true;
+  setStatus("App ban raha hai… (30-60 second lag sakte hain)");
+  try{
+    let html = cleanHTML(await generate(buildPrompt(idea, theme)));
+    if (!/<\/html>/i.test(html)) {
+      setStatus("Pehli koshish adhoori rahi — dobara try kar raha hoon…");
+      html = cleanHTML(await generate(buildPrompt(idea, theme) + "\n\nPichhli baar adhoora aaya tha. Is baar POORA HTML do, </html> tak."));
+    }
+    if (!/<html/i.test(html)) throw new Error("AI ne poora HTML nahi diya");
+    lastHTML = html;
+    $("frame").srcdoc = html;
+    if (lastUrl) URL.revokeObjectURL(lastUrl);
+    lastUrl = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    $("code").textContent = html;
+    ["download","copyCode","openNew"].forEach(i => $(i).disabled = false);
+    setStatus("✅ App ban gaya — neeche preview dekho.", "ok");
+  }catch(e){
+    setStatus("❌ Nahi bana: " + (e.message || e) + " — dobara try karo.", "bad");
+  }finally{
+    $("build").disabled = false;
+  }
+};
+
+$("download").onclick = () => {
+  if (!lastHTML) return;
+  const a = document.createElement("a");
+  a.href = lastUrl;
+  a.download = "app.html";
+  a.click();
+};
+
+$("copyCode").onclick = async () => {
+  if (!lastHTML) return;
+  try{ await navigator.clipboard.writeText(lastHTML); setStatus("Code copy ho gaya.", "ok"); }
+  catch(e){ $("code").style.display = "block"; setStatus("Copy nahi hua — neeche se code utha lo."); }
+};
+
+$("openNew").onclick = () => {
+  if (lastUrl) window.open(lastUrl, "_blank");
+};
+</script>
+</body>
+</html>
