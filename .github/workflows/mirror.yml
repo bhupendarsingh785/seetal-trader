@@ -1,7 +1,7 @@
 name: Mirror to GitLab (backup)
 
 # GitHub band ho jaye to bhi code GitLab par zinda rahe.
-# Chahiye: repo secret GITLAB_TOKEN (GitLab personal access token, scope: write_repository)
+# Chahiye: repo secret GITLAB_TOKEN (GitLab token jisme repository write ho)
 # GITLAB_REPO optional hai - na do to neeche wala default chalta hai.
 # Secret na ho to yeh workflow chup-chaap skip ho jaata hai - kuch tootta nahi.
 
@@ -41,6 +41,25 @@ jobs:
           TOKEN: ${{ secrets.GITLAB_TOKEN }}
           REPO: ${{ steps.chk.outputs.target }}
         run: |
+          set -u
           git clone --mirror "https://github.com/${{ github.repository }}.git" repo.git
           cd repo.git
-          git push --mirror "https://oauth2:${TOKEN}@gitlab.com/${REPO}.git"
+
+          # GitLab teen tarah se token leta hai - jo chale wahi use karo.
+          try_push () {
+            local url="$1"
+            echo "-> try: ${url%%@*}@gitlab.com/..."
+            if git push --mirror "$url" 2>&1; then
+              echo "MIRROR OK"
+              return 0
+            fi
+            return 1
+          }
+
+          for user in oauth2 gitlab-ci-token "$TOKEN"; do
+            url="https://${user}:${TOKEN}@gitlab.com/${REPO}.git"
+            if try_push "$url"; then exit 0; fi
+          done
+
+          echo "Sab tarike fail hue. Check: (1) token mein repository write permission, (2) repo path ${REPO}, (3) token expire na hua ho."
+          exit 1
