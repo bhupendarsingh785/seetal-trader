@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Seetal Gyan — kai dimaag, ek jagah</title>
+<style>
+  :root{--bg:#0a0e14;--panel:#111823;--line:#1e2a3a;--txt:#e6edf6;--dim:#8496ad;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--violet:#8b5cf6;--blue:#3b82f6}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1000px 500px at 80% -10%,#12203a,transparent 60%),var(--bg);color:var(--txt);
+       font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;min-height:100vh}
+  header{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .brand{display:flex;gap:10px;align-items:center}
+  .logo{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-weight:800;background:linear-gradient(135deg,#22d3ee,#8b5cf6)}
+  h1{font-size:17px;margin:0}
+  .sub{margin:2px 0 0;color:var(--dim);font-size:12px}
+  main{max-width:820px;margin:0 auto;padding:16px}
+  .tabs{display:flex;gap:6px;overflow:auto;padding-bottom:10px}
+  .tab{background:var(--panel);border:1px solid var(--line);color:var(--dim);padding:9px 14px;border-radius:999px;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .tab.on{color:var(--txt);border-color:var(--violet);background:rgba(139,92,246,.15)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+  textarea{width:100%;background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:11px 12px;border-radius:10px;font-size:14px;font-family:inherit;min-height:90px;resize:vertical}
+  .btn{background:linear-gradient(180deg,#2b3b52,#1d2a3b);color:var(--txt);border:1px solid var(--line);padding:10px 15px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer}
+  .btn.primary{background:linear-gradient(135deg,var(--violet),var(--blue));border:none}
+  .btn:disabled{opacity:.5;cursor:wait}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .warnbox{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.45);color:#ffd89a;padding:11px 13px;border-radius:11px;font-size:13px;margin-bottom:12px}
+  .ans{font-size:14.5px;line-height:1.65;white-space:pre-wrap}
+  .meta{font-size:11.5px;color:var(--dim);margin-top:10px}
+  .q{display:inline-block;font-size:12.5px;padding:7px 11px;border:1px solid var(--line);border-radius:999px;margin:5px 6px 0 0;cursor:pointer;color:var(--dim)}
+  .q:hover{color:var(--txt);border-color:#33507a}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">ग</div>
+    <div>
+      <h1>Seetal Gyan</h1>
+      <p class="sub">Kai dimaag — ek jagah. Poochho, samjho.</p>
+    </div>
+  </div>
+  <a class="btn" href="index.html">← Wapas</a>
+</header>
+
+<main>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-k="health">🩺 Sehat</button>
+    <button class="tab" data-k="robot">🤖 Robot / Tech</button>
+    <button class="tab" data-k="study">📚 Padhai</button>
+    <button class="tab" data-k="money">💰 Paisa</button>
+    <button class="tab" data-k="life">🌱 Zindagi</button>
+  </div>
+
+  <div id="warn" class="warnbox"></div>
+
+  <div class="card">
+    <textarea id="q" placeholder="Apna sawal likho…"></textarea>
+    <div id="examples"></div>
+    <div class="row">
+      <button class="btn primary" id="ask">Poochho</button>
+      <button class="btn" id="clear">Saaf</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ans" id="ans">Jawab yahan aayega.</div>
+    <div class="meta" id="meta"></div>
+  </div>
+</main>
+
+<script src="assets/brain.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+
+const DOMAINS = {
+  health: {
+    name: "Sehat",
+    warn: "⚠️ Ye jaankari hai, ilaaj nahi. Main dawai nahi bata sakti aur bimari ka pakka pata nahi laga sakti. Tabiyat kharab ho to doctor se milo — emergency mein turant hospital jao.",
+    persona: "Tum ek aise health-guide ho jo aam aadmi ko Hinglish me samjhata hai. SIRF general jaankari do: bimari kya hoti hai, kya dekhbhal, kab doctor ke paas jana chahiye. KABHI dawai ka naam, dose ya prescription mat do. KABHI 'aapko ye bimari hai' mat bolo. Har jawab me ek line: 'doctor se milna zaroori hai'. 5-6 line me, simple shabdon me.",
+    examples: ["bukhar 3 din se hai, kya karun", "sugar mein kya khana chahiye", "sir dard ka kya kaaran hota hai"],
+  },
+  robot: {
+    name: "Robot / Tech",
+    warn: "",
+    persona: "Tum ek hardware aur robotics teacher ho. Hinglish me simple samjhao: robot kaise bante hain, motor, sensor, Arduino, Raspberry Pi, 3D printing, coding. Practical steps do, sasta jugaad batao, aur shuruaat ke liye ek chhota project suggest karo. 6-8 line, seedhi baat.",
+    examples: ["ghar par chhota robot kaise banau", "Arduino aur Raspberry Pi me farak", "robot ko chalna kaise sikhate hain"],
+  },
+  study: {
+    name: "Padhai",
+    warn: "",
+    persona: "Tum ek dost teacher ho jo Hinglish me padhata hai. Mushkil cheez ko aasan example se samjhao, chhote steps me todo, aur ek line me yaad rakhne ki trick do. 6-8 line.",
+    examples: ["photosynthesis aasan bhasha me", "percentage kaise nikalte hain", "English bolna kaise sudhare"],
+  },
+  money: {
+    name: "Paisa",
+    warn: "⚠️ Ye samajhne ke liye hai, financial salah nahi. Koi bhi paisa lagane se pehle khud socho — jo kho sakte ho wahi lagao.",
+    persona: "Tum paise ki samajh samjhane wale ho — Hinglish me. Budget, bachat, SIP, FD, loan, tax — aasan example se samjhao. KABHI 'ye share kharido' ya 'yahan invest karo' mat bolo. Risk saaf batao. 6-8 line.",
+    examples: ["SIP kya hota hai", "salary ka budget kaise banau", "FD aur mutual fund me farak"],
+  },
+  life: {
+    name: "Zindagi",
+    warn: "",
+    persona: "Tum ek samajhdaar dost ho. Hinglish me, pyaar se, bina lecture. Pehle feeling ko naam do, phir ek-do practical baat. Chhota rakho — 4-6 line. Bohot serious baat ho to professional ki salah do.",
+    examples: ["mann nahi lag raha kaam me", "neend nahi aati raat ko", "gussa kaise kam karun"],
+  },
+};
+
+let current = "health";
+
+function render(){
+  const d = DOMAINS[current];
+  $("warn").textContent = d.warn || "";
+  $("warn").style.display = d.warn ? "block" : "none";
+  $("q").placeholder = "Jaise: " + d.examples[0];
+  $("examples").innerHTML = d.examples
+    .map((e) => `<span class="q" data-q="${e.replace(/"/g, "&quot;")}">${e}</span>`)
+    .join("");
+  document.querySelectorAll(".q").forEach((b) => b.onclick = () => { $("q").value = b.dataset.q; });
+}
+
+document.querySelectorAll(".tab").forEach((t) => t.onclick = () => {
+  document.querySelectorAll(".tab").forEach((x) => x.classList.remove("on"));
+  t.classList.add("on");
+  current = t.dataset.k;
+  $("ans").textContent = "Jawab yahan aayega.";
+  $("meta").textContent = "";
+  render();
+});
+
+$("clear").onclick = () => { $("q").value = ""; $("ans").textContent = "Jawab yahan aayega."; $("meta").textContent = ""; };
+
+$("ask").onclick = async () => {
+  const text = ($("q").value || "").trim();
+  if (text.length < 3) { $("ans").textContent = "Thoda aur likho."; return; }
+  const d = DOMAINS[current];
+  $("ask").disabled = true;
+  $("ans").textContent = "Soch rahi hoon…";
+  $("meta").textContent = "";
+  const prompt = d.persona + "\n\nSawal: " + text + "\n\nJawab Hinglish (Roman Hindi) me do, seedha aur saaf.";
+  try{
+    if (!window.Brain) throw new Error("Brain nahi mila");
+    const r = await Brain.ask(prompt, { task: "advice" });
+    if (!r.ok) throw new Error("koi AI nahi chala");
+    $("ans").textContent = r.text.trim();
+    $("meta").textContent = d.name + " · " + r.model + " · " + r.ms + "ms";
+  }catch(e){
+    $("ans").textContent = "Jawab nahi aa paya (" + (e.message || e) + "). Thodi der baad dobara poochho.";
+  }finally{
+    $("ask").disabled = false;
+  }
+};
+
+render();
+</script>
+</body>
+</html>
