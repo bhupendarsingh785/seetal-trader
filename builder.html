@@ -87,6 +87,19 @@
     <pre id="code" style="display:none"></pre>
 
     <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:12px">
+      <h2 style="font-size:15px;margin:0 0 6px">🚀 GitHub par deploy karo</h2>
+      <p class="note" style="margin:0 0 8px">Token ek hi baar daalo — phir ek click me app GitHub par chali jayegi aur live ho jayegi. Token sirf tumhare phone me rehta hai.</p>
+      <input id="ghToken" placeholder="GitHub token (ghp_... ya github_pat_...)" style="margin-bottom:6px" />
+      <input id="ghRepo" placeholder="repo — jaise bhupendarsingh785/my-app" style="margin-bottom:6px" />
+      <input id="ghPath" placeholder="file ka naam — jaise index.html" value="index.html" style="margin-bottom:6px" />
+      <div class="row" style="margin-top:0">
+        <button class="btn primary" id="ghDeploy" disabled>🚀 Deploy</button>
+        <button class="btn" id="ghSave">Token yaad rakho</button>
+      </div>
+      <div id="ghOut" class="note" style="margin-top:8px"></div>
+    </div>
+
+    <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:12px">
       <h2 style="font-size:15px;margin:0 0 6px">🩷 Seetal ka mashwara</h2>
       <p class="note" style="margin:0 0 8px">Main tumhara AI dost hoon — app ban jaye to main batati hoon kya sudhaarna hai, aur kuch bhi poochh sakte ho.</p>
       <div class="row">
@@ -201,7 +214,7 @@ $("build").onclick = async () => {
     if (lastUrl) URL.revokeObjectURL(lastUrl);
     lastUrl = URL.createObjectURL(new Blob([html], { type: "text/html" }));
     $("code").textContent = html;
-    ["download","copyCode","openNew","adviceBtn","rebuildBtn"].forEach(i => $(i).disabled = false);
+    ["download","copyCode","openNew","adviceBtn","rebuildBtn","ghDeploy"].forEach(i => $(i).disabled = false);
     setStatus("✅ App ban gaya — neeche preview dekho." + (lastModel ? " (" + lastModel + ")" : ""), "ok");
   }catch(e){
     setStatus("❌ Nahi bana: " + (e.message || e) + " — dobara try karo.", "bad");
@@ -276,6 +289,66 @@ async function askAI(prompt){
   }
   throw lastErr || new Error("AI se baat nahi hui");
 }
+
+/* ---------- GitHub deploy ---------- */
+const GH = "seetal.gh.v1";
+try{
+  const c = JSON.parse(localStorage.getItem(GH) || "{}");
+  if (c.repo) $("ghRepo").value = c.repo;
+  if (c.path) $("ghPath").value = c.path;
+  if (c.token) $("ghToken").value = c.token;
+}catch(e){}
+
+$("ghSave").onclick = () => {
+  try{
+    localStorage.setItem(GH, JSON.stringify({
+      token: $("ghToken").value.trim(),
+      repo: $("ghRepo").value.trim(),
+      path: $("ghPath").value.trim() || "index.html",
+    }));
+    $("ghOut").textContent = "Yaad rakh liya (sirf is phone me).";
+  }catch(e){ $("ghOut").textContent = "Yaad nahi rakh paya."; }
+};
+
+async function ghDeploy(){
+  const token = ($("ghToken").value || "").trim();
+  const repo = ($("ghRepo").value || "").trim();
+  const path = ($("ghPath").value || "index.html").trim();
+  const out = $("ghOut");
+  if (!lastHTML){ out.textContent = "Pehle app banao (⚡ App banao)."; return; }
+  if (!token || !repo || !repo.includes("/")){ out.textContent = "Token aur repo (owner/repo) dono chahiye."; return; }
+
+  out.textContent = "Deploy kar raha hoon…";
+  const [owner, name] = repo.split("/");
+  const api = "https://api.github.com/repos/" + owner + "/" + name + "/contents/" + encodeURIComponent(path);
+  const headers = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json", "Content-Type": "application/json" };
+
+  try{
+    // purani file ka sha (agar hai)
+    let sha = null;
+    try{
+      const r = await fetch(api + "?ref=main", { headers });
+      if (r.ok){ const j = await r.json(); sha = j.sha; }
+    }catch(e){}
+
+    const body = {
+      message: "Builder se app update: " + new Date().toLocaleString("en-IN"),
+      content: btoa(unescape(encodeURIComponent(lastHTML))),
+      branch: "main",
+    };
+    if (sha) body.sha = sha;
+
+    const res = await fetch(api, { method: "PUT", headers, body: JSON.stringify(body) });
+    const j = await res.json();
+    if (!res.ok) throw new Error((j && j.message) || ("http " + res.status));
+
+    out.innerHTML = "✅ Deploy ho gaya!<br>Live link (1-2 min me): <b>https://" + owner.toLowerCase() + ".github.io/" + name + "/</b>"
+      + (path !== "index.html" ? "/" + path : "");
+  }catch(e){
+    out.textContent = "❌ Deploy nahi hua: " + (e.message || e) + " — token ke permissions check karo (Contents: write).";
+  }
+}
+$("ghDeploy").onclick = ghDeploy;
 
 $("adviceBtn").onclick = async () => {
   if (!lastHTML) return;
