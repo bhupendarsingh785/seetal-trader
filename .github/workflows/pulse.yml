@@ -29,6 +29,7 @@ jobs:
           FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
           SUPABASE_URL: https://urvhrcyuqepzpbklonrz.supabase.co
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python3 tools/snapshot.py
       - name: Commit if changed
         run: |

@@ -284,6 +284,15 @@ def main() -> int:
         except Exception:  # noqa: BLE001
             pass
 
+    prev_state = {}
+    if os.path.exists(OUT):
+        try:
+            with open(OUT, "r", encoding="utf-8") as fh:
+                for r in (json.load(fh).get("rows") or []):
+                    prev_state[r.get("symbol")] = r.get("state")
+        except Exception:  # noqa: BLE001
+            pass
+
     rows, errors, repairs = [], [], []
     for sym in symbols:
         try:
@@ -371,16 +380,47 @@ def main() -> int:
     else:
         print("supabase: secret nahi hai - skip")
 
+    # Discord par naye entry signal bhejo
+    discord_status = "skip: webhook nahi hai"
+    hook = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
+    fresh = [r for r in rows if r.get("state") == "ENTRY" and prev_state.get(r["symbol"]) != "ENTRY"]
+    if hook and fresh:
+        try:
+            import urllib.request as _r
+            lines = []
+            for r in fresh[:8]:
+                lines.append(
+                    f"**{r['symbol']}** — entry {r.get('entry')} | stop {r.get('stop')} | target {r.get('target')}"
+                )
+            msg = {
+                "username": "Seetal Trader",
+                "content": "⚡ **Naya ENTRY signal** (opening range breakout)\n" + "\n".join(lines),
+            }
+            req = _r.Request(
+                hook,
+                data=json.dumps(msg).encode(),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with _r.urlopen(req, timeout=15) as resp:
+                discord_status = f"sent ({resp.status}) {len(fresh)} signals"
+        except Exception as exc:  # noqa: BLE001
+            discord_status = f"error: {str(exc)[:100]}"
+    elif hook:
+        discord_status = "ok: koi naya signal nahi"
+
     # status ko live.json mein likho taki bahar se dikhe
     try:
         with open(OUT, "r", encoding="utf-8") as fh:
             payload = json.load(fh)
         payload["supabase"] = supabase_status
+        payload["discord"] = discord_status
         with open(OUT, "w", encoding="utf-8") as fh:
             json.dump(payload, fh, ensure_ascii=False, indent=1)
     except Exception:  # noqa: BLE001
         pass
     print("supabase status:", supabase_status)
+    print("discord status:", discord_status)
 
     return 0 if rows else 1
 
