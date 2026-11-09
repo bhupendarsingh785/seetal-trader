@@ -38,7 +38,7 @@
     <div class="logo">SB</div>
     <div>
       <h1>Seetal Builder</h1>
-      <p class="sub">Bol ke app banao — code, preview, download</p>
+      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v2</b></p>
     </div>
   </div>
   <a class="btn" href="index.html">← Wapas Trader</a>
@@ -427,6 +427,13 @@ $("rebuildBtn").onclick = async () => {
   $("build").click();
   $("advice").textContent = "Naya version ban gaya — preview dekho.";
 };
+</script>
+<script>
+/* purana cache na dikhe */
+try{
+  if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister())).catch(()=>{});
+  if ('caches' in window) caches.keys().then(ks => ks.forEach(k => caches.delete(k))).catch(()=>{});
+}catch(e){}
 </script>
 </body>
 </html>
