@@ -61,6 +61,18 @@
     <div id="aiDocOut" style="margin-top:12px"></div>
   </div>
 
+
+  <div class="card" style="border-color:rgba(139,92,246,.45)">
+    <h2 style="font-size:14px;margin:0 0 6px">🕘 Purana version wapas laao (revert)</h2>
+    <p class="sub" style="margin:0 0 10px">GitHub par har version ka record rehta hai. Yahan se koi bhi purana version wapas laa sakte ho — kuch bhi permanent nahi bigadta.</p>
+    <input id="rvToken" placeholder="GitHub token (Contents: write)" style="width:100%;background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:9px 11px;border-radius:9px;font-size:13px;margin-bottom:6px" />
+    <input id="rvRepo" placeholder="repo — jaise bhupendarsingh785/seetal-trader" style="width:100%;background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:9px 11px;border-radius:9px;font-size:13px;margin-bottom:6px" />
+    <input id="rvPath" placeholder="file — jaise builder.html" style="width:100%;background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:9px 11px;border-radius:9px;font-size:13px;margin-bottom:8px" />
+    <div class="row">
+      <button class="btn primary" id="rvList">📜 Version list karo</button>
+    </div>
+    <div id="rvOut" style="margin-top:10px;font-size:13px;line-height:1.6"></div>
+  </div>
   <div class="card">
     <h2 style="font-size:14px;margin:0 0 6px">1 · Dimaag (AI) — Builder aur Suno isi par chalte hain</h2>
     <div id="aiBox"><p class="sub">Jaanch baaki hai.</p></div>
@@ -355,6 +367,82 @@ async function runSkills(){
     RESULTS.push({ name: "skill: " + list[i].name, state: r.state, detail: r.note || "", fix: "" });
   }
 }
+
+
+/* ---------- revert: purana version wapas ---------- */
+const RV = "seetal.revert.v1";
+try{
+  const c = JSON.parse(localStorage.getItem(RV) || "{}");
+  if (c.token) $("rvToken").value = c.token;
+  if (c.repo) $("rvRepo").value = c.repo;
+  if (c.path) $("rvPath").value = c.path;
+}catch(e){}
+
+function rvSave(){
+  try{ localStorage.setItem(RV, JSON.stringify({
+    token: $("rvToken").value.trim(), repo: $("rvRepo").value.trim(), path: $("rvPath").value.trim()
+  })); }catch(e){}
+}
+
+$("rvList").onclick = async () => {
+  const out = $("rvOut");
+  const token = ($("rvToken").value || "").trim();
+  const repo = ($("rvRepo").value || "").trim();
+  const path = ($("rvPath").value || "").trim();
+  if (!token || !repo.includes("/") || !path){ out.textContent = "Token, repo aur file — teeno chahiye."; return; }
+  rvSave();
+  const [owner, name] = repo.split("/");
+  out.textContent = "Version dhoondh raha hoon…";
+  try{
+    const r = await fetch("https://api.github.com/repos/" + owner + "/" + name + "/commits?path=" + encodeURIComponent(path) + "&per_page=10",
+      { headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" } });
+    const j = await r.json();
+    if (!Array.isArray(j)) throw new Error((j && j.message) || "list nahi mili");
+    if (!j.length){ out.textContent = "Is file ka koi commit nahi mila."; return; }
+    out.innerHTML = j.map((c, i) =>
+      `<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+         <div style="min-width:0">
+           <div style="font-weight:700">${(c.commit.message || "").slice(0, 60)}</div>
+           <div class="sub">${new Date(c.commit.author.date).toLocaleString("en-IN")} · ${c.sha.slice(0,7)}</div>
+         </div>
+         <button class="btn" data-sha="${c.sha}" style="padding:6px 10px;font-size:12px">↩️ Wapas</button>
+       </div>`).join("");
+    out.querySelectorAll("[data-sha]").forEach(b => b.onclick = () => rvRestore(b.dataset.sha));
+  }catch(e){
+    out.textContent = "List nahi aayi: " + (e.message || e) + " — token ka Contents: read permission check karo.";
+  }
+};
+
+async function rvRestore(sha){
+  const out = $("rvOut");
+  const token = ($("rvToken").value || "").trim();
+  const repo = ($("rvRepo").value || "").trim();
+  const path = ($("rvPath").value || "").trim();
+  const [owner, name] = repo.split("/");
+  out.textContent = "Wapas laa raha hoon…";
+  try{
+    const api = "https://api.github.com/repos/" + owner + "/" + name + "/contents/" + encodeURIComponent(path);
+    const headers = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json", "Content-Type": "application/json" };
+
+    // purana content
+    const rr = await fetch(api + "?ref=" + sha, { headers });
+    const jj = await rr.json();
+    if (!jj.content) throw new Error("purana content nahi mila");
+
+    // abhi ka sha (update ke liye)
+    let cur = null;
+    try{ const cr = await fetch(api + "?ref=main", { headers }); if (cr.ok){ cur = (await cr.json()).sha; } }catch(e){}
+
+    const body = { message: "Revert: " + path + " ko " + sha.slice(0,7) + " par wapas", content: jj.content.replace(/\n/g, ""), branch: "main" };
+    if (cur) body.sha = cur;
+    const res = await fetch(api, { method: "PUT", headers, body: JSON.stringify(body) });
+    const rj = await res.json();
+    if (!res.ok) throw new Error(rj.message || ("http " + res.status));
+    out.innerHTML = "✅ Wapas aa gaya! 1-2 minute me live ho jayega.<br>Ab page refresh karo.";
+  }catch(e){
+    out.textContent = "❌ Wapas nahi aaya: " + (e.message || e) + " — token me Contents: write chahiye.";
+  }
+};
 
 async function runAll(){
   const btn = $("run");
