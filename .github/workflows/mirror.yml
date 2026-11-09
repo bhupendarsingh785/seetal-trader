@@ -64,8 +64,10 @@ jobs:
             return 1
           }
 
+          echo "debug: token_len=${#TOKEN} repo=[${REPO}]" | tee -a "$LOG"
           for user in oauth2 gitlab-ci-token "$TOKEN"; do
             url="https://${user}:${TOKEN}@gitlab.com/${REPO}.git"
+            printf '%s' "$url" | od -c | head -3 >> "$LOG" 2>&1 || true
             if try_push "$url"; then exit 0; fi
           done
 
