@@ -81,6 +81,17 @@
     <div id="siteBox"><p class="sub">Jaanch baaki hai.</p></div>
   </div>
 
+  <div class="card" style="border-color:rgba(34,197,94,.45)">
+    <h2 style="font-size:14px;margin:0 0 6px">🧩 Doctor ki skills — nayi jaanch khud sikho</h2>
+    <p class="sub" style="margin:0 0 10px">Doctor nayi skill seekh sakta hai: tum bolo kaunsa link ya cheez jaanchni hai, woh hamesha ke liye yaad rakhega aur har baar check karega.</p>
+    <div class="row" style="gap:6px">
+      <input id="skName" placeholder="Naam (jaise: Vercel site)" style="flex:1;min-width:140px;background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:9px 11px;border-radius:9px;font-size:13.5px" />
+      <input id="skUrl" placeholder="https://... (link ya JSON)" style="flex:2;min-width:180px;background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:9px 11px;border-radius:9px;font-size:13.5px" />
+      <button class="btn" id="skAdd">➕ Skill jodo</button>
+    </div>
+    <div id="skList" style="margin-top:10px"></div>
+  </div>
+
   <div class="card">
     <h2 style="font-size:14px;margin:0 0 6px">5 · Is page ki apni galtiyan</h2>
     <div id="errBox"><p class="sub">Jaanch baaki hai.</p></div>
@@ -306,6 +317,45 @@ $("fixAll").onclick = async () => {
   box.innerHTML += '<p class="sub ok" style="margin-top:8px">✅ Doctor ne jo ho saka theek kar diya — upar ki report ab nayi hai.</p>';
 };
 
+/* ---------- Doctor ki apni skills (seekhne wala hissa) ---------- */
+const SK = "seetal.doctor.skills.v1";
+function skills(){ try{ return JSON.parse(localStorage.getItem(SK) || "[]"); }catch(e){ return []; } }
+function saveSkills(v){ try{ localStorage.setItem(SK, JSON.stringify(v)); }catch(e){} }
+
+function paintSkills(){
+  const list = skills();
+  const box = $("skList");
+  if (!list.length){ box.innerHTML = '<p class="sub">Abhi koi apni skill nahi. Upar se jodo — jaise Vercel ka link.</p>'; return; }
+  box.innerHTML = list.map((s, i) => `<div class="item"><div class="hd"><div>
+      <div class="nm">${s.name}</div><div class="dt">${s.url}</div>
+      <div class="dt" id="skr-${i}">abhi check nahi hui</div>
+    </div><button class="btn" data-del="${i}" style="padding:6px 10px;font-size:12px">✕</button></div></div>`).join("");
+  box.querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
+    const l = skills(); l.splice(Number(b.dataset.del), 1); saveSkills(l); paintSkills();
+  });
+}
+
+$("skAdd").onclick = () => {
+  const name = ($("skName").value || "").trim();
+  const url = ($("skUrl").value || "").trim();
+  if (!name || !/^https?:/i.test(url)){ $("skList").innerHTML = '<p class="sub bad">Naam aur poora https:// link dono chahiye.</p>'; return; }
+  const l = skills(); l.push({ name, url }); saveSkills(l);
+  $("skName").value = ""; $("skUrl").value = "";
+  paintSkills();
+};
+
+async function runSkills(){
+  const list = skills();
+  for (let i = 0; i < list.length; i++){
+    const el = $("skr-" + i);
+    if (!el) continue;
+    el.textContent = "check kar raha hoon…";
+    const r = await check({ name: list[i].name, url: list[i].url, json: /live\.json|\/snapshots/i.test(list[i].url) });
+    el.textContent = (r.state === "ok" ? "✅ " : r.state === "warn" ? "⚠️ " : "❌ ") + (r.note || "");
+    RESULTS.push({ name: "skill: " + list[i].name, state: r.state, detail: r.note || "", fix: "" });
+  }
+}
+
 async function runAll(){
   const btn = $("run");
   btn.disabled = true;
@@ -317,6 +367,7 @@ async function runAll(){
   if (aiOk) await testBuilder(); else paint("buildBox", [item("Builder", "bad", "AI ke bina Builder nahi chalega", "AI ka rasta theek hone ke baad dobara jaanch karo")]);
   await testData();
   await testSites();
+  await runSkills();
   testErrors();
 
   $("sum").innerHTML = aiOk
@@ -325,6 +376,7 @@ async function runAll(){
   btn.disabled = false;
 }
 
+paintSkills();
 $("run").onclick = runAll;
 runAll();
 </script>
