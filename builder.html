@@ -38,7 +38,7 @@
     <div class="logo">SB</div>
     <div>
       <h1>Seetal Builder</h1>
-      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v10</b></p>
+      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v11</b></p>
     </div>
   </div>
   <a class="btn" href="index.html">← Wapas Trader</a>
@@ -140,7 +140,8 @@
   </section>
 </main>
 
-<script src="assets/brain.js"></script>
+<script src="assets/apis.js"></script>
+  <script src="assets/brain.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 let lastHTML = "";
@@ -810,6 +811,23 @@ try{
   if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister())).catch(()=>{});
   if ('caches' in window) caches.keys().then(ks => ks.forEach(k => caches.delete(k))).catch(()=>{});
 }catch(e){}
+
+/* agar Brain ka rasta band ho to shared free API se jawab */
+(function(){
+  if (!window.Brain || !Brain.ask) return;
+  const _ask = Brain.ask.bind(Brain);
+  Brain.ask = async function(prompt, opts){
+    const r = await _ask(prompt, opts);
+    if (r && r.ok) return r;
+    try{
+      if (window.SeetalAPIs){
+        const a = await SeetalAPIs.ask(prompt, { timeout: 15000 });
+        if (a.ok) return { ok: true, text: a.text, ms: 0, model: a.model, via: "shared:" + a.via, tried: [] };
+      }
+    }catch(e){}
+    return r;
+  };
+})();
 
 /* ================= Builder ka ghar ka gyan (Seetal system ka poora naksha) ================= */
 const SEETAL_KNOWLEDGE = `
