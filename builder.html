@@ -38,7 +38,7 @@
     <div class="logo">SB</div>
     <div>
       <h1>Seetal Builder</h1>
-      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v11</b></p>
+      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v12</b></p>
     </div>
   </div>
   <a class="btn" href="index.html">← Wapas Trader</a>
@@ -111,6 +111,24 @@
         <button class="btn" id="apiTest2">🔌 Test karo</button>
       </div>
       <div id="apiOut2" class="note" style="margin-top:8px"></div>
+
+      <div style="margin-top:12px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.08)">
+        <div class="note" style="margin:0 0 6px"><b>➕ Koi bhi API jodo</b> — kisi bhi model/provider ki, naam ka koi bandhan nahi.</div>
+        <input id="cName" placeholder="naam — jaise my-groq" style="margin-bottom:6px" />
+        <input id="cUrl" placeholder="URL — jaise https://api.groq.com/openai/v1/chat/completions" style="margin-bottom:6px" />
+        <input id="cKey" placeholder="key (na ho to khali)" style="margin-bottom:6px" autocomplete="off" />
+        <input id="cModel" placeholder="model — jaise llama-3.1-8b-instant" style="margin-bottom:6px" />
+        <select id="cKind" style="margin-bottom:6px">
+          <option value="openai">OpenAI jaisa (chat/completions)</option>
+          <option value="gemini">Gemini jaisa</option>
+          <option value="text">Seedha text (URL me {prompt})</option>
+        </select>
+        <div class="row" style="margin-top:0">
+          <button class="btn" id="cAdd">➕ Jodo</button>
+          <button class="btn" id="cList">📋 Meri APIs</button>
+        </div>
+        <div id="cOut" class="note" style="margin-top:8px"></div>
+      </div>
       <button class="btn" id="selfTest2" style="margin-top:8px">🧪 Poora check karo</button>
       <div id="selfOut2" class="note" style="margin-top:8px"></div>
     </div>
@@ -359,6 +377,33 @@ $("apiTest2").onclick = async () => {
   }
   const r = await Brain.ask("Sirf ek shabd: theek", { task:"any" });
   out.textContent = r.ok ? ("✅ Free AI chal rahi hai (" + r.model + ")") : "❌ Free AI se bhi jawab nahi aaya — net check karo.";
+};
+
+
+/* ---------- koi bhi API jodo ---------- */
+$("cAdd").onclick = () => {
+  if (!window.SeetalAPIs || !SeetalAPIs.addCustom){ $("cOut").textContent = "apis.js load nahi hui."; return; }
+  const name = ($("cName").value || "").trim();
+  const url = ($("cUrl").value || "").trim();
+  const key = ($("cKey").value || "").trim();
+  const model = ($("cModel").value || "").trim();
+  const kind = $("cKind").value;
+  if (!url){ $("cOut").textContent = "URL chahiye."; return; }
+  const r = SeetalAPIs.addCustom({ name, url, key, model, kind });
+  $("cOut").textContent = r.ok ? ("✅ " + (name || "api") + " jud gaya — ab sabse pehle yahi try hoga.") : ("❌ " + r.error);
+};
+
+$("cList").onclick = () => {
+  if (!window.SeetalAPIs){ $("cOut").textContent = "apis.js load nahi hui."; return; }
+  const list = SeetalAPIs.listCustom();
+  if (!list.length){ $("cOut").textContent = "Abhi koi apni API nahi jodi."; return; }
+  $("cOut").innerHTML = list.map((x, i) =>
+    '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;padding:4px 0">'
+    + '<span>' + (i + 1) + '. <b>' + x.name + '</b> — ' + (x.kind || 'text') + (x.model ? ' · ' + x.model : '') + '</span>'
+    + '<button class="btn" data-del="' + x.name + '" style="padding:4px 8px;font-size:11px">Hatayein</button></div>').join("");
+  $("cOut").querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
+    SeetalAPIs.removeCustom(b.dataset.del); $("cList").click();
+  });
 };
 
 /* ---------- poora self test ---------- */

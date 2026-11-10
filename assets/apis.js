@@ -32,6 +32,91 @@
     { id: "gitlab", url: "https://gitlab.com/Bhuprndar785/bhupendarsingh785/-/raw/main/data/live.json" },
   ];
 
+
+  /* ---------- apni koi bhi API (custom) ---------- */
+  const LS_CUSTOM = "seetal.customapis.v1";
+
+  function listCustom() {
+    try { return JSON.parse(localStorage.getItem(LS_CUSTOM) || "[]"); } catch (e) { return []; }
+  }
+  function saveCustom(list) {
+    try { localStorage.setItem(LS_CUSTOM, JSON.stringify(list.slice(0, 20))); } catch (e) {}
+  }
+  /**
+   * koi bhi API jodo.
+   * item = { name, url, key, authHeader, model, body, kind }
+   * url me {prompt} likho — wahan prompt jayega. Ya {key} likho — wahan key.
+   * kind: "text" (seedha jawab) ya "openai" (OpenAI jaisa JSON) ya "gemini"
+   */
+  function addCustom(item) {
+    if (!item || !item.url) return { ok: false, error: "url chahiye" };
+    const list = listCustom().filter(x => x.name !== item.name);
+    list.unshift({
+      name: item.name || ("api-" + (list.length + 1)),
+      url: item.url,
+      key: item.key || "",
+      authHeader: item.authHeader || "Authorization",
+      authPrefix: item.authPrefix === undefined ? "Bearer " : item.authPrefix,
+      model: item.model || "",
+      body: item.body || "",
+      kind: item.kind || "text",
+    });
+    saveCustom(list);
+    return { ok: true, count: list.length };
+  }
+  function removeCustom(name) {
+    saveCustom(listCustom().filter(x => x.name !== name));
+    return { ok: true };
+  }
+
+  function fill(tpl, prompt, key, model) {
+    return String(tpl)
+      .replace(/\{prompt\}/g, encodeURIComponent(prompt))
+      .replace(/\{promptRaw\}/g, prompt)
+      .replace(/\{key\}/g, encodeURIComponent(key || ""))
+      .replace(/\{model\}/g, encodeURIComponent(model || ""));
+  }
+
+  async function callCustom(api, prompt, ms) {
+    const url = fill(api.url, prompt, api.key, api.model);
+    const headers = { "Content-Type": "application/json" };
+    if (api.key) headers[api.authHeader] = (api.authPrefix || "") + api.key;
+    let init = { method: "GET", headers, cache: "no-store" };
+
+    if (api.kind === "openai" || api.body) {
+      init.method = "POST";
+      const bodyTpl = api.body || JSON.stringify({
+        model: api.model || "gpt-4o-mini",
+        messages: [{ role: "user", content: "{promptRaw}" }],
+      });
+      init.body = bodyTpl
+        .replace(/\{promptRaw\}/g, prompt.replace(/"/g, '\\"'))
+        .replace(/\{model\}/g, api.model || "");
+    }
+
+    const ctl = new AbortController();
+    const to = setTimeout(() => ctl.abort(), ms || 15000);
+    try {
+      const r = await fetch(url, { ...init, signal: ctl.signal });
+      if (!r.ok) return null;
+      const ct = r.headers.get("content-type") || "";
+      if (ct.includes("json")) {
+        const j = await r.json();
+        const t = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content)
+          || (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts && j.candidates[0].content.parts[0].text)
+          || (j.content && j.content[0] && j.content[0].text)
+          || j.output || j.text || j.response || "";
+        return t ? String(t).trim() : null;
+      }
+      const t = (await r.text() || "").trim();
+      return t || null;
+    } catch (e) {
+      return null;
+    } finally {
+      clearTimeout(to);
+    }
+  }
+
   /* ---------- health yaaddasht ---------- */
   function loadHealth() {
     try { return JSON.parse(localStorage.getItem(LS_HEALTH) || "{}"); } catch (e) { return {}; }
@@ -72,6 +157,15 @@
   /* sabse achha rasta chuno (health ke hisaab se) */
   async function ask(prompt, opts) {
     opts = opts || {};
+
+    // 1) tumhari apni APIs pehle
+    for (const api of listCustom()) {
+      const t = await callCustom(api, prompt, opts.timeout || 15000);
+      if (t && t.length > 1) { mark("custom:" + api.name, true); return { ok: true, text: t, model: "custom:" + api.name, via: "own" }; }
+      mark("custom:" + api.name, false);
+    }
+
+    // 2) free models
     const list = AI_FREE.slice().sort((a, b) => score(b.id) - score(a.id));
     for (const model of list) {
       const base = model.url(prompt);
@@ -114,5 +208,5 @@
     return out;
   }
 
-  window.SeetalAPIs = { ask, data, health, mark, score, AI_FREE, PROXIES, DATA };
+  window.SeetalAPIs = { ask, data, health, mark, score, AI_FREE, PROXIES, DATA, addCustom, listCustom, removeCustom, callCustom };
 })();
