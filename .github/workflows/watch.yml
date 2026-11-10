@@ -1,0 +1,44 @@
+name: Watchdog
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Data aur system check karo
+        run: |
+          python3 - <<'PY'
+          import json, datetime, sys
+          try:
+              d = json.load(open('data/live.json'))
+          except Exception as e:
+              print("::error::live.json padha nahi ja saka:", e); sys.exit(1)
+
+          gen = d.get('generated_at') or d.get('ts') or ''
+          try:
+              t = datetime.datetime.fromisoformat(gen.replace('Z', '+00:00'))
+              now = datetime.datetime.now(datetime.timezone.utc)
+              age = (now - t).total_seconds() / 60
+          except Exception:
+              age = -1
+
+          rows = d.get('symbols') or d.get('data') or d.get('rows') or []
+          n = len(rows) if hasattr(rows, '__len__') else 0
+          print(f"data age: {age:.0f} min | symbols: {n}")
+
+          if age > 45:
+              print(f"::error::Data purana hai — {age:.0f} minute. Pulse Action check karo.")
+              sys.exit(1)
+          if n < 3:
+              print(f"::error::Sirf {n} symbols hain — data pipeline check karo.")
+              sys.exit(1)
+          print("Sab theek hai ✅")
+          PY
