@@ -1,8 +1,8 @@
-name: Watchdog
+name: Watchdog (har 5 minute)
 
 on:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 permissions:
