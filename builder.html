@@ -38,7 +38,7 @@
     <div class="logo">SB</div>
     <div>
       <h1>Seetal Builder</h1>
-      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v8</b></p>
+      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v9</b></p>
     </div>
   </div>
   <a class="btn" href="index.html">← Wapas Trader</a>
@@ -762,6 +762,60 @@ try{
   if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister())).catch(()=>{});
   if ('caches' in window) caches.keys().then(ks => ks.forEach(k => caches.delete(k))).catch(()=>{});
 }catch(e){}
+
+/* ================= Builder ka ghar ka gyan (Seetal system ka poora naksha) ================= */
+const SEETAL_KNOWLEDGE = `
+SEETAL SYSTEM (Swag ka ghar) — ye sab ek hi parivar hai:
+
+PAGES (GitHub Pages: bhupendarsingh785.github.io/seetal-trader/)
+- index.html   → Trader (live market pulse, opening range breakout, entry/stop/target, paper trades)
+- hub.html     → ek hi darwaza, sab hisse ek jagah
+- builder.html → app/system banane wala (yahi)
+- doctor.html  → system ki jaanch + auto-repair + purana version wapas (revert)
+- gyan.html    → knowledge base
+- vault.html   → password tijori (local only)
+- status.html  → system map
+
+SUNO (bhupendarsingh785.github.io/suno-assistant/)
+- voice assistant: mic + Hindi (Devanagari) samajhna + AI failover + Seekho (skills/memory) + Doctor + notes
+
+DATA KE RASTE (trader app, failover ke saath)
+1. data/live.json (site)  2. GitHub raw  3. jsDelivr CDN  4. GitLab mirror
+5. GitHub Pages  6. Cloudflare API (seetal-api.bhupendarsingh785.workers.dev/live)  7. Supabase snapshots
+
+CLOUDFLARE WORKER API (seetal-api)
+- /health  /status (age_minutes, symbols)  /live  /symbol/RELIANCE
+- CORS khula, data GitHub raw se aata hai
+
+AUTOMATION
+- pulse.yml: har 10 minute data laata hai aur data/live.json commit karta hai
+- watch.yml: har 5 minute data ki umar check (45 min se purana ho to fail)
+- test.yml: har push par 76 checks
+- mirror.yml: GitLab backup; netlify.yml: Netlify deploy; cloudflare.yml: worker deploy
+
+SECRETS (naam yaad rakh, value kabhi mat maang)
+CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, GITLAB_TOKEN, NETLIFY_AUTH_TOKEN,
+SUPABASE_SERVICE_KEY, DISCORD_WEBHOOK_URL
+
+RULES (inhe hamesha follow karo)
+- Har page mobile-first, Hinglish UI, ek hi dark theme (bg #0b0f19, card #161e30, line #26324b, accent #7c6cf8 / #22d3ee)
+- localStorage me data, koi key code me nahi
+- Failover: pehla rasta fail ho to doosra
+- Har naya page hub.html me jodna hai
+- Bina test kiye kuch deliver nahi
+`;
+
+/* Brain.ask par ghar ka gyan chipka do */
+(function(){
+  if (!window.Brain || !Brain.ask) return;
+  const _ask = Brain.ask.bind(Brain);
+  Brain.ask = function(prompt, opts){
+    const p = String(prompt || "");
+    const needs = /app|page|system|html|code|banao|bana/i.test(p);
+    const enriched = needs ? (SEETAL_KNOWLEDGE + "\n\n---\n\nKAAM:\n" + p) : p;
+    return _ask(enriched, opts);
+  };
+})();
 </script>
 </body>
 </html>
