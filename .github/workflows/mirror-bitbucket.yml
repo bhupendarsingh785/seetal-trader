@@ -1,0 +1,41 @@
+name: Mirror to Bitbucket (backup)
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Bitbucket par push karo
+        env:
+          BB_USER: ${{ secrets.BITBUCKET_USER }}
+          BB_PASS: ${{ secrets.BITBUCKET_APP_PASSWORD }}
+        run: |
+          set -uo pipefail
+          if [ -z "${BB_PASS:-}" ]; then
+            echo "::warning::BITBUCKET_APP_PASSWORD nahi hai — skip"
+            exit 0
+          fi
+          U="${BB_USER:-bhupendarsingh785}"
+          P=$(echo "$BB_PASS" | tr -d '[:space:]')
+          git config user.name "seetal-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git remote add bb "https://${U}:${P}@bitbucket.org/${U}/seetal-trader.git" || true
+          git push bb main --force 2>&1 | tee /tmp/bb.log
+          if grep -qi "error\|denied\|fatal\|invalid" /tmp/bb.log; then
+            echo "::error::Bitbucket push fail — app password ya repo check karo"
+            exit 1
+          fi
+          echo "Bitbucket mirror ✅"

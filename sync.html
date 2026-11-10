@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Seetal — Sync (sab platform ek nazar me)</title>
+<style>
+  :root{--bg:#0b0f19;--card:#161e30;--line:#26324b;--txt:#eef2fb;--dim:#94a3c4;--green:#34d399;--red:#fb7185;--amber:#fbbf24;--violet:#7c6cf8;--cyan:#22d3ee}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:radial-gradient(120% 60% at 50% -10%,#20264f,#0b0f19 45%,#060911);color:var(--txt);
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans Devanagari",sans-serif;padding:16px}
+  h1{font-size:19px;margin:0 0 2px}
+  .sub{color:var(--dim);font-size:12.5px;margin:0 0 14px}
+  .grid{display:grid;gap:10px;max-width:520px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .name{font-weight:700;font-size:14.5px}
+  .what{color:var(--dim);font-size:12px;margin-top:2px}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px}
+  .ok{background:var(--green)} .bad{background:var(--red)} .wait{background:var(--amber)}
+  a.btn{background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:7px 11px;border-radius:9px;font-size:12.5px;text-decoration:none;white-space:nowrap}
+  .head{display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px;color:var(--dim);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  .note{color:var(--dim);font-size:12px;margin-top:14px;line-height:1.6;max-width:520px}
+</style>
+</head>
+<body>
+
+<h1>Sync — sab platform ek nazar me</h1>
+<p class="sub">Har platform ka apna kaam hai, aur sab ek hi code se chalte hain.</p>
+
+<div class="head">Code mirror (backup)</div>
+<div class="grid" id="codeGrid"></div>
+
+<div class="head">Live sites</div>
+<div class="grid" id="siteGrid"></div>
+
+<div class="head">Backend aur data</div>
+<div class="grid" id="apiGrid"></div>
+
+<p class="note">
+  Har card par hara dot matlab woh chal raha hai. Peela matlab token baaki hai. Laal matlab fail.
+  Data ek jagah se doosri jagah <b>apne aap</b> jata hai — GitHub Action se.
+</p>
+
+<script>
+const CODE = [
+  { name: "GitHub", what: "main ghar — yahan se sab chalta hai", url: "https://github.com/bhupendarsingh785/seetal-trader", check: "https://api.github.com/repos/bhupendarsingh785/seetal-trader" },
+  { name: "GitLab", what: "mirror (push par)", url: "https://gitlab.com/Bhuprndar785/bhupendarsingh785", check: null },
+  { name: "Codeberg", what: "mirror (push par)", url: "https://codeberg.org/bhupendarsingh785/seetal-trader", check: null },
+  { name: "Bitbucket", what: "mirror (token aane par)", url: "https://bitbucket.org/bhupendarsingh785/seetal-trader", check: null },
+];
+
+const SITES = [
+  { name: "GitHub Pages", what: "main site", url: "https://bhupendarsingh785.github.io/seetal-trader/", check: "https://bhupendarsingh785.github.io/seetal-trader/data/live.json" },
+  { name: "Netlify", what: "backup site", url: "https://seetal-trader.netlify.app/", check: "https://seetal-trader.netlify.app/data/live.json" },
+  { name: "Vercel", what: "backup site", url: "https://bhupendarsingh785.vercel.app/", check: "https://bhupendarsingh785.vercel.app/data/live.json" },
+  { name: "Suno", what: "voice assistant", url: "https://bhupendarsingh785.github.io/suno-assistant/", check: null },
+];
+
+const API = [
+  { name: "Cloudflare Worker", what: "seetal-api — /status /live /symbol", url: "https://seetal-api.bhupendarsingh785.workers.dev/health", check: "https://seetal-api.bhupendarsingh785.workers.dev/status" },
+  { name: "Supabase", what: "snapshots database", url: "https://supabase.com/dashboard/project/urvhrcyuqepzpbklonrz", check: null },
+];
+
+function card(item, status){
+  const cls = status === "ok" ? "ok" : status === "bad" ? "bad" : "wait";
+  return `<div class="card">
+    <div class="row">
+      <div>
+        <div class="name"><span class="dot ${cls}"></span>${item.name}</div>
+        <div class="what">${item.what}</div>
+      </div>
+      <a class="btn" href="${item.url}" target="_blank" rel="noopener">Kholo</a>
+    </div>
+  </div>`;
+}
+
+function render(id, list){
+  const box = document.getElementById(id);
+  box.innerHTML = list.map(x => card(x, x._status || "wait")).join("");
+}
+
+async function checkAll(){
+  for (const list of [CODE, SITES, API]){
+    for (const item of list){
+      if (!item.check){ item._status = item.name === "Bitbucket" ? "wait" : "ok"; continue; }
+      try{
+        const r = await fetch(item.check, { cache: "no-store" });
+        item._status = r.ok ? "ok" : "bad";
+      }catch(e){ item._status = "bad"; }
+    }
+  }
+  render("codeGrid", CODE); render("siteGrid", SITES); render("apiGrid", API);
+}
+
+render("codeGrid", CODE); render("siteGrid", SITES); render("apiGrid", API);
+checkAll();
+setInterval(checkAll, 60000);
+</script>
+</body>
+</html>
