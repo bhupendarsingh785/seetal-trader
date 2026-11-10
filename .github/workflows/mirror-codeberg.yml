@@ -1,0 +1,41 @@
+name: Mirror to Codeberg (backup)
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Codeberg par push karo
+        env:
+          CB_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
+          CB_USER: ${{ secrets.CODEBERG_USER }}
+        run: |
+          set -uo pipefail
+          if [ -z "${CB_TOKEN:-}" ]; then
+            echo "::warning::CODEBERG_TOKEN nahi hai — skip (account banao, token daalo)"
+            exit 0
+          fi
+          USER_NAME="${CB_USER:-bhupendarsingh785}"
+          TOKEN=$(echo "$CB_TOKEN" | tr -d '[:space:]')
+          git config user.name "seetal-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git remote add codeberg "https://${USER_NAME}:${TOKEN}@codeberg.org/${USER_NAME}/seetal-trader.git" || true
+          git push codeberg main --force 2>&1 | tee /tmp/push.log
+          if grep -qi "error\|denied\|fatal" /tmp/push.log; then
+            echo "::error::Codeberg push fail — token ya repo check karo"
+            exit 1
+          fi
+          echo "Codeberg mirror ✅"
