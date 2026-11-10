@@ -38,7 +38,7 @@
     <div class="logo">SB</div>
     <div>
       <h1>Seetal Builder</h1>
-      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v9</b></p>
+      <p class="sub">Bol ke app banao — code, preview, download · <b style="color:#22d3ee">v10</b></p>
     </div>
   </div>
   <a class="btn" href="index.html">← Wapas Trader</a>
@@ -74,6 +74,7 @@
       <button class="btn" id="clear">Saaf karo</button>
     </div>
     <div id="fileList" style="margin-top:10px;font-size:13px;color:var(--dim);line-height:1.6"></div>
+    <div id="truthBox" style="display:none;margin-top:10px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(34,211,238,.05);font-size:13px;line-height:1.7"></div>
 
     <p class="note" id="status">Kuch nahi hua abhi.</p>
   </section>
@@ -507,6 +508,51 @@ function checkFile(name, code){
   return { ok: true };
 }
 
+
+/* ================= SACH KA REPORT (koi jhooth nahi) ================= */
+function truthReport(files){
+  const names = Object.keys(files || {});
+  const all = names.map(n => files[n]).join("\n");
+  const lines = all.split("\n").length;
+  const kb = Math.round(all.length / 1024);
+
+  const has = (re) => re.test(all);
+  const checks = [
+    ["Mobile (viewport)", has(/name=["']viewport["']/i), "mobile par theek nahi dikhega"],
+    ["Data save (localStorage)", has(/localStorage/i), "refresh par data chala jayega"],
+    ["Error handling (try/catch)", has(/try\s*\{/), "kuch toota to page blank ho sakta hai"],
+    ["CSS alag file", names.some(n => /\.css$/i.test(n)), "sab ek hi file me hai"],
+    ["JS alag file", names.some(n => /\.js$/i.test(n)), "logic HTML me ghula hua hai"],
+    ["README", names.some(n => /readme/i.test(n)), "koi guide nahi hai"],
+    ["GitHub Action", names.some(n => /\.github\/workflows/i.test(n)), "koi automation nahi hai"],
+    ["Offline/backup", has(/serviceWorker|cache|backup/i), "net band hua to kuch nahi chalega"],
+  ];
+
+  const pass = checks.filter(c => c[1]).length;
+  const todos = (all.match(/TODO|FIXME|placeholder|coming soon|baad me/gi) || []).length;
+
+  let grade, say;
+  if (names.length >= 4 && pass >= 6 && lines > 300) { grade = "ACHHA — asli kaam ka"; say = "Ye ek chhota system hai, demo nahi."; }
+  else if (names.length >= 2 && pass >= 4) { grade = "THEEK — kaam chalau"; say = "Chalega, par Seetal jaisa mazboot nahi."; }
+  else { grade = "BASIC — sirf shuruaat"; say = "Ye ek simple page hai. Ise 'advanced' nahi keh sakti."; }
+
+  const rows = checks.map(c => (c[1] ? "✅ " : "❌ ") + c[0] + (c[1] ? "" : " — " + c[2])).join("<br>");
+  return `<b>📋 Sach ka report</b><br>`
+    + `Files: <b>${names.length}</b> · Lines: <b>${lines}</b> · Size: <b>${kb} KB</b><br>`
+    + `Grade: <b>${grade}</b> — ${say}<br><br>`
+    + rows
+    + (todos ? `<br><br>⚠️ ${todos} jagah "TODO/baad me" likha hai — woh kaam abhi nahi hua.` : "")
+    + `<br><br><i>Ye report code dekh kar bani hai, kisi ki tareef nahi.</i>`;
+}
+
+function showTruth(files){
+  const box = $("truthBox");
+  if (!box) return;
+  box.style.display = "block";
+  box.innerHTML = truthReport(files || state.files || {});
+}
+window.showTruth = showTruth;
+
 /* ================= POORA SYSTEM (repo) ================= */
 function sysFiles(idea, theme){
   const name = "seetal-app";
@@ -613,7 +659,8 @@ async function buildSystem(){
     Object.keys(infra).forEach(k => { state.files[k] = infra[k]; });
 
     $("fileList").innerHTML = "✅ System ready — " + Object.keys(state.files).length + " files:<br>• " + Object.keys(state.files).join("<br>• ");
-    setStatus("✅ Poora system ban gaya (app + data script + Action). Ab GitHub par deploy karo.", "ok");
+    showTruth(state.files);
+    setStatus("✅ System ka dhancha ban gaya — neeche sach ka report dekho.", "ok");
   }catch(e){
     setStatus("❌ System nahi bana: " + (e.message || e) + "", "bad");
   }finally{
@@ -685,7 +732,8 @@ async function buildProject(){
     lastUrl = URL.createObjectURL(new Blob([idx], { type: "text/html" }));
     ["download","copyCode","openNew","adviceBtn","rebuildBtn","ghDeploy"].forEach(i => $(i).disabled = false);
     $("fileList").innerHTML = "✅ " + Object.keys(state.files).length + " file ban gayi:<br>• " + Object.keys(state.files).join("<br>• ");
-    setStatus("✅ Project ban gaya — preview dekho, phir GitHub par deploy karo.", "ok");
+    showTruth(state.files);
+    setStatus("✅ Project ban gaya — neeche sach ka report dekho.", "ok");
   }catch(e){
     setStatus("❌ Project nahi bana: " + (e.message || e) + " — dobara try karo.", "bad");
     throw e;
