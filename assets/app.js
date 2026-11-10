@@ -18,6 +18,11 @@ const DATA_SOURCES = [
   { name: "GitLab", url: "https://gitlab.com/Bhuprndar785/bhupendarsingh785/-/raw/main/data/live.json" },
   { name: "GitHub Pages", url: "https://bhupendarsingh785.github.io/seetal-trader/data/live.json" },
   {
+    name: "Cloudflare API",
+    url: "https://seetal-api.bhupendarsingh785.workers.dev/live",
+    kind: "worker",
+  },
+  {
     name: "Supabase",
     url: "https://urvhrcyuqepzpbklonrz.supabase.co/rest/v1/snapshots?select=payload&order=generated_epoch.desc&limit=1",
     headers: {
@@ -241,6 +246,10 @@ async function fetchSnapshotFrom(src) {
     });
     if (!res.ok) throw new Error("http " + res.status);
     let data = await res.json();
+    if (src.kind === "worker") {
+      if (!data || !data.data) throw new Error("worker khaali");
+      data = data.data;
+    }
     if (src.kind === "supabase") {
       if (!Array.isArray(data) || !data.length) throw new Error("supabase khaali");
       data = data[0].payload;
