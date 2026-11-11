@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Seetal — ek hi darwaza</title>
+<style>
+  :root{--bg:#0a0e14;--panel:#111823;--line:#1e2a3a;--txt:#e6edf6;--dim:#8496ad;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--violet:#8b5cf6;--blue:#3b82f6}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1100px 600px at 50% -15%,#16244a,transparent 60%),var(--bg);color:var(--txt);
+       font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;min-height:100vh;padding-bottom:30px}
+  header{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:16px;flex-wrap:wrap}
+  .brand{display:flex;gap:11px;align-items:center}
+  .logo{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-weight:800;font-size:18px;
+        background:linear-gradient(135deg,var(--violet),var(--blue))}
+  h1{font-size:19px;margin:0}
+  .sub{margin:2px 0 0;color:var(--dim);font-size:12.5px}
+  main{max-width:900px;margin:0 auto;padding:0 16px}
+
+  .status{display:flex;gap:16px;align-items:center;background:var(--panel);border:1px solid var(--line);
+          border-radius:18px;padding:18px;margin-bottom:16px}
+  .ring{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:20px;flex:0 0 auto;
+        background:conic-gradient(var(--green) 0deg, #1a2432 0deg)}
+  .ring.ok{background:conic-gradient(var(--green) 360deg, #1a2432 0deg)}
+  .ring.bad{background:conic-gradient(var(--red) 360deg, #1a2432 0deg)}
+  .ring.warn{background:conic-gradient(var(--amber) 360deg, #1a2432 0deg)}
+  .st-txt b{font-size:15px}
+  .st-txt p{margin:3px 0 0;color:var(--dim);font-size:12.5px}
+
+  .ask{display:flex;gap:8px;margin-bottom:16px}
+  .ask input{flex:1;background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:13px 14px;border-radius:12px;font-size:14.5px}
+  .ask button{background:linear-gradient(135deg,var(--violet),var(--blue));border:none;color:#fff;padding:0 18px;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer}
+  .ansbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:16px;font-size:14px;white-space:pre-wrap;display:none}
+  .ansbox.on{display:block}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:11px}
+  .tile{display:block;text-decoration:none;color:var(--txt);background:var(--panel);border:1px solid var(--line);
+        border-radius:15px;padding:14px;position:relative;transition:.15s}
+  .tile:hover{border-color:#33507a;transform:translateY(-1px)}
+  .tile .ic{font-size:22px}
+  .tile .nm{font-weight:800;margin-top:6px;font-size:15px}
+  .tile .ds{color:var(--dim);font-size:12.5px;margin-top:2px}
+  .tile .dot{position:absolute;top:13px;right:13px;width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 9px currentColor}
+  .tile .dot.ok{background:var(--green)}
+  .tile .dot.bad{background:var(--red)}
+  .foot{margin-top:18px;color:var(--dim);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">S</div>
+    <div>
+      <h1>Seetal</h1>
+<p style="text-align:center;margin:6px 0 0"><a href="https://bhupendarsingh785.github.io/swag-page/platform/" style="color:#a78bfa;font-size:13px;margin-left:12px">🧩 Seetal Platform</a> · <a href="sync.html" style="color:#22d3ee;font-size:13px">🔄 Sync — sab platform ek nazar me</a></p>
+      <p class="sub">Ek hi darwaza — sab kuch andar</p>
+    </div>
+  </div>
+  <button class="ask-btn" id="recheck" style="background:transparent;border:1px solid var(--line);color:var(--dim);padding:9px 13px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Recheck</button>
+</header>
+
+<main>
+  <div class="status">
+    <div class="ring" id="ring">…</div>
+    <div class="st-txt">
+      <b id="stTitle">Jaanch chal rahi hai…</b>
+      <p id="stText">Sab hisse ek saath dekhe ja rahe hain.</p>
+    </div>
+  </div>
+
+  <div class="ask">
+    <input id="q" placeholder="Kuch bhi poochho — ya bolo kya karna hai…" />
+    <button id="go">Poochho</button>
+  </div>
+  <div class="ansbox" id="ans"></div>
+
+  <div class="grid" id="grid"></div>
+
+  <p class="foot">Sab hisse ek hi dimaag (Brain) se chalte hain — ek juda hua ecosystem, alag-alag app nahi.</p>
+</main>
+
+<script src="assets/brain.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+
+const TOOLS = [
+  { k:"trader", ic:"📈", nm:"Seetal Trader", ds:"Live market, entry-stop-target, hisab", url:"index.html" },
+  { k:"builder", ic:"🧱", nm:"Builder", ds:"Bol ke naya app banao", url:"builder.html" },
+  { k:"doctor", ic:"🩺", nm:"Doctor", ds:"System ki jaanch aur ilaaj", url:"doctor.html" },
+  { k:"gyan", ic:"🧠", nm:"Gyan", ds:"Sehat, robot, padhai, paisa, zindagi", url:"gyan.html" },
+  { k:"vault", ic:"🔐", nm:"Vault", ds:"Password tijori (encrypted)", url:"vault.html" },
+  { k:"map", ic:"🛰️", nm:"System Map", ds:"Kaun platform zinda hai", url:"status.html" },
+  { k:"suno", ic:"🎙️", nm:"Suno", ds:"Phone ka voice assistant", url:"https://bhupendarsingh785.github.io/suno-assistant/", ext:true },
+];
+
+const DATA = "https://raw.githubusercontent.com/bhupendarsingh785/seetal-trader/main/data/live.json";
+
+function tileHTML(t){
+  return `<a class="tile" href="${t.url}" ${t.ext ? 'target="_blank" rel="noopener"' : ""} data-k="${t.k}">
+    <span class="dot" id="dot-${t.k}"></span>
+    <div class="ic">${t.ic}</div>
+    <div class="nm">${t.nm}</div>
+    <div class="ds">${t.ds}</div>
+  </a>`;
+}
+$("grid").innerHTML = TOOLS.map(tileHTML).join("");
+
+async function ping(url){
+  const t0 = performance.now();
+  try{
+    const ctl = new AbortController();
+    const to = setTimeout(()=>ctl.abort(), 8000);
+    const res = await fetch(url + (url.includes("?")?"&":"?") + "t=" + Date.now(), { cache:"no-store", signal:ctl.signal });
+    clearTimeout(to);
+    if (!res.ok) throw new Error("http " + res.status);
+    return { ok:true, ms: Math.round(performance.now()-t0) };
+  }catch(e){ return { ok:false, err:String(e.message||e).slice(0,40) }; }
+}
+
+async function recheck(){
+  const ring = $("ring"), title = $("stTitle"), text = $("stText");
+  ring.className = "ring"; ring.textContent = "…";
+  title.textContent = "Jaanch chal rahi hai…";
+  text.textContent = "Sab hisse ek saath dekhe ja rahe hain.";
+
+  const checks = [];
+  // pages
+  for (const t of TOOLS){
+    if (t.ext) continue;
+    checks.push((async () => {
+      const r = await ping(t.url);
+      const d = $("dot-" + t.k);
+      if (d) d.className = "dot " + (r.ok ? "ok" : "bad");
+      return { k:t.k, ok:r.ok, ms:r.ms };
+    })());
+  }
+  // data
+  checks.push((async () => {
+    try{
+      const res = await fetch(DATA + "?t=" + Date.now(), { cache:"no-store" });
+      const j = await res.json();
+      const ok = (j.rows||[]).length > 0;
+      const d = $("dot-trader");
+      if (d) d.className = "dot " + (ok ? "ok" : "bad");
+      return { k:"data", ok, n:(j.rows||[]).length };
+    }catch(e){
+      const d = $("dot-trader"); if (d) d.className = "dot bad";
+      return { k:"data", ok:false };
+    }
+  })());
+  // brain
+  checks.push((async () => {
+    if (!window.Brain) return { k:"brain", ok:false };
+    const r = await Brain.ask("Sirf ek shabd: theek", { task:"any", timeout: 20000 });
+    return { k:"brain", ok: r.ok, via: r.model };
+  })());
+
+  const results = await Promise.all(checks);
+  const bad = results.filter(r => !r.ok);
+  const total = results.length;
+  const okCount = total - bad.length;
+
+  if (!bad.length){
+    ring.className = "ring ok"; ring.textContent = "✓";
+    title.textContent = "Sab theek chal raha hai";
+    text.textContent = total + " hisse jaanche — sab zinda. Dimaag: " + (results.find(r=>r.k==="brain")?.via || "-");
+  } else if (okCount >= total - 2){
+    ring.className = "ring warn"; ring.textContent = okCount + "/" + total;
+    title.textContent = "Zyadatar theek — " + bad.length + " hisse dhyan mein";
+    text.textContent = "Dikkat: " + bad.map(b => b.k).join(", ") + ". Baaki chal rahe hain.";
+  } else {
+    ring.className = "ring bad"; ring.textContent = okCount + "/" + total;
+    title.textContent = "Kuch hisse toote hain";
+    text.textContent = "Dikkat: " + bad.map(b => b.k).join(", ") + " — Doctor kholo.";
+  }
+}
+
+/* ek hi jagah se poochho — dimaag khud tool chunega aur kaam bhi karega */
+const nf = (n) => (n===null||n===undefined||isNaN(n)) ? "—" : Number(n).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+
+async function marketAnswer(text){
+  const urls = [
+    "https://raw.githubusercontent.com/bhupendarsingh785/seetal-trader/main/data/live.json",
+    "https://cdn.jsdelivr.net/gh/bhupendarsingh785/seetal-trader@main/data/live.json",
+    "https://bhupendarsingh785.github.io/seetal-trader/data/live.json",
+  ];
+  let d = null;
+  for (const u of urls){
+    try{
+      const res = await fetch(u + "?t=" + Date.now(), { cache:"no-store" });
+      if (!res.ok) continue;
+      const j = await res.json();
+      if (j && Array.isArray(j.rows) && j.rows.length){ d = j; break; }
+    }catch(e){}
+  }
+  if (!d) return "Market ka data abhi nahi mil raha — Trader kholo, wahan Doctor bata dega kya dikkat hai.";
+  const t = text.toLowerCase();
+  const alias = { "nifty":"^NSEI", "banknifty":"^NSEBANK", "sensex":"^BSESN", "reliance":"RELIANCE.NS",
+    "tcs":"TCS.NS", "sbi":"SBIN.NS", "infosys":"INFY.NS", "hdfc":"HDFCBANK.NS", "icici":"ICICIBANK.NS",
+    "adani":"ADANIENT.NS", "itc":"ITC.NS", "tesla":"TSLA", "apple":"AAPL", "nvidia":"NVDA" };
+  let hit = null;
+  for (const [w, sym] of Object.entries(alias)){
+    if (t.includes(w)) { hit = d.rows.find(r => r.symbol === sym); if (hit) break; }
+  }
+  if (hit){
+    let out = hit.symbol.replace(".NS","").replace("^","") + ": " + nf(hit.last) + " (" + (hit.change_pct>0?"+":"") + nf(hit.change_pct) + "%)";
+    if (hit.state === "ENTRY") out += "\n⚡ ENTRY signal — entry " + nf(hit.entry) + ", stop " + nf(hit.stop) + ", target " + nf(hit.target);
+    else if (hit.or_high) out += "\nEntry abhi nahi — range high " + nf(hit.or_high) + " se " + nf(Math.abs(hit.distance_points)) + " point door.";
+    return out;
+  }
+  const idx = d.rows.filter(r => r.is_index);
+  const up = d.rows.filter(r => r.change_pct > 0).length;
+  const mood = up > d.rows.length/2 ? "Market uth raha hai" : up < d.rows.length/2 ? "Market gir raha hai" : "Market flat hai";
+  return mood + ".\n" + idx.map(r => r.symbol.replace("^","") + ": " + nf(r.last) + " (" + (r.change_pct>0?"+":"") + nf(r.change_pct) + "%)").join("\n")
+    + "\n\nPoora chart, scanner aur hisab Trader mein hai.";
+}
+
+$("go").onclick = async () => {
+  const text = ($("q").value || "").trim();
+  if (text.length < 3) return;
+  const box = $("ans");
+  box.classList.add("on");
+  box.textContent = "Dekh rahi hoon…";
+  const t = text.toLowerCase();
+
+  /* 1. market / trading */
+  if (/(market|nifty|bank ?nifty|sensex|share|stock|bhav|bhaav|reliance|tcs|sbi|infosys|hdfc|icici|adani|itc|tesla|apple|nvidia|मार्केट|निफ्टी|सेंसेक्स)/.test(t)){
+    box.textContent = await marketAnswer(text);
+    return;
+  }
+
+  /* 2. app banwana */
+  if (/(app banao|app banado|application banao|builder|naya app)/.test(t)){
+    box.innerHTML = 'Builder khol rahi hoon…<br><a href="builder.html?idea=' + encodeURIComponent(text) + '" style="color:#7dd3fc">Yahan dabao (idea pehle se bhara hua)</a>';
+    setTimeout(() => { location.href = "builder.html?idea=" + encodeURIComponent(text); }, 700);
+    return;
+  }
+
+  /* 3. system ki jaanch */
+  if (/(doctor|theek karo|dikkat|error|kaam nahi|toota)/.test(t)){
+    box.innerHTML = 'Doctor khol rahi hoon…<br><a href="doctor.html" style="color:#7dd3fc">Yahan dabao</a>';
+    setTimeout(() => { location.href = "doctor.html"; }, 700);
+    return;
+  }
+
+  /* 4. sehat / dawai */
+  if (/(dawai|bimari|bukhar|dard|doctor ke paas|sugar|bp |tabiyat|medicine|health)/.test(t)){
+    box.textContent = "Soch rahi hoon…";
+    const p = 'Tum health-guide ho, Hinglish me samjhao. SIRF general jaankari — KABHI dawai ka naam, dose ya prescription mat do. KABHI "aapko ye bimari hai" mat bolo. 5-6 line. Aakhir me: "doctor se milna zaroori hai".\n\nSawal: ' + text;
+    const r = await Brain.ask(p, { task:"advice" });
+    box.textContent = (r.ok ? r.text.trim() : "Jawab nahi aaya.") + "\n\n⚠️ Ye jaankari hai, ilaaj nahi — doctor se milo.";
+    return;
+  }
+
+  /* 5. baaki sab — dimaag */
+  const prompt = 'Tum "Seetal" ho — Swag ke system ka dimaag. Hisse: Trader (market), Builder (app banana), Doctor (system jaanch), Gyan (sehat/robot/padhai/paisa), Vault (passwords), Suno (phone). '
+    + 'User ne kaha: "' + text + '"\n\nHinglish me 2-4 line me jawab do. Kaam kisi tool ka ho to batao kaunsa kholna hai. Chhota rakho.';
+  try{
+    const r = await Brain.ask(prompt, { task:"advice" });
+    box.textContent = r.ok ? r.text.trim() : "Jawab nahi aaya — thodi der baad try karo.";
+  }catch(e){
+    box.textContent = "Jawab nahi aaya (" + (e.message||e) + ").";
+  }
+};
+
+$("q").addEventListener("keydown", (e) => { if (e.key === "Enter") $("go").click(); });
+
+$("recheck").onclick = recheck;
+recheck();
+setInterval(recheck, 180000);
+</script>
+  <script src="assets/apis.js"></script>
+</body>
+</html>
