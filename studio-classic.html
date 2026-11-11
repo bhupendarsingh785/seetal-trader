@@ -56,7 +56,8 @@
   <button id="tpl">🧩 Template</button>
   <button id="ai">🤖 AI</button>
   <button id="make">✨ Poora app</button>
-  <button id="brain">🔌 Dimaag</button>
+  <button id="brain">🔌 API</button>
+  <span id="apiBadge" style="font-size:11px;color:#94a3c4;border:1px solid #26324b;border-radius:20px;padding:2px 8px">API: 0</span>
   <button id="imp">⬇️ Import</button>
   <button id="find">🔎</button>
   <button id="dl">⬇️ Download</button>
@@ -115,6 +116,31 @@ const DEFAULT = {
   <h1>Namaste</h1>
   <p>Ye Seetal Studio me bana hai.</p>
   <script src="app.js"><\/script>
+
+<div id="apiSheet" style="position:fixed;inset:0;background:rgba(4,8,14,.75);display:none;z-index:60;align-items:flex-end">
+  <div style="background:#121a26;border:1px solid #26324b;border-top-left-radius:18px;border-top-right-radius:18px;
+              width:100%;max-height:86vh;overflow:auto;padding:14px">
+    <h3 style="margin:0 0 4px;font-size:16px">🔌 API — koi bhi model jodo</h3>
+    <p style="color:#94a3c4;font-size:12.5px;margin:0 0 12px;line-height:1.6">
+      Jo jodoge wahi pehle try hoga; na chale to agla; sab fail ho to free AI.
+      Key sirf is phone me rehti hai.
+    </p>
+    <div id="apiList"></div>
+
+    <h3 style="margin:16px 0 6px;font-size:14px">➕ Apni koi bhi API (OpenAI jaisi)</h3>
+    <input id="cuName" placeholder="naam — jaise my-groq" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:11px;border-radius:10px;margin-bottom:6px">
+    <input id="cuUrl" placeholder="URL — https://api.../v1/chat/completions" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:11px;border-radius:10px;margin-bottom:6px">
+    <input id="cuKey" placeholder="key" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:11px;border-radius:10px;margin-bottom:6px">
+    <input id="cuModel" placeholder="model — jaise llama-3.1-8b-instant" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:11px;border-radius:10px;margin-bottom:8px">
+    <button id="cuAdd" style="width:100%;background:#7c6cf8;border:0;color:#fff;padding:12px;border-radius:10px;font-weight:700">➕ Jodo</button>
+
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button id="apiTestAll" style="flex:1;background:#182231;border:1px solid #26324b;color:#fff;padding:12px;border-radius:10px;font-weight:700">🧪 Sab test karo</button>
+      <button id="apiClose" style="flex:1;background:transparent;border:1px solid #26324b;color:#94a3c4;padding:12px;border-radius:10px">Band karo</button>
+    </div>
+    <div id="apiOut" style="color:#94a3c4;font-size:13px;margin-top:10px;line-height:1.7"></div>
+  </div>
+</div>
 </body>
 </html>`,
     "style.css": `body{margin:0;font-family:system-ui;background:#0b0f19;color:#eef2fb;padding:20px}
@@ -498,6 +524,103 @@ $("dl").onclick = () => {
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
   out("ok", "⬇️ " + name + " download — phone me offline chalega.");
 };
+
+
+/* ================= API manager (poora panel) ================= */
+const PROVIDERS = [
+  { id:"sarvam",   name:"Sarvam AI (India)", model:"sarvam-m" },
+  { id:"gemini",   name:"Google Gemini",     model:"gemini-2.0-flash" },
+  { id:"anthropic",name:"Anthropic Claude",  model:"claude-3-5-haiku-20241022" },
+  { id:"openai",   name:"OpenAI GPT",        model:"gpt-4o-mini" },
+  { id:"deepseek", name:"DeepSeek",          model:"deepseek-chat" },
+  { id:"kimi",     name:"Kimi (Moonshot)",   model:"moonshot-v1-8k" },
+  { id:"groq",     name:"Groq",              model:"llama-3.1-8b-instant" },
+];
+
+function apiKeys(){ try{ return JSON.parse(localStorage.getItem("seetal.apikeys.v1") || "{}"); }catch(e){ return {}; } }
+function apiSaveAll(v){ try{ localStorage.setItem("seetal.apikeys.v1", JSON.stringify(v)); }catch(e){} }
+function customApis(){ try{ return JSON.parse(localStorage.getItem("seetal.customapis.v1") || "[]"); }catch(e){ return []; } }
+function customSave(v){ try{ localStorage.setItem("seetal.customapis.v1", JSON.stringify(v.slice(0,15))); }catch(e){} }
+
+function paintApi(){
+  const keys = apiKeys(), customs = customApis();
+  const n = Object.keys(keys).filter(k => keys[k] && keys[k].key).length + customs.filter(c => c.key).length;
+  $("apiBadge").textContent = "API: " + n;
+  $("apiBadge").style.color = n ? "#34d399" : "#94a3c4";
+
+  $("apiList").innerHTML = PROVIDERS.map(p => {
+    const cur = keys[p.id] || {};
+    return '<div style="border:1px solid #26324b;border-radius:12px;padding:10px;margin-bottom:8px;background:#182231">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+      + '<b style="font-size:13.5px">' + p.name + '</b>'
+      + '<span style="font-size:11px;color:' + (cur.key ? "#34d399" : "#94a3c4") + '">' + (cur.key ? "✅ juda" : "—") + '</span></div>'
+      + '<input data-k="' + p.id + '" data-f="key" placeholder="API key" value="' + (cur.key || "").replace(/"/g,"&quot;") + '" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:10px;border-radius:9px;margin-bottom:5px;font-size:13px">'
+      + '<input data-k="' + p.id + '" data-f="model" placeholder="model (' + p.model + ')" value="' + (cur.model || "").replace(/"/g,"&quot;") + '" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:10px;border-radius:9px;font-size:13px">'
+      + '</div>';
+  }).join("");
+
+  $("apiList").querySelectorAll("input").forEach(inp => inp.onchange = () => {
+    const k = inp.dataset.k, f = inp.dataset.f;
+    const all = apiKeys();
+    all[k] = all[k] || {};
+    all[k][f] = inp.value.trim();
+    apiSaveAll(all);
+    // purane brain format me bhi sabse pehla key daal do
+    const first = Object.keys(all).find(x => all[x].key);
+    if (first) bSet({ provider: first, key: all[first].key, model: all[first].model || "" });
+    paintApi();
+  });
+}
+
+$("brain").onclick = () => { paintApi(); $("apiSheet").style.display = "flex"; };
+$("apiClose").onclick = () => { $("apiSheet").style.display = "none"; };
+
+$("cuAdd").onclick = () => {
+  const name = $("cuName").value.trim(), url = $("cuUrl").value.trim();
+  const key = $("cuKey").value.trim(), model = $("cuModel").value.trim();
+  if (!url) return ($("apiOut").textContent = "URL chahiye.");
+  const list = customApis().filter(x => x.name !== name);
+  list.unshift({ name: name || ("api-" + (list.length + 1)), url, key, model });
+  customSave(list);
+  $("cuName").value = $("cuUrl").value = $("cuKey").value = $("cuModel").value = "";
+  $("apiOut").textContent = "✅ " + (name || "api") + " jud gaya — ab sabse pehle yahi try hoga.";
+  paintApi();
+};
+
+async function testOne(provider, cfg){
+  try{
+    if (window.SeetalAPIs && SeetalAPIs.callCustom){
+      return await SeetalAPIs.callCustom({ name: provider, url: cfg.url, key: cfg.key, model: cfg.model, kind: "openai" }, "Sirf ek shabd: theek", 15000);
+    }
+  }catch(e){}
+  return null;
+}
+
+$("apiTestAll").onclick = async () => {
+  const out = $("apiOut");
+  out.textContent = "Test kar raha hoon…";
+  const keys = apiKeys();
+  const lines = [];
+  for (const p of PROVIDERS){
+    const cfg = keys[p.id];
+    if (!cfg || !cfg.key){ lines.push("⚪ " + p.name + " — key nahi"); continue; }
+    bSet({ provider: p.id, key: cfg.key, model: cfg.model || "" });
+    const t = await bAsk("Sirf ek shabd: theek", 12000);
+    lines.push((t ? "✅ " : "❌ ") + p.name + (t ? " — chal gaya" : " — jawab nahi aaya"));
+  }
+  const customs = customApis();
+  for (const c of customs){
+    const t = await testOne(c.name, c);
+    lines.push((t ? "✅ " : "❌ ") + c.name + " (custom)" + (t ? " — chal gaya" : " — jawab nahi aaya"));
+  }
+  // free
+  try{
+    const a = window.SeetalAPIs ? await SeetalAPIs.ask("Sirf ek shabd: theek", { timeout: 12000 }) : null;
+    lines.push((a && a.ok ? "✅ " : "⚪ ") + "Free AI" + (a && a.ok ? " — chal rahi hai" : " — abhi nahi"));
+  }catch(e){ lines.push("⚪ Free AI — check nahi hua"); }
+  out.innerHTML = lines.join("<br>");
+};
+paintApi();
 
 /* ---------- start ---------- */
 paintFiles(); openFile(cur);
