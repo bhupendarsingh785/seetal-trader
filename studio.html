@@ -152,6 +152,8 @@
     <h3>Kya karna hai?</h3>
     <button class="srow" id="mTemplate">🧩 Template se shuru karo<small>khatabook · quiz · notes · todo</small></button>
     <button class="srow" id="mAI">🤖 AI se code likhwao<small>current file sudharo ya naya kaam bolo</small></button>
+    <button class="srow" id="mMake">✨ Poora app banao (AI se)<small>ek line likho — files AI khud banayega</small></button>
+    <button class="srow" id="mBrain">🔌 AI ka dimaag<small>GPT · Gemini · Sarvam · DeepSeek · Kimi · free</small></button>
     <button class="srow" id="mImport">⬇️ GitHub se import<small>owner/repo likho, files aa jayengi</small></button>
     <button class="srow" id="mFind">🔎 Project me dhoondo<small>file aur line number ke saath</small></button>
     <button class="srow" id="mDownload">⬇️ Download (phone me rakho)<small>ek hi file, offline chalegi</small></button>
@@ -379,6 +381,134 @@ $("mTemplate").onclick = () => {
 };
 $("tBack").onclick = () => $("sheet2").classList.remove("on");
 
+
+/* ================= AI ka dimaag (kai model) ================= */
+const BRAIN_KEY = "seetal.studio.brain.v1";
+const BRAINS = {
+  sarvam:   { url:"https://api.sarvam.ai/v1/chat/completions", model:"sarvam-m", auth:"api-subscription-key", prefix:"", openai:true },
+  gemini:   { gemini:true, model:"gemini-2.0-flash" },
+  anthropic:{ url:"https://api.anthropic.com/v1/messages", model:"claude-3-5-haiku-20241022", anthropic:true },
+  openai:   { url:"https://api.openai.com/v1/chat/completions", model:"gpt-4o-mini", auth:"Authorization", prefix:"Bearer ", openai:true },
+  deepseek: { url:"https://api.deepseek.com/v1/chat/completions", model:"deepseek-chat", auth:"Authorization", prefix:"Bearer ", openai:true },
+  kimi:     { url:"https://api.moonshot.cn/v1/chat/completions", model:"moonshot-v1-8k", auth:"Authorization", prefix:"Bearer ", openai:true },
+  groq:     { url:"https://api.groq.com/openai/v1/chat/completions", model:"llama-3.1-8b-instant", auth:"Authorization", prefix:"Bearer ", openai:true },
+  none:     { free:true, model:"free" }
+};
+
+function brainGet(){ try{ return JSON.parse(localStorage.getItem(BRAIN_KEY) || "null"); }catch(e){ return null; } }
+function brainSet(v){ try{ localStorage.setItem(BRAIN_KEY, JSON.stringify(v)); }catch(e){} }
+
+async function brainAsk(prompt, ms){
+  const c = brainGet();
+  if (c && c.key && c.provider && c.provider !== "none"){
+    const B = BRAINS[c.provider];
+    if (B && !B.free){
+      const model = c.model || B.model;
+      const ctl = new AbortController();
+      const to = setTimeout(() => ctl.abort(), ms || 30000);
+      try{
+        if (B.gemini){
+          const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(c.key);
+          const r = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" },
+            body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] }), signal: ctl.signal });
+          const j = await r.json();
+          if (j.error) throw new Error(j.error.message || "gemini");
+          const t = j.candidates && j.candidates[0].content.parts[0].text;
+          if (t) return t.trim();
+        } else if (B.anthropic){
+          const r = await fetch(B.url, { method:"POST",
+            headers:{ "Content-Type":"application/json", "x-api-key": c.key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
+            body: JSON.stringify({ model, max_tokens: 3000, messages:[{ role:"user", content: prompt }] }), signal: ctl.signal });
+          const j = await r.json();
+          if (j.error) throw new Error(j.error.message || "anthropic");
+          const t = j.content && j.content[0] && j.content[0].text;
+          if (t) return t.trim();
+        } else {
+          const headers = { "Content-Type":"application/json" };
+          headers[B.auth] = (B.prefix || "") + c.key;
+          const r = await fetch(B.url, { method:"POST", headers,
+            body: JSON.stringify({ model, temperature:0.4, messages:[{ role:"user", content: prompt }] }), signal: ctl.signal });
+          const j = await r.json();
+          if (j.error) throw new Error((j.error && (j.error.message || j.error)) || "api");
+          const t = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+          if (t) return t.trim();
+        }
+      }catch(e){ /* chup-chaap free par gir jao */ }
+      finally{ clearTimeout(to); }
+    }
+  }
+  try{
+    if (window.SeetalAPIs){ const a = await SeetalAPIs.ask(prompt, { timeout: ms || 25000 }); if (a.ok) return a.text; }
+  }catch(e){}
+  return null;
+}
+
+/* dimaag ka panel */
+$("mBrain").onclick = () => {
+  closeSheet();
+  const cur = brainGet() || { provider:"none", key:"", model:"" };
+  const inner = $("sheet2Inner");
+  inner.innerHTML = '<h3>AI ka dimaag</h3>'
+    + '<p style="color:#94a3c4;font-size:12.5px;margin:0 0 10px;line-height:1.6">Key daal do to code usi model se likhega. Na ho to free AI. Key sirf is phone me rehti hai.</p>'
+    + '<select id="bProv" style="width:100%;background:#131b28;border:1px solid #26324b;color:#fff;padding:12px;border-radius:10px;margin-bottom:8px;font-size:15px">'
+    + Object.keys(BRAINS).map(k => '<option value="' + k + '"' + (k === cur.provider ? " selected" : "") + '>' + k + '</option>').join("")
+    + '</select>'
+    + '<input id="bKey" placeholder="API key" value="' + (cur.key || "").replace(/"/g,"&quot;") + '" style="width:100%;background:#131b28;border:1px solid #26324b;color:#fff;padding:12px;border-radius:10px;margin-bottom:8px;font-size:15px">'
+    + '<input id="bModel" placeholder="model (optional)" value="' + (cur.model || "").replace(/"/g,"&quot;") + '" style="width:100%;background:#131b28;border:1px solid #26324b;color:#fff;padding:12px;border-radius:10px;margin-bottom:8px;font-size:15px">'
+    + '<button class="srow" id="bSave">💾 Yaad rakho</button>'
+    + '<button class="srow" id="bTest">🧪 Test karo</button>'
+    + '<div id="bOut" style="color:#94a3c4;font-size:13px;margin:8px 0"></div>'
+    + '<button class="close" id="bBack">Wapas</button>';
+  $("sheet2").classList.add("on");
+
+  $("bSave").onclick = () => {
+    brainSet({ provider: $("bProv").value, key: $("bKey").value.trim(), model: $("bModel").value.trim() });
+    $("bOut").textContent = $("bProv").value === "none" ? "Free AI par set." : "Key yaad rakh li (is phone me).";
+  };
+  $("bTest").onclick = async () => {
+    brainSet({ provider: $("bProv").value, key: $("bKey").value.trim(), model: $("bModel").value.trim() });
+    $("bOut").textContent = "Test kar raha hoon…";
+    const t = await brainAsk("Sirf ek shabd likho: theek", 15000);
+    $("bOut").textContent = t ? ("✅ Chal gaya: " + t.slice(0,40)) : "❌ Koi AI nahi chali — key/net check karo.";
+  };
+  $("bBack").onclick = () => $("sheet2").classList.remove("on");
+};
+
+/* poora app AI se banao */
+$("mMake").onclick = async () => {
+  closeSheet();
+  const idea = prompt("Kaisa app banao? ek line me likho:\n(jaise: 'padhaai ka timetable jo phone me save ho')");
+  if (!idea) return;
+  go("build");
+  $("outBody").innerHTML = '<div class="warn">✨ AI poora app bana raha hai… (10-20 second)</div>';
+
+  const prompt2 = "Tum expert web developer ho. Ek chhota app banao is idea par: \"" + idea + "\".\n"
+    + "Sirf JSON do, is shakal me:\n"
+    + '{"name":"app-naam","files":{"index.html":"...","style.css":"...","app.js":"..."}}\n'
+    + "Niyam: index.html me viewport meta ho, style.css aur app.js se link ho. Mobile-first, bade touch buttons, "
+    + "Hinglish UI, data localStorage me save ho, try/catch ho. Har file me chhote Hinglish comments. "
+    + "Sirf JSON — koi explanation nahi, koi code fence nahi.";
+
+  let ans = await brainAsk(prompt2, 40000);
+  if (!ans){ $("outBody").innerHTML = '<div class="bad">❌ AI se jawab nahi aaya — 🔌 AI ka dimaag me key daalo ya net check karo.</div>'; return; }
+
+  ans = ans.replace(/^```[a-z]*\n?/i, "").replace(/```$/, "").trim();
+  const a = ans.indexOf("{"), b = ans.lastIndexOf("}");
+  let data = null;
+  try{ data = JSON.parse(ans.slice(a, b + 1)); }catch(e){}
+  if (!data || !data.files || !Object.keys(data.files).length){
+    $("outBody").innerHTML = '<div class="bad">❌ AI ka jawab samajh nahi aaya — dobara bolo, thoda saaf likho.</div>';
+    return;
+  }
+  if (!confirm("AI ne " + Object.keys(data.files).length + " file banaayi. Purani files badal dun?")) return;
+  P = { name: (data.name || "ai-app").replace(/[^\w\-]/g, ""), files: data.files };
+  cur = P.files["index.html"] ? "index.html" : Object.keys(P.files)[0];
+  save(); paintFiles(); openFile(cur);
+  build(); go("build");
+};
+
+/* purana AI button bhi naye dimaag se */
+
 $("mAI").onclick = async () => {
   closeSheet();
   const ask = prompt("AI se kya karwana hai? (jaise: 'is file me search box jodo')");
@@ -388,9 +518,9 @@ $("mAI").onclick = async () => {
   const prompt2 = "Tum expert developer ho. Neeche ek file hai. User ne kaha: \"" + ask + "\". "
     + "Sirf poora naya file content do — koi explanation nahi, koi code fence nahi. Mobile-first, Hinglish UI, bade touch buttons.\n\n"
     + "File: " + cur + "\n\n" + P.files[cur];
-  let ans = null;
-  try{ if (window.SeetalAPIs){ const a = await SeetalAPIs.ask(prompt2, { timeout: 25000 }); if (a.ok) ans = a.text; } }catch(e){}
-  if (!ans){ $("outBody").innerHTML = '<div class="bad">❌ AI se jawab nahi aaya — net ya key check karo.</div>'; return; }
+  const ansRaw = await brainAsk(prompt2, 30000);
+  let ans = ansRaw;
+  if (!ans){ $("outBody").innerHTML = '<div class="bad">❌ AI se jawab nahi aaya — 🔌 AI ka dimaag me key daalo.</div>'; return; }
   ans = ans.replace(/^```[a-z]*\n?/i, "").replace(/```$/, "").trim();
   if (!confirm("AI ne naya code bheja. Badal dun?")) return;
   P.files[cur] = ans; $("code").value = ans; paintLines(); save();
