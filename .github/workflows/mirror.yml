@@ -1,26 +1,30 @@
 name: Mirror to GitLab (backup)
 
 # GitHub band ho jaye to bhi code GitLab par zinda rahe.
-# Chahiye: repo secret GITLAB_TOKEN (GitLab token jisme repository write ho)
-# GITLAB_REPO optional hai - na do to neeche wala default chalta hai.
-# Secret na ho to yeh workflow chup-chaap skip ho jaata hai - kuch tootta nahi.
+# Chahiye: secret GITLAB_TOKEN (scope: write_repository ya api)
+# GITLAB_REPO optional (default: Bhuprndar785/bhupendarsingh785)
 
 on:
   push:
     branches: [main]
   schedule:
-    - cron: "0 2 * * *"
+    - cron: "0 */6 * * *"     # har 6 ghante khud check + sync
   workflow_dispatch:
 
 permissions:
   contents: read
   issues: write
 
+concurrency:
+  group: gitlab-mirror
+  cancel-in-progress: false
+
 jobs:
   mirror:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - name: Check secrets
+      - name: Secret check
         id: chk
         env:
           TOKEN: ${{ secrets.GITLAB_TOKEN }}
@@ -31,53 +35,88 @@ jobs:
           echo "target=$REPO" >> "$GITHUB_OUTPUT"
           if [ -z "$TOKEN" ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "GITLAB_TOKEN nahi hai - mirror skip"
+            echo "GITLAB_TOKEN nahi hai - mirror skip (kuch nahi tootega)"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
-            echo "mirror chalega: $REPO"
+            echo "mirror chalega: $REPO (token len ${#TOKEN})"
           fi
 
-      - name: Mirror
+      - name: Token pehle jaanch lo (API se)
         if: steps.chk.outputs.ready == 'true'
+        id: verify
+        env:
+          TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          TOKEN="$(printf '%s' "$TOKEN" | tr -d '[:space:]')"
+          # token valid hai? (200 = haan)
+          CODE=$(curl -s -o /tmp/me.json -w '%{http_code}' -H "PRIVATE-TOKEN: $TOKEN" https://gitlab.com/api/v4/user || echo 000)
+          echo "token_status=$CODE"
+          if [ "$CODE" != "200" ]; then
+            echo "::error::GitLab token kaam nahi kar raha (HTTP $CODE) — naya token banao (scope: write_repository)"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+            python3 -c "import json;d=json.load(open('/tmp/me.json'));print('user:', d.get('username'))" || true
+          fi
+
+      - name: Mirror (retry ke saath)
+        if: steps.chk.outputs.ready == 'true' && steps.verify.outputs.ok == 'true'
         env:
           TOKEN: ${{ secrets.GITLAB_TOKEN }}
           REPO: ${{ steps.chk.outputs.target }}
           GH_TOKEN: ${{ github.token }}
         run: |
           set -uo pipefail
-          # secret mein kabhi kabhi space/newline aa jaata hai - woh URL ko tod deta hai
-          TOKEN="$(printf '%s' "${TOKEN}" | tr -d '[:space:]')"
-          REPO="$(printf '%s' "${REPO}" | tr -d '[:space:]')"
-          LOG=/tmp/mirror.log
-          : > "$LOG"
-          git clone --mirror "https://github.com/${{ github.repository }}.git" repo.git
+          TOKEN="$(printf '%s' "$TOKEN" | tr -d '[:space:]')"
+          REPO="$(printf '%s' "$REPO" | tr -d '[:space:]')"
+          LOG=/tmp/mirror.log; : > "$LOG"
+
+          git clone --quiet --mirror "https://github.com/${{ github.repository }}.git" repo.git
           cd repo.git
 
-          # GitLab teen tarah se token leta hai - jo chale wahi use karo.
-          try_push () {
+          push_once () {
             local url="$1"
-            echo "-> try: ${url%%@*}@gitlab.com/..."
-            if git push --mirror "$url" 2>&1 | tee -a "$LOG"; then
-              echo "MIRROR OK"
-              return 0
-            fi
-            return 1
+            git push --mirror --quiet --prune "$url" 2>&1 | tee -a "$LOG"
+            return "${PIPESTATUS[0]}"
           }
 
-          echo "debug: token_len=${#TOKEN} repo=[${REPO}]" | tee -a "$LOG"
-          for user in oauth2 gitlab-ci-token "$TOKEN"; do
-            url="https://${user}:${TOKEN}@gitlab.com/${REPO}.git"
-            printf '%s' "$url" | od -c | head -3 >> "$LOG" 2>&1 || true
-            if try_push "$url"; then exit 0; fi
+          ok=0
+          for attempt in 1 2 3; do
+            echo "=== koshish $attempt ===" | tee -a "$LOG"
+            for user in oauth2 gitlab-ci-token; do
+              url="https://${user}:${TOKEN}@gitlab.com/${REPO}.git"
+              if push_once "$url"; then ok=1; break 2; fi
+            done
+            # network jaisi dikkat ho to thoda ruk kar dobara
+            sleep $((attempt * 8))
           done
 
-          echo "Sab tarike fail hue. Check: (1) token mein repository write permission, (2) repo path ${REPO}, (3) token expire na hua ho."
-          # error ko issue mein likho taki chat se padha ja sake
-          {
-            echo "Mirror to ${REPO} fail hua.\n"
-            echo '```'
-            tail -c 3000 "$LOG"
-            echo '```'
-          } > /tmp/body.md
-          gh issue create --title "Mirror failed $(date -u +%FT%TZ)" --body-file /tmp/body.md || true
-          exit 1
+          if [ "$ok" != "1" ]; then
+            echo "::error::Mirror fail — token scope (write_repository) ya repo path ($REPO) check karo"
+            {
+              echo "Mirror to ${REPO} fail hua."
+              echo '```'
+              tail -c 2500 "$LOG"
+              echo '```'
+            } > /tmp/body.md
+            gh issue create --title "Mirror failed $(date -u +%FT%TZ)" --body-file /tmp/body.md || true
+            exit 1
+          fi
+          echo "MIRROR OK"
+
+      - name: Push ke baad jaanch (GitLab par file sach me hai?)
+        if: steps.chk.outputs.ready == 'true' && steps.verify.outputs.ok == 'true'
+        env:
+          TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          REPO: ${{ steps.chk.outputs.target }}
+        run: |
+          TOKEN="$(printf '%s' "$TOKEN" | tr -d '[:space:]')"
+          PROJ=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1], safe=''))" "$REPO")
+          CODE=$(curl -s -o /tmp/f.json -w '%{http_code}' -H "PRIVATE-TOKEN: $TOKEN" \
+            "https://gitlab.com/api/v4/projects/$PROJ/repository/files/index.html" || echo 000)
+          echo "index.html status: $CODE"
+          if [ "$CODE" = "200" ]; then
+            echo "✅ GitLab par code maujood hai"
+          else
+            echo "::warning::GitLab API se index.html nahi mila (HTTP $CODE) — mirror phir chalega"
+          fi
