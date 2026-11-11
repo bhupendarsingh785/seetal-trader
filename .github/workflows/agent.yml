@@ -1,0 +1,39 @@
+name: Seetal Agent
+
+# Mera apna kaam karne wala hissa — orders.md padhta hai, kaam karta hai, report likhta hai.
+
+on:
+  schedule:
+    - cron: "0 */2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Dependencies (tests ke liye)
+        run: |
+          npm i -g eslint@8 >/dev/null 2>&1 || true
+          npm i jsdom >/dev/null 2>&1 || true
+
+      - name: Agent chalao
+        run: python3 agent/run.py
+
+      - name: Report commit karo
+        run: |
+          git config user.name "Seetal Agent"
+          git config user.email "agent@seetal.local"
+          git add agent/ || true
+          git commit -m "agent: report $(date -u +%FT%TZ)" || echo "kuch naya nahi"
+          git push || echo "push skip"
