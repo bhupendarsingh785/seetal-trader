@@ -121,6 +121,7 @@ main{flex:1;display:flex;min-height:0;position:relative}
   <button id="snap" title="Snapshot">📸</button>
   <button id="imp" title="Import">⬇️</button>
   <button id="find" class="btn-icon" title="Search">🔎</button>
+  <button id="bPlus" title="File daalo — khud build hoga" style="font-size:19px;font-weight:900;background:linear-gradient(135deg,#34d399,#22d3ee);color:#04170c;border:0;border-radius:10px;padding:6px 12px">＋</button>
   <button id="dl" title="Download">⬇️</button>
   <button id="bSeetal" title="Seetal system kholo">📦</button>
 <button id="bAsk" title="System se poochho">💬</button>
@@ -1389,5 +1390,33 @@ setInterval(()=>{ if(dirty) save(); },45000);
     <button id="askClose" style="width:100%;margin-top:12px;background:transparent;border:1px solid #26324b;color:#94a3c4;padding:12px;border-radius:10px">Band karo</button>
   </div>
 </div>
+
+<div id="plusSheet" style="position:fixed;inset:0;background:rgba(4,8,14,.8);display:none;z-index:75;align-items:flex-end">
+  <div style="background:#121a26;border:1px solid #26324b;border-top-left-radius:18px;border-top-right-radius:18px;
+              width:100%;max-height:90vh;overflow:auto;padding:14px">
+    <h3 style="margin:0 0 4px;font-size:16px">＋ File daalo — baaki main kar dungi</h3>
+    <p style="color:#94a3c4;font-size:12.5px;margin:0 0 10px;line-height:1.65">
+      Koi bhi file paste karo (HTML, CSS, JS, JSON) ya file chuno. Main khud pehchanungi, files me baantungi,
+      API/AI juda hai ya nahi bataungi, phir Build chalaungi. Sab theek hua to <b>Download</b> chamkega.
+    </p>
+
+    <div id="plusApi" style="font-size:12.5px;padding:9px 11px;border-radius:10px;margin-bottom:10px;background:#182231;border:1px solid #26324b">API check ho raha hai…</div>
+
+    <textarea id="plusText" placeholder="yahan file ka code paste karo…" style="width:100%;min-height:150px;background:#0b1119;border:1px solid #26324b;color:#fff;border-radius:10px;padding:11px;font-family:ui-monospace,monospace;font-size:12.5px;margin-bottom:8px"></textarea>
+
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button id="plusPick" style="flex:1;background:#182231;border:1px solid #26324b;color:#fff;padding:11px;border-radius:10px;font-weight:700">📂 File chuno</button>
+      <input id="plusFile" type="file" multiple style="display:none">
+      <button id="plusRun" style="flex:1;background:#7c6cf8;border:0;color:#fff;padding:11px;border-radius:10px;font-weight:800">⚡ Process karo</button>
+    </div>
+
+    <div id="plusOut" style="font-size:13px;color:#cfe0f5;line-height:1.75;white-space:pre-wrap"></div>
+    <button id="plusClose" style="width:100%;margin-top:12px;background:transparent;border:1px solid #26324b;color:#94a3c4;padding:12px;border-radius:10px">Band karo</button>
+  </div>
+</div>
+<style>
+@keyframes pulseDl{0%{box-shadow:0 0 0 0 rgba(52,211,153,.85)}70%{box-shadow:0 0 0 14px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+#dl.glow{background:linear-gradient(135deg,#34d399,#22d3ee);color:#04170c;animation:pulseDl 1.3s infinite}
+</style>
 </body>
 </html>
