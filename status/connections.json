@@ -4,7 +4,7 @@
   "suno": {"code": "200", "ok": true},
   "vercel": {"code": "200", "ok": true},
   "cloudflare": {"code": "200", "ok": true},
-  "gitlab": {"code": "429", "ok": false},
+  "gitlab": {"code": "200", "ok": true},
   "codeberg": {"code": "200", "ok": true},
   "bitbucket": {"code": "skip", "ok": true},
   "gitlab_token": {"code": "403", "ok": true},
