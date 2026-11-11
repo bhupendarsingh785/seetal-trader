@@ -49,6 +49,10 @@
   <div class="spacer"></div>
   <button id="newFile">＋ File</button>
   <button id="delFile">🗑</button>
+  <button id="tpl">🧩 Template</button>
+  <button id="ai">🤖 AI</button>
+  <button id="imp">⬇️ Import</button>
+  <button id="find">🔎</button>
   <button class="pri" id="build">🔨 Build</button>
   <button class="ok" id="run">▶ Run</button>
   <button id="deploy">🚀 Deploy</button>
@@ -282,9 +286,154 @@ $("deploy").onclick = async () => {
   out("ok", "Live link (1-2 min): https://" + owner.toLowerCase() + ".github.io/" + name + "/");
 };
 
+
+/* ================= templates (padhaai ke liye bhi) ================= */
+const CLOSE_SCRIPT = "<" + "/script>";
+const TEMPLATES = {
+  "khatabook": {
+    name: "Khatabook (hisaab)",
+    files: {
+      "index.html": '<!DOCTYPE html><html lang="hi"><head><meta charset="utf-8">'
+        + '<meta name="viewport" content="width=device-width, initial-scale=1"><title>Khatabook</title>'
+        + '<link rel="stylesheet" href="style.css"></head><body>'
+        + '<h1>Khatabook</h1>'
+        + '<div class="box"><input id="kis" placeholder="Kis ka (naam)"><input id="kitna" type="number" placeholder="Kitna ₹">'
+        + '<button id="add">+ Jodo</button></div>'
+        + '<div id="list"></div><p class="tot">Total: ₹<span id="tot">0</span></p>'
+        + '<script src="app.js">' + CLOSE_SCRIPT + '</body></html>',
+      "style.css": "body{margin:0;font-family:system-ui;background:#0b0f19;color:#eef2fb;padding:16px}\n"
+        + ".box{display:flex;gap:6px;margin-bottom:12px}\n"
+        + "input{flex:1;background:#131b28;border:1px solid #26324b;color:#eef2fb;padding:10px;border-radius:9px}\n"
+        + "button{background:#7c6cf8;border:0;color:#fff;padding:10px 14px;border-radius:9px;font-weight:700}\n"
+        + ".row{display:flex;justify-content:space-between;background:#131b28;border:1px solid #26324b;border-radius:9px;padding:10px;margin-bottom:6px}\n"
+        + ".tot{font-size:18px;font-weight:800}",
+      "app.js": "let rows = JSON.parse(localStorage.getItem('khatabook') || '[]');\n"
+        + "const $ = id => document.getElementById(id);\n"
+        + "function paint(){\n"
+        + "  $('list').innerHTML = rows.map((r,i) => '<div class=\"row\"><span>'+r.kis+' — Rs '+r.kitna+'</span><button onclick=\"del('+i+')\">x</button></div>').join('');\n"
+        + "  $('tot').textContent = rows.reduce((a,b)=>a+Number(b.kitna||0),0);\n"
+        + "  localStorage.setItem('khatabook', JSON.stringify(rows));\n"
+        + "}\n"
+        + "function del(i){ rows.splice(i,1); paint(); }\n"
+        + "$('add').onclick = () => { const kis = $('kis').value.trim(), kitna = $('kitna').value; if(!kis || !kitna) return; rows.push({kis, kitna}); $('kis').value=''; $('kitna').value=''; paint(); };\n"
+        + "paint();",
+    },
+  },
+  "quiz": {
+    name: "Quiz (padhaai)",
+    files: {
+      "index.html": '<!DOCTYPE html><html lang="hi"><head><meta charset="utf-8">'
+        + '<meta name="viewport" content="width=device-width, initial-scale=1"><title>Quiz</title>'
+        + '<link rel="stylesheet" href="style.css"></head><body>'
+        + '<h1>Quiz</h1><div id="q"></div><div id="opts"></div><p id="res"></p>'
+        + '<script src="app.js">' + CLOSE_SCRIPT + '</body></html>',
+      "style.css": "body{margin:0;font-family:system-ui;background:#0b0f19;color:#eef2fb;padding:16px}\n"
+        + "h1{font-size:20px}\n"
+        + "button{display:block;width:100%;margin:6px 0;background:#131b28;border:1px solid #26324b;color:#eef2fb;padding:12px;border-radius:10px;text-align:left;font-size:14px}\n"
+        + "button.right{background:#0f3d2a;border-color:#34d399}\n"
+        + "button.wrong{background:#3d1520;border-color:#fb7185}",
+      "app.js": "const Q = [\n"
+        + "  {q:'Bharat ki rajdhani?', o:['Mumbai','Delhi','Patna'], a:1},\n"
+        + "  {q:'2 + 2 = ?', o:['3','4','5'], a:1},\n"
+        + "  {q:'Sabse bada grah?', o:['Prithvi','Shukra','Brihaspati'], a:2}\n"
+        + "];\n"
+        + "let i = 0, score = 0;\n"
+        + "const $ = id => document.getElementById(id);\n"
+        + "function show(){\n"
+        + "  if (i >= Q.length){ $('q').textContent = 'Khatam!'; $('opts').innerHTML = ''; $('res').textContent = 'Score: ' + score + '/' + Q.length; return; }\n"
+        + "  const q = Q[i]; $('q').textContent = (i+1) + '. ' + q.q; $('opts').innerHTML = '';\n"
+        + "  q.o.forEach((o, idx) => { const b = document.createElement('button'); b.textContent = o;\n"
+        + "    b.onclick = () => { if (idx === q.a){ b.className='right'; score++; } else b.className='wrong'; setTimeout(()=>{ i++; show(); }, 500); };\n"
+        + "    $('opts').appendChild(b); });\n"
+        + "}\n"
+        + "show();",
+    },
+  },
+  "notes": {
+    name: "Notes (padhaai diary)",
+    files: {
+      "index.html": '<!DOCTYPE html><html lang="hi"><head><meta charset="utf-8">'
+        + '<meta name="viewport" content="width=device-width, initial-scale=1"><title>Notes</title>'
+        + '<link rel="stylesheet" href="style.css"></head><body>'
+        + '<h1>Mere notes</h1><textarea id="t" placeholder="Aaj kya padha…"></textarea>'
+        + '<p id="s"></p><script src="app.js">' + CLOSE_SCRIPT + '</body></html>',
+      "style.css": "body{margin:0;font-family:system-ui;background:#0b0f19;color:#eef2fb;padding:16px}\n"
+        + "textarea{width:100%;min-height:300px;background:#131b28;border:1px solid #26324b;color:#eef2fb;border-radius:10px;padding:12px;font-size:14px}\n"
+        + "#s{color:#94a3c4;font-size:12px}",
+      "app.js": "const $ = id => document.getElementById(id);\n"
+        + "$('t').value = localStorage.getItem('notes') || '';\n"
+        + "$('t').oninput = () => { localStorage.setItem('notes', $('t').value); $('s').textContent = 'save ho gaya · ' + $('t').value.length + ' akshar'; };",
+    },
+  },
+};
+
+$("tpl").onclick = () => {
+  const list = Object.keys(TEMPLATES);
+  const pick = prompt("Kaunsa template?\n" + list.map((k,i) => (i+1) + ". " + TEMPLATES[k].name).join("\n") + "\n\nNumber likho:");
+  const key = list[Number(pick) - 1];
+  if (!key) return;
+  if (!confirm("Purani files badal jayengi. Theek hai?")) return;
+  P = { name: key, files: JSON.parse(JSON.stringify(TEMPLATES[key].files)) };
+  cur = "index.html"; save(); paintFiles(); openFile(cur);
+  out("ok", "🧩 Template laga: " + TEMPLATES[key].name);
+};
+
+$("ai").onclick = async () => {
+  const ask = prompt("AI se kya karwana hai? (jaise: 'is file me search box jodo')");
+  if (!ask) return;
+  out("warn", "🤖 AI likh raha hai…");
+  const prompt2 = "Tum expert developer ho. Neeche ek file hai. User ne kaha: \"" + ask + "\". "
+    + "Sirf poora naya file content do — koi explanation nahi, koi code fence nahi. Mobile-first, Hinglish UI.\n\n"
+    + "File: " + cur + "\n\n" + P.files[cur];
+  let ans = null;
+  try{ if (window.SeetalAPIs){ const a = await SeetalAPIs.ask(prompt2, { timeout: 25000 }); if (a.ok) ans = a.text; } }catch(e){}
+  if (!ans){ out("bad", "❌ AI se jawab nahi aaya — key ya net check karo."); return; }
+  ans = ans.replace(/^```[a-z]*\n?/i, "").replace(/```$/, "").trim();
+  if (!confirm("AI ne naya code bheja. Badal dun?")){ out("warn", "Rok diya — kuch nahi badla."); return; }
+  P.files[cur] = ans; $("code").value = ans; paintLines(); save();
+  out("ok", "✅ " + cur + " AI se update ho gayi — Build dabao.");
+};
+
+$("imp").onclick = async () => {
+  const repo = prompt("GitHub repo — jaise bhupendarsingh785/my-app");
+  if (!repo || !repo.includes("/")) return;
+  const [owner, name] = repo.split("/");
+  out("warn", "⬇️ La raha hoon…");
+  try{
+    const r = await fetch("https://api.github.com/repos/" + owner + "/" + name + "/git/trees/main?recursive=1");
+    const j = await r.json();
+    const list = (j.tree || []).filter(x => x.type === "blob" && /\.(html|css|js|json|md)$/i.test(x.path) && x.size < 200000).slice(0, 12);
+    if (!list.length){ out("bad", "Koi text file nahi mili."); return; }
+    if (!confirm(list.length + " file mili. Purani files badal jayengi. Theek hai?")) return;
+    const files = {};
+    for (const f of list){
+      const raw = await fetch("https://raw.githubusercontent.com/" + owner + "/" + name + "/main/" + f.path);
+      if (raw.ok) files[f.path] = await raw.text();
+    }
+    P = { name: name, files };
+    cur = files["index.html"] ? "index.html" : Object.keys(files)[0];
+    save(); paintFiles(); openFile(cur);
+    out("ok", "✅ " + Object.keys(files).length + " file aa gayi.");
+  }catch(e){ out("bad", "❌ Import fail: " + e.message); }
+};
+
+$("find").onclick = () => {
+  const q = prompt("Kya dhoondhna hai?");
+  if (!q) return;
+  $("outBody").innerHTML = "";
+  let n = 0;
+  Object.keys(P.files).forEach(f => {
+    P.files[f].split("\n").forEach((line, i) => {
+      if (line.toLowerCase().includes(q.toLowerCase())){ n++; out("ok", "<b>" + f + ":" + (i+1) + "</b> — " + line.trim().slice(0,90)); }
+    });
+  });
+  out(n ? "ok" : "warn", n ? (n + " jagah mila") : "Kuch nahi mila.");
+};
+
 /* ---------- start ---------- */
 paintFiles(); openFile(cur);
 out("ok", "Seetal Studio taiyar — " + Object.keys(P.files).length + " file. Build → Run → Deploy.");
 </script>
+<script src="assets/apis.js"></script>
 </body>
 </html>
