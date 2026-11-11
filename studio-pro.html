@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0f19" />
+<title>Seetal Studio Pro — code likho, build karo, chalao</title>
+<style>
+  :root{--bg:#0b0f19;--panel:#121a26;--panel2:#182231;--line:#26324b;--txt:#eef2fb;--dim:#94a3c4;
+        --green:#34d399;--red:#fb7185;--amber:#fbbf24;--violet:#7c6cf8;--cyan:#22d3ee;--fs:13px;--lh:21px;--gw:44px}
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+       display:flex;flex-direction:column;overflow:hidden;height:100vh;height:100dvh}
+  header{display:flex;align-items:center;gap:6px;padding:7px 8px;background:#0e1520;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .logo{font-weight:800;font-size:14.5px}
+  .logo span{color:var(--green)}
+  .logo small{font-size:10px;color:var(--violet);margin-left:3px}
+  .spacer{flex:1}
+  button{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:7px 10px;
+         font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+  button:active{transform:scale(.97)}
+  button.pri{background:linear-gradient(135deg,var(--violet),#3b82f6);border:none}
+  button.gbtn{background:var(--green);color:#04170c;border:none}
+  button.dang{background:var(--red);color:#2a0710;border:none}
+  button:disabled{opacity:.45}
+  button.mini{padding:3px 8px;font-size:12px}
+  main{flex:1;display:flex;min-height:0}
+  #side{width:150px;min-width:110px;background:#0e1520;border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:auto}
+  .file{padding:10px 8px;font-size:13px;color:var(--dim);cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);
+        white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .file.dir{color:#b9c6e4;font-weight:700}
+  .file.on{background:var(--panel2);color:var(--txt);border-left:3px solid var(--green);font-weight:700}
+  #editorWrap{flex:1;display:flex;flex-direction:column;min-width:0}
+  #tabbar{display:flex;gap:8px;align-items:center;padding:5px 8px;background:#0e1520;border-bottom:1px solid var(--line);font-size:12px;color:var(--dim);overflow:hidden;white-space:nowrap}
+  #codeArea{flex:1;display:flex;min-height:0;position:relative}
+  #lines{width:var(--gw);flex:none;background:#0a0f18;color:#4b5b73;font:var(--fs)/var(--lh) ui-monospace,Menlo,Consolas,monospace;
+         text-align:right;padding:10px 6px 56px;overflow:hidden;user-select:none;white-space:pre}
+  #code{flex:1;min-width:0;background:#0a0f18;color:#e8f0fb;border:0;outline:none;resize:none;
+        font:var(--fs)/var(--lh) ui-monospace,Menlo,Consolas,monospace;padding:10px 10px 40px;tab-size:2;white-space:pre;overflow:auto}
+  #statusbar{display:flex;gap:12px;align-items:center;padding:4px 10px;background:#0b1017;border-top:1px solid var(--line);font-size:11.5px;color:var(--dim);white-space:nowrap;overflow:hidden}
+  #bottom{height:38%;min-height:120px;border-top:1px solid var(--line);display:flex;flex-direction:column;background:var(--panel)}
+  #bottom.big{height:76%}
+  #outHead{display:flex;gap:5px;padding:5px 7px;border-bottom:1px solid var(--line);align-items:center;font-size:12px;color:var(--dim);overflow:auto}
+  .tab{padding:5px 9px;font-size:12px;white-space:nowrap}
+  .tab.on{background:var(--violet);border-color:var(--violet)}
+  .pane{flex:1;overflow:auto;padding:8px 10px;font-size:12.5px;line-height:1.6;min-height:0}
+  #preBody{padding:0;overflow:hidden}
+  .ok{color:var(--green)} .bad{color:var(--red)} .warn{color:var(--amber)} .dim{color:var(--dim)} .info{color:var(--cyan)}
+  .pill{background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:2px 9px;font-size:11px;cursor:pointer;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .con{font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;border-bottom:1px solid rgba(255,255,255,.05);padding:2px 0}
+  .con .loc{color:var(--dim);font-size:11px;display:block}
+  .hint{color:var(--dim);padding:14px}
+  .khform{display:flex;flex-direction:column;gap:6px}
+  .khform input[type=text]{width:100%;padding:9px;border-radius:8px;border:1px solid var(--line);background:#0a0f18;color:var(--txt);font-size:14px}
+  .khrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--dim)}
+  .res{padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
+  .res b{color:var(--cyan)}
+  /* dialogs */
+  .ov{position:fixed;inset:0;background:rgba(3,6,12,.72);display:flex;align-items:center;justify-content:center;z-index:50;padding:14px}
+  .dlg{width:100%;max-width:420px;max-height:90vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .dt{font-weight:800;font-size:15px}
+  .dm{color:var(--dim);font-size:13px;line-height:1.5;white-space:pre-wrap}
+  .df{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--dim)}
+  .df.chk{flex-direction:row;align-items:center;gap:8px}
+  .df input[type=text],.df input[type=password],.df input[type=number],.df select,.df textarea{
+    width:100%;padding:10px;border-radius:8px;border:1px solid var(--line);background:#0a0f18;color:var(--txt);font-size:14px;font-family:inherit}
+  .dr{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+  .dr button{padding:9px 14px}
+  .sheet{align-items:flex-end}
+  .sheet .dlg{max-width:520px;gap:6px}
+  .sheet button{text-align:left;padding:11px 12px;font-size:13.5px}
+  .sheet .sh{color:var(--dim);font-size:11px;font-weight:800;margin-top:6px;letter-spacing:.04em}
+  @media(max-width:640px){ #side{width:112px} #bottom{height:42%} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Seetal<span>.</span>Studio<small>PRO</small></div>
+  <span class="pill" id="projName">project</span>
+  <div class="spacer"></div>
+  <button id="bUndo" title="Undo">↶</button>
+  <button id="bRedo" title="Redo">↷</button>
+  <button id="bNew" title="Naya file">＋</button>
+  <button id="bSave" title="Save">💾</button>
+  <button class="pri" id="bBuild">🔨 Build</button>
+  <button class="gbtn" id="bRun">▶ Run</button>
+  <button id="bMenu" title="Menu">☰</button>
+</header>
+
+<main>
+  <div id="side"></div>
+  <div id="editorWrap">
+    <div id="tabbar">
+      <button class="mini" id="sideT" title="Files chhupao/dikhao">📁</button>
+      <span id="curFile">index.html</span>
+      <span class="spacer"></span>
+      <span id="stat"></span>
+    </div>
+    <div id="codeArea">
+      <div id="lines">1</div>
+      <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off"></textarea>
+    </div>
+  </div>
+</main>
+
+<div id="statusbar">
+  <span id="sbFile">index.html</span>
+  <span id="sbPos">1:1</span>
+  <span id="sbLines">1 line</span>
+  <span class="spacer"></span>
+  <span id="sbSave">…</span>
+  <span id="sbBuild">taiyar</span>
+</div>
+
+<div id="bottom">
+  <div id="outHead">
+    <button class="tab on" data-t="out">Output</button>
+    <button class="tab" data-t="con" id="tabCon">Console</button>
+    <button class="tab" data-t="pre">Preview</button>
+    <button class="tab" data-t="kh">🔎 Khoj</button>
+    <span class="spacer"></span>
+    <button class="mini" id="clearOut">saaf</button>
+    <button class="mini" id="expand">⤢</button>
+  </div>
+  <div class="pane" id="outBody"></div>
+  <div class="pane" id="conBody" hidden></div>
+  <div class="pane" id="preBody" hidden><div class="hint">▶ Run dabao — yahan app dikhega.</div></div>
+  <div class="pane" id="khBody" hidden>
+    <div class="khform">
+      <input type="text" id="khQ" placeholder="Kya dhoondhna hai" autocapitalize="off" autocomplete="off" spellcheck="false">
+      <input type="text" id="khR" placeholder="Isse badlo (replace)" autocapitalize="off" autocomplete="off" spellcheck="false">
+      <div class="khrow">
+        <label><input type="checkbox" id="khCase"> Aksar ka farak</label>
+        <label><input type="checkbox" id="khRx"> Regex</label>
+        <span class="spacer"></span>
+        <button class="mini" id="khGo">Khojo</button>
+        <button class="mini dang" id="khAll">Sab badlo</button>
+      </div>
+      <div id="khMsg" class="dim"></div>
+      <div id="khRes"></div>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="fileIn" multiple hidden>
+<input type="file" id="dirIn" webkitdirectory hidden>
+
+<script>
+"use strict";
+/* =====================================================================
+   PURE LOGIC — koi DOM nahi. Isi hisse ka alag se test hota hai.
+   ===================================================================== */
+/*PURE-START*/
+const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+
+function normPath(p){
+  if (typeof p !== "string") return null;
+  p = p.trim().replace(/\\/g, "/");
+  if (!p) return null;
+  const out = [];
+  for (const seg of p.split("/")){
+    if (seg === "" || seg === ".") continue;
+    if (seg === ".."){ if (!out.length) return null; out.pop(); continue; }
+    if (/^\.+$/.test(seg)) return null;
+    if (!/^[\w.\-@+]+$/.test(seg)) return null;
+    out.push(seg);
+  }
+  return out.length ? out.join("/") : null;
+}
+function dirname(p){ const i = p.lastIndexOf("/"); return i < 0 ? "" : p.slice(0, i); }
+function extOf(p){ const m = /\.([A-Za-z0-9]+)$/.exec(p); return m ? m[1].toLowerCase() : ""; }
+function isHTML(p){ return /\.html?$/i.test(p); }
+function isJS(p){ return /\.m?js$/i.test(p); }
+function mimeOf(p){
+  switch (extOf(p)){
+    case "html": case "htm": return "text/html";
+    case "css": return "text/css";
+    case "js": case "mjs": return "text/javascript";
+    case "json": case "webmanifest": return "application/json";
+    case "svg": return "image/svg+xml";
+    case "xml": return "application/xml";
+    case "csv": return "text/csv";
+    default: return "text/plain";
+  }
+}
+function isExternal(ref){
+  ref = String(ref).trim();
+  return ref === "" || /^(?:[a-zA-Z][a-zA-Z0-9+.\-]*:|\/\/|#|\?)/.test(ref);
+}
+function findFile(files, p, loose){
+  if (p == null) return null;
+  if (has(files, p)) return p;
+  if (loose){
+    for (const s of [".js", ".mjs", "/index.js"]) if (has(files, p + s)) return p + s;
+  }
+  return null;
+}
+function resolveRef(from, ref){
+  ref = String(ref).split(/[?#]/)[0];
+  if (!ref) return null;
+  try{ ref = decodeURIComponent(ref); }catch(e){}
+  let p;
+  if (ref.charAt(0) === "/") p = ref.slice(1);
+  else { const d = dirname(from); p = d ? d + "/" + ref : ref; }
+  return normPath(p);
+}
+function getAttr(attrs, name){
+  const m = new RegExp("(?:^|\\s)" + name + "\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)')", "i").exec(attrs);
+  return m ? (m[1] != null ? m[1] : m[2]) : null;
+}
+function setAttr(attrs, name, val){
+  return attrs.replace(new RegExp("(^|\\s)" + name + "(\\s*=\\s*)(\"[^\"]*\"|'[^']*')", "i"),
+    (m, pre, eq) => pre + name + eq + '"' + val + '"');
+}
+
+/* JS ke relative import ko "@p/<path>" bana do (import-map se jud jayega) */
+function rewriteImports(code, from, files, missing){
+  return code.replace(/(\bfrom\s*|\bimport\s*\(\s*|\bimport\s*)(["'])([^"'\n]+)\2/g, (m, pre, q, spec) => {
+    const c = spec.charAt(0);
+    if (c !== "." && c !== "/") return m;
+    const rp = resolveRef(from, spec);
+    const key = rp ? findFile(files, rp, true) : null;
+    if (!key){ if (missing) missing.push(spec); return m; }
+    return pre + q + "@p/" + key + q;
+  });
+}
+
+function rewriteCSS(code, from, ctx){
+  code = code.replace(/@import\s+(?:url\(\s*)?(["']?)([^"')\s;]+)\1\s*\)?/gi, (m, q, ref) => {
+    if (isExternal(ref)) return m;
+    const rp = resolveRef(from, ref);
+    if (rp && has(ctx.files, rp)){ const u = ctx.urlFor(rp); if (u) return '@import url("' + u + '")'; }
+    return m;
+  });
+  code = code.replace(/url\(\s*(["']?)([^"')]+)\1\s*\)/gi, (m, q, ref) => {
+    ref = ref.trim();
+    if (!ref || isExternal(ref)) return m;
+    const rp = resolveRef(from, ref);
+    if (rp && has(ctx.files, rp)){ const u = ctx.urlFor(rp); if (u) return 'url("' + u + '")'; }
+    return m;
+  });
+  return code;
+}
+
+function makeCtx(files, mk){
+  const cache = Object.create(null), busy = Object.create(null);
+  const ctx = {
+    files, cache,
+    urlFor(p){
+      if (p in cache) return cache[p];
+      if (p in busy) return null;
+      busy[p] = 1;
+      let text = files[p];
+      try{
+        if (isJS(p)) text = rewriteImports(text, p, files, null);
+        else if (extOf(p) === "css") text = rewriteCSS(text, p, ctx);
+      } finally { delete busy[p]; }
+      cache[p] = mk(p, mimeOf(p), text);
+      return cache[p];
+    }
+  };
+  return ctx;
+}
+
+/* preview ke andar chalne wala chhota runtime: console + error + page-link bhejta hai */
+function __rt(){
+  var P = window.parent; if (P === window) return;
+  function send(m){ try{ m.__seetal = 1; P.postMessage(m, "*"); }catch(e){} }
+  function fmt(a){
+    try{
+      return Array.prototype.map.call(a, function(x){
+        if (typeof x === "string") return x;
+        if (x instanceof Error) return x.stack || x.message;
+        try{ return JSON.stringify(x); }catch(e){ return String(x); }
+      }).join(" ");
+    }catch(e){ return "?"; }
+  }
+  ["log", "info", "warn", "error"].forEach(function(k){
+    var o = console[k];
+    console[k] = function(){ send({ k: "log", lvl: k, t: fmt(arguments) }); try{ o.apply(console, arguments); }catch(e){} };
+  });
+  window.addEventListener("error", function(e){
+    var t = e.target;
+    if (t && t !== window && t.tagName){
+      var u = t.src || t.href || "";
+      send({ k: "err", t: "Load nahi hua", res: u, f: "", l: 0, c: 0 });
+      return;
+    }
+    send({ k: "err", t: e.message || "error", f: e.filename || "", l: e.lineno || 0, c: e.colno || 0 });
+  }, true);
+  window.addEventListener("unhandledrejection", function(e){
+    var r = e.reason;
+    send({ k: "err", t: "Promise: " + (r && r.message ? r.message : String(r)), f: "", l: 0, c: 0 });
+  });
+  document.addEventListener("click", function(e){
+    var a = e.target && e.target.closest ? e.target.closest("a") : null;
+    if (a && a.getAttribute("data-sp")){ e.preventDefault(); send({ k: "nav", p: a.getAttribute("data-sp") }); }
+  }, true);
+  send({ k: "ready" });
+}
+const RUNTIME = "(" + __rt.toString() + ")();";
+
+function b64(text){
+  const bytes = new TextEncoder().encode(text);
+  let s = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+
+/* entry html ko poora bundle me badlo. mk(path,mime,text) -> url */
+function buildRun(files, entry, mk, opts){
+  opts = opts || {};
+  const ctx = makeCtx(files, mk);
+  const missing = [];
+  let html = files[entry];
+  if (typeof html !== "string") throw new Error(entry + " nahi mili");
+  const keep = [];
+  const hold = (s) => { keep.push(s); return "\u0000" + (keep.length - 1) + "\u0000"; };
+
+  html = html.replace(/<!--[\s\S]*?-->/g, (m) => hold(m));
+
+  html = html.replace(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi, (m, attrs, body) => {
+    const tm = /(?:^|\s)type\s*=\s*["']?([^"'\s>]+)/i.exec(attrs);
+    const isMod = !!tm && tm[1].toLowerCase() === "module";
+    const src = getAttr(attrs, "src");
+    let a = attrs, b = body;
+    if (src != null){
+      if (!isExternal(src)){
+        const rp = resolveRef(entry, src);
+        if (rp && has(files, rp)) a = setAttr(attrs, "src", ctx.urlFor(rp));
+        else missing.push(src);
+      }
+    } else if (isMod){
+      b = rewriteImports(body, entry, files, missing);
+    }
+    return hold("<script" + a + ">" + b + "</" + "script>");
+  });
+
+  html = html.replace(/<style\b([^>]*)>([\s\S]*?)<\/style\s*>/gi, (m, attrs, body) =>
+    hold("<style" + attrs + ">" + rewriteCSS(body, entry, ctx) + "</" + "style>"));
+
+  html = html.replace(/<([a-zA-Z][\w:-]*)((?:"[^"]*"|'[^']*'|[^'">])*)>/g, (m, tag, attrs) => {
+    const t = tag.toLowerCase();
+    let a = attrs, extra = "";
+    ["src", "href", "poster"].forEach((n) => {
+      const v = getAttr(attrs, n);
+      if (v == null || isExternal(v)) return;
+      const rp = resolveRef(entry, v);
+      if (!rp) return;
+      if (!has(files, rp)){ missing.push(v); return; }
+      if (t === "a"){
+        if (isHTML(rp)){
+          if (opts.nav){ a = setAttr(a, "href", "#"); extra = ' data-sp="' + rp + '"'; }
+        } else a = setAttr(a, n, ctx.urlFor(rp));
+      } else a = setAttr(a, n, ctx.urlFor(rp));
+    });
+    return "<" + tag + a + extra + ">";
+  });
+
+  // head me runtime + import-map daalo
+  const map = {};
+  Object.keys(files).forEach((p) => { if (isJS(p)) map["@p/" + p] = ctx.urlFor(p); });
+  let inj = opts.runtime ? "<script>" + RUNTIME + "</" + "script>" : "";
+  if (Object.keys(map).length){
+    inj += '<script type="importmap">' + JSON.stringify({ imports: map }).replace(/</g, "\\u003c") + "</" + "script>";
+  }
+  if (/<head(?:\s[^>]*)?>/i.test(html)) html = html.replace(/<head(?:\s[^>]*)?>/i, (m) => m + inj);
+  else if (/<html(?:\s[^>]*)?>/i.test(html)) html = html.replace(/<html(?:\s[^>]*)?>/i, (m) => m + "<head>" + inj + "</head>");
+  else html = inj + html;
+
+  for (let k = 0; k < 4 && /\u0000\d+\u0000/.test(html); k++){
+    html = html.replace(/\u0000(\d+)\u0000/g, (m, i) => keep[Number(i)]);
+  }
+  return { html, missing, map };
+}
+
+/* ---------- build ki jaanch ---------- */
+const AsyncFn = Object.getPrototypeOf(async function(){}).constructor;
+
+function maskHTML(code){
+  const blank = (s) => s.replace(/[^\n]/g, " ");
+  return code.replace(/<!--[\s\S]*?-->/g, blank)
+    .replace(/(<script\b[^>]*>)([\s\S]*?)(<\/script\s*>)/gi, (m, a, b, c) => a + blank(b) + c)
+    .replace(/(<style\b[^>]*>)([\s\S]*?)(<\/style\s*>)/gi, (m, a, b, c) => a + blank(b) + c);
+}
+function lineAt(code, idx){
+  let n = 1;
+  for (let i = 0; i < idx && i < code.length; i++) if (code.charCodeAt(i) === 10) n++;
+  return n;
+}
+const TRACK = new Set(["div","span","section","main","header","footer","nav","article","aside","ul","ol","table","form","button","a",
+  "h1","h2","h3","h4","h5","h6","label","select","textarea","pre","code","strong","em","b","i","u","small","figure","dialog","details","summary","canvas"]);
+
+function checkHTML(code){
+  const errs = [], warns = [];
+  const m = maskHTML(code);
+  const hasHtml = /<html[\s>]/i.test(m), hasBody = /<body[\s>]/i.test(m);
+  if (hasHtml && !/<\/html\s*>/i.test(m)) errs.push("</html> band nahi hua");
+  if (hasBody && !/<\/body\s*>/i.test(m)) errs.push("</body> band nahi hua");
+  if (!hasHtml && !hasBody) warns.push("poora page nahi lagta (<html>/<body> nahi) — partial ho to theek");
+  if (hasHtml && !/<!doctype html/i.test(m)) warns.push("<!DOCTYPE html> nahi hai");
+  const so = (m.match(/<script\b/gi) || []).length, sc = (m.match(/<\/script\s*>/gi) || []).length;
+  if (so !== sc) errs.push("<script> " + so + " khule, </" + "script> " + sc + " band");
+  const to = (m.match(/<style\b/gi) || []).length, tc = (m.match(/<\/style\s*>/gi) || []).length;
+  if (to !== tc) errs.push("<style> " + to + " khule, </style> " + tc + " band");
+  const re = /<(\/?)([a-zA-Z][\w:-]*)((?:"[^"]*"|'[^']*'|[^'">])*)>/g;
+  const st = [];
+  let t;
+  while ((t = re.exec(m)) && errs.length < 6){
+    const name = t[2].toLowerCase();
+    if (!TRACK.has(name)) continue;
+    if (t[1]){
+      let k = st.length - 1;
+      while (k >= 0 && st[k].n !== name) k--;
+      if (k < 0) errs.push("</" + name + "> bina <" + name + "> ke (line " + lineAt(code, t.index) + ")");
+      else {
+        while (st.length - 1 > k){ const o = st.pop(); errs.push("<" + o.n + "> band nahi hua (line " + lineAt(code, o.i) + ")"); }
+        st.pop();
+      }
+    } else {
+      if (/\/\s*$/.test(t[3])) continue;
+      st.push({ n: name, i: t.index });
+    }
+  }
+  st.forEach((o) => { if (errs.length < 6) errs.push("<" + o.n + "> band nahi hua (line " + lineAt(code, o.i) + ")"); });
+  return { errs, warns };
+}
+
+function checkCSS(code){
+  const errs = [], warns = [];
+  const stack = [];
+  let line = 1, i = 0;
+  const n = code.length;
+  while (i < n && errs.length < 5){
+    const c = code[i];
+    if (c === "\n"){ line++; i++; continue; }
+    if (c === "/" && code[i + 1] === "*"){
+      const e = code.indexOf("*/", i + 2);
+      const seg = e < 0 ? code.slice(i) : code.slice(i, e + 2);
+      if (e < 0){ errs.push("comment (/*) band nahi hua (line " + line + ")"); break; }
+      line += (seg.match(/\n/g) || []).length;
+      i = e + 2; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && code[j] !== c && code[j] !== "\n"){ if (code[j] === "\\") j++; j++; }
+      if (code[j] !== c){ errs.push("string band nahi hui (line " + line + ")"); i = j; continue; }
+      i = j + 1; continue;
+    }
+    if (c === "{") stack.push(line);
+    else if (c === "}"){
+      if (!stack.length) errs.push("extra } mila (line " + line + ")");
+      else stack.pop();
+    }
+    i++;
+  }
+  if (stack.length && errs.length < 5) errs.push(stack.length + " { band nahi hua (aakhri khula: line " + stack[stack.length - 1] + ")");
+  return { errs, warns };
+}
+
+function stripModuleSyntax(code){
+  const blank = (s) => s.replace(/[^\n]/g, "");
+  let c = code;
+  c = c.replace(/^[ \t]*import\s*(["'])[^"'\n]*\1[ \t]*;?/gm, blank);
+  c = c.replace(/^[ \t]*import\s+(?!\()[\s\S]*?\bfrom\s*(["'])[^"'\n]*\1[ \t]*;?/gm, blank);
+  c = c.replace(/^[ \t]*export\s*\*(?:\s+as\s+[\w$]+)?\s*from\s*(["'])[^"'\n]*\1[ \t]*;?/gm, blank);
+  c = c.replace(/^[ \t]*export\s*\{[\s\S]*?\}(?:\s*from\s*(["'])[^"'\n]*\1)?[ \t]*;?/gm, blank);
+  c = c.replace(/^([ \t]*)export\s+default\s+/gm, (m, a) => a + "0,");
+  c = c.replace(/^([ \t]*)export\s+(?=(?:const|let|var|function|class|async)\b)/gm, (m, a) => a);
+  c = c.replace(/\bimport\.meta\b/g, "({})");
+  return c;
+}
+function checkJS(code){
+  try{ new AsyncFn(code); return null; }
+  catch(e1){
+    if (/^[ \t]*(?:import|export)\b|\bimport\.meta\b/m.test(code)){
+      try{ new AsyncFn(stripModuleSyntax(code)); return null; }
+      catch(e2){ return String(e2.message).slice(0, 100); }
+    }
+    return String(e1.message).slice(0, 100);
+  }
+}
+
+function projectCheck(files){
+  const items = [], hints = [];
+  let fail = 0, warn = 0;
+  const names = Object.keys(files).sort();
+  const kb = (s) => (s.length / 1024).toFixed(1) + " KB";
+
+  names.forEach((f) => {
+    const code = files[f];
+    let r = { errs: [], warns: [] };
+    if (isJS(f)){ const e = checkJS(code); if (e) r.errs.push(e); }
+    else if (isHTML(f)) r = checkHTML(code);
+    else if (extOf(f) === "css") r = checkCSS(code);
+    else if (extOf(f) === "json"){ try{ JSON.parse(code); }catch(e){ r.errs.push("JSON galat: " + String(e.message).slice(0, 80)); } }
+    r.errs.forEach((x) => { fail++; items.push({ cls: "bad", msg: "❌ " + f + " — " + x }); });
+    r.warns.forEach((x) => { warn++; items.push({ cls: "warn", msg: "⚠️ " + f + " — " + x }); });
+    if (!r.errs.length && !r.warns.length) items.push({ cls: "ok", msg: "✅ " + f + " theek (" + code.split("\n").length + " line, " + kb(code) + ")" });
+  });
+
+  // link aur import jaanch
+  names.filter(isHTML).forEach((h) => {
+    const code = files[h];
+    const m = maskHTML(code);
+    const re = /<([a-zA-Z][\w:-]*)((?:"[^"]*"|'[^']*'|[^'">])*)>/g;
+    let t;
+    const seen = {};
+    while ((t = re.exec(m))){
+      ["src", "href", "poster"].forEach((n) => {
+        const v = getAttr(t[2], n);
+        if (v == null || isExternal(v)) return;
+        const rp = resolveRef(h, v);
+        if (!rp || !has(files, rp)){
+          const key = h + "|" + v;
+          if (!seen[key]){ seen[key] = 1; warn++; items.push({ cls: "warn", msg: "⚠️ " + h + " — " + v + " ka file nahi hai (link toota)" }); }
+        }
+      });
+    }
+    if ((/<html[\s>]/i.test(m) || /<head[\s>]/i.test(m)) && !/<meta[^>]+viewport/i.test(m)){
+      warn++; items.push({ cls: "warn", msg: "⚠️ " + h + " — mobile viewport nahi, phone par theek nahi dikhega" });
+    }
+    const sre = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
+    let s;
+    while ((s = sre.exec(code))){
+      const tm = /(?:^|\s)type\s*=\s*["']?([^"'\s>]+)/i.exec(s[1]);
+      if (tm && tm[1].toLowerCase() === "module" && getAttr(s[1], "src") == null){
+        const miss = [];
+        rewriteImports(s[2], h, files, miss);
+        miss.forEach((x) => { fail++; items.push({ cls: "bad", msg: "❌ " + h + " — import \"" + x + "\" ka file nahi mila" }); });
+      }
+    }
+  });
+  names.filter(isJS).forEach((f) => {
+    const miss = [];
+    rewriteImports(files[f], f, files, miss);
+    miss.forEach((x) => { fail++; items.push({ cls: "bad", msg: "❌ " + f + " — import \"" + x + "\" ka file nahi mila" }); });
+  });
+
+  if (!names.some(isHTML)){ warn++; items.push({ cls: "warn", msg: "⚠️ koi .html file nahi — Run ke liye index.html chahiye" }); }
+
+  const all = names.map((n) => files[n]).join("\n");
+  if (names.some(isJS) || /<script/i.test(all)){
+    if (!/localStorage|indexedDB/i.test(all)) hints.push("data save (localStorage) nahi hai — refresh par sab chala jayega");
+    if (!/try\s*\{/.test(all)) hints.push("try/catch nahi — kuch toota to page blank ho sakta hai");
+  }
+  return { items, fail, warn, hints, total: names.length };
+}
+
+/* ---------- AI jawab ---------- */
+function unfence(t){
+  t = String(t || "").trim();
+  const m = /```[A-Za-z0-9_-]*\r?\n([\s\S]*?)```/.exec(t);
+  if (m) return m[1].trim();
+  if (t.startsWith("```")) t = t.replace(/^```[A-Za-z0-9_-]*\r?\n?/, "").replace(/```\s*$/, "");
+  return t.trim();
+}
+function cleanFiles(obj){
+  if (!obj || typeof obj !== "object") return null;
+  const files = {};
+  let n = 0;
+  for (const k of Object.keys(obj)){
+    const p = normPath(k), v = obj[k];
+    if (p && typeof v === "string"){ files[p] = v; n++; }
+  }
+  return n ? files : null;
+}
+function parseApp(ans){
+  const tries = [String(ans || ""), unfence(ans)];
+  for (const t of tries){
+    const a = t.indexOf("{"), b = t.lastIndexOf("}");
+    if (a < 0 || b <= a) continue;
+    let d = null;
+    try{ d = JSON.parse(t.slice(a, b + 1)); }catch(e){ continue; }
+    const files = d && cleanFiles(d.files);
+    if (files) return { name: String(d.name || "ai-app").replace(/[^\w\-]/g, "").slice(0, 40) || "ai-app", files };
+  }
+  return null;
+}
+
+/* ---------- ZIP (store, bina library) ---------- */
+const CRC_T = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++){ let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; }
+  return t;
+})();
+function crc32(b){
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < b.length; i++) c = CRC_T[(c ^ b[i]) & 255] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function zipParts(files){
+  const enc = new TextEncoder();
+  const chunks = [], central = [];
+  let off = 0;
+  const dt = new Date();
+  const dosT = (dt.getHours() << 11) | (dt.getMinutes() << 5) | (dt.getSeconds() >> 1);
+  const dosD = ((dt.getFullYear() - 1980) << 9) | ((dt.getMonth() + 1) << 5) | dt.getDate();
+  const names = Object.keys(files);
+  for (const name of names){
+    const nb = enc.encode(name), data = enc.encode(files[name]), crc = crc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+    lh.setUint16(10, dosT, true); lh.setUint16(12, dosD, true); lh.setUint32(14, crc, true);
+    lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, nb.length, true); lh.setUint16(28, 0, true);
+    chunks.push(new Uint8Array(lh.buffer), nb, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
+    ch.setUint16(12, dosT, true); ch.setUint16(14, dosD, true); ch.setUint32(16, crc, true);
+    ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true); ch.setUint16(28, nb.length, true);
+    ch.setUint16(30, 0, true); ch.setUint16(32, 0, true); ch.setUint16(34, 0, true); ch.setUint16(36, 0, true);
+    ch.setUint32(38, 0, true); ch.setUint32(42, off, true);
+    central.push(new Uint8Array(ch.buffer), nb);
+    off += 30 + nb.length + data.length;
+  }
+  let csize = 0;
+  central.forEach((c) => { csize += c.length; });
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(4, 0, true); end.setUint16(6, 0, true);
+  end.setUint16(8, names.length, true); end.setUint16(10, names.length, true);
+  end.setUint32(12, csize, true); end.setUint32(16, off, true); end.setUint16(20, 0, true);
+  return chunks.concat(central, [new Uint8Array(end.buffer)]);
+}
+/*PURE-END*/
+
+/* =====================================================================
+   UI
+   ===================================================================== */
+const $ = (id) => document.getElementById(id);
+const BRAIN_KEY = "seetal.studio.brain.v1";
+const LS_OLD = "seetal.studio.v1";
+const PREF_KEY = "seetal.studio.pref.v2";
+const EMERG_KEY = "seetal.studio.emerg.v2";
+const TEXT_EXT = /\.(html?|css|m?js|json|md|txt|svg|xml|webmanifest|csv)$/i;
+
+let P = null, cur = "index.html";
+const ta = $("code");
+const COLL = new Set();
+const HIST = new Map();
+let prefs = { fs: 13 };
+let curTab = "out";
+
+/* ---------- chhote helpers ---------- */
+function hhmm(){ return new Date().toTimeString().slice(0, 5); }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function out(cls, msg){
+  const d = document.createElement("div");
+  d.className = cls; d.textContent = msg;
+  const b = $("outBody");
+  b.appendChild(d); b.scrollTop = b.scrollHeight;
+}
+function setSb(msg){ $("sbSave").textContent = msg; }
+function download(blob, name){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+function slug(s){ return String(s || "app").replace(/[^\w\-]/g, "") || "app"; }
+async function pool(items, n, fn){
+  let i = 0;
+  const w = Array.from({ length: Math.min(n, items.length) }, async () => {
+    while (i < items.length){ const k = i++; await fn(items[k], k); }
+  });
+  await Promise.all(w);
+}
+
+/* ---------- dialog / menu ---------- */
+function dialog(o){
+  return new Promise((resolve) => {
+    const ov = document.createElement("div"); ov.className = "ov";
+    const box = document.createElement("div"); box.className = "dlg"; ov.appendChild(box);
+    if (o.title){ const h = document.createElement("div"); h.className = "dt"; h.textContent = o.title; box.appendChild(h); }
+    if (o.msg){ const m = document.createElement("div"); m.className = "dm"; m.textContent = o.msg; box.appendChild(m); }
+    const els = {};
+    (o.fields || []).forEach((f) => {
+      const w = document.createElement("label"); w.className = "df";
+      let el;
+      if (f.type === "check"){
+        w.className = "df chk";
+        el = document.createElement("input"); el.type = "checkbox"; el.checked = !!f.value;
+        w.appendChild(el);
+        const s = document.createElement("span"); s.textContent = f.label; w.appendChild(s);
+      } else {
+        const s = document.createElement("span"); s.textContent = f.label; w.appendChild(s);
+        if (f.type === "select"){
+          el = document.createElement("select");
+          f.options.forEach((op) => { const x = document.createElement("option"); x.value = op.v; x.textContent = op.t; el.appendChild(x); });
+          el.value = f.value != null ? f.value : f.options[0].v;
+        } else if (f.type === "textarea"){
+          el = document.createElement("textarea"); el.rows = f.rows || 4; el.value = f.value || "";
+          if (f.ph) el.placeholder = f.ph;
+        } else {
+          el = document.createElement("input"); el.type = f.type || "text"; el.value = f.value || "";
+          if (f.ph) el.placeholder = f.ph;
+          el.setAttribute("autocapitalize", "off"); el.setAttribute("autocomplete", "off"); el.spellcheck = false;
+        }
+        w.appendChild(el);
+      }
+      box.appendChild(w); els[f.id] = el;
+    });
+    const row = document.createElement("div"); row.className = "dr";
+    const bc = document.createElement("button"); bc.textContent = o.cancel || "Radd";
+    const bo = document.createElement("button"); bo.textContent = o.ok || "Theek hai"; bo.className = o.danger ? "dang" : "gbtn";
+    if (!o.noCancel) row.appendChild(bc);
+    row.appendChild(bo); box.appendChild(row);
+    function done(v){ document.removeEventListener("keydown", kd, true); ov.remove(); resolve(v); }
+    function submit(){
+      const v = {};
+      Object.keys(els).forEach((k) => { const e = els[k]; v[k] = e.type === "checkbox" ? e.checked : e.value; });
+      done(v);
+    }
+    function kd(e){
+      if (e.key === "Escape"){ e.preventDefault(); done(null); }
+      else if (e.key === "Enter" && e.target && e.target.tagName === "INPUT" && e.target.type !== "checkbox"){ e.preventDefault(); submit(); }
+    }
+    bc.onclick = () => done(null);
+    bo.onclick = submit;
+    ov.addEventListener("click", (e) => { if (e.target === ov && !o.noCancel) done(null); });
+    document.addEventListener("keydown", kd, true);
+    document.body.appendChild(ov);
+    const first = box.querySelector("input:not([type=checkbox]),textarea,select");
+    if (first) setTimeout(() => first.focus(), 30);
+  });
+}
+const yesno = (msg, ok, danger) => dialog({ msg, ok: ok || "Haan", danger }).then((v) => !!v);
+
+function sheet(title, items){
+  const ov = document.createElement("div"); ov.className = "ov sheet";
+  const box = document.createElement("div"); box.className = "dlg"; ov.appendChild(box);
+  const h = document.createElement("div"); h.className = "dt"; h.textContent = title; box.appendChild(h);
+  const close = () => ov.remove();
+  items.forEach((it) => {
+    if (it.h){ const s = document.createElement("div"); s.className = "sh"; s.textContent = it.h; box.appendChild(s); return; }
+    const b = document.createElement("button"); b.textContent = it.t;
+    b.onclick = () => { close(); try{ const r = it.f(); if (r && r.catch) r.catch(reportErr); }catch(e){ reportErr(e); } };
+    box.appendChild(b);
+  });
+  ov.addEventListener("click", (e) => { if (e.target === ov) close(); });
+  document.body.appendChild(ov);
+}
+function reportErr(e){
+  showTab("out");
+  out("bad", "❌ " + (e && e.message ? e.message : e));
+}
+
+/* ---------- storage: IndexedDB (na chale to localStorage) ---------- */
+const DB_NAME = "seetal-studio", STORE = "kv";
+let db = null, useLS = false;
+
+function idbOpen(){
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error("IndexedDB nahi"));
+    let done = false, rq;
+    const t = setTimeout(() => { if (!done){ done = true; rej(new Error("IndexedDB time out")); } }, 4000);
+    try{ rq = indexedDB.open(DB_NAME, 1); }catch(e){ clearTimeout(t); return rej(e); }
+    rq.onupgradeneeded = () => { const d = rq.result; if (!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE); };
+    rq.onsuccess = () => {
+      if (done){ try{ rq.result.close(); }catch(e){} return; }
+      done = true; clearTimeout(t); res(rq.result);
+    };
+    rq.onerror = () => { if (done) return; done = true; clearTimeout(t); rej(rq.error || new Error("IndexedDB error")); };
+  });
+}
+function kvPut(k, v){
+  return new Promise((res, rej) => {
+    if (useLS){ try{ localStorage.setItem("ss.kv." + k, JSON.stringify(v)); res(); }catch(e){ rej(e); } return; }
+    try{
+      const tx = db.transaction(STORE, "readwrite");
+      tx.objectStore(STORE).put(v, k);
+      tx.oncomplete = () => res();
+      tx.onerror = () => rej(tx.error || new Error("save error"));
+      tx.onabort = () => rej(tx.error || new Error("save abort"));
+    }catch(e){ rej(e); }
+  });
+}
+function kvGet(k){
+  return new Promise((res, rej) => {
+    if (useLS){ try{ const s = localStorage.getItem("ss.kv." + k); res(s ? JSON.parse(s) : undefined); }catch(e){ rej(e); } return; }
+    try{
+      const rq = db.transaction(STORE, "readonly").objectStore(STORE).get(k);
+      rq.onsuccess = () => res(rq.result);
+      rq.onerror = () => rej(rq.error);
+    }catch(e){ rej(e); }
+  });
+}
+function kvDel(k){
+  return new Promise((res, rej) => {
+    if (useLS){ try{ localStorage.removeItem("ss.kv." + k); res(); }catch(e){ rej(e); } return; }
+    try{
+      const tx = db.transaction(STORE, "readwrite");
+      tx.objectStore(STORE).delete(k);
+      tx.oncomplete = () => res();
+      tx.onerror = () => rej(tx.error);
+    }catch(e){ rej(e); }
+  });
+}
+function kvKeys(prefix){
+  return new Promise((res, rej) => {
+    if (useLS){
+      const r = [];
+      try{
+        for (let i = 0; i < localStorage.length; i++){
+          const k = localStorage.key(i);
+          if (k && k.indexOf("ss.kv." + prefix) === 0) r.push(k.slice(6));
+        }
+      }catch(e){ return rej(e); }
+      return res(r);
+    }
+    try{
+      const rq = db.transaction(STORE, "readonly").objectStore(STORE).getAllKeys();
+      rq.onsuccess = () => res((rq.result || []).filter((k) => typeof k === "string" && k.indexOf(prefix) === 0));
+      rq.onerror = () => rej(rq.error);
+    }catch(e){ rej(e); }
+  });
+}
+
+let dirty = false, saveT = null, saving = false;
+function touch(){
+  if (!P) return;
+  P.updated = Date.now(); dirty = true;
+  setSb("● badla hua");
+  clearTimeout(saveT); saveT = setTimeout(saveNow, 600);
+}
+async function saveNow(){
+  clearTimeout(saveT);
+  if (!P) return false;
+  if (saving){ saveT = setTimeout(saveNow, 300); return false; }
+  saving = true;
+  try{
+    await kvPut("project", P);
+    dirty = false;
+    try{ localStorage.removeItem(EMERG_KEY); }catch(e){}
+    setSb("💾 save " + hhmm());
+    return true;
+  }catch(e){
+    setSb("⚠ save nahi hua");
+    out("bad", "❌ Save fail: " + (e && e.message ? e.message : e) + " — Project export (.json) kar lo.");
+    return false;
+  } finally { saving = false; }
+}
+function emergency(){
+  if (!dirty || !P) return;
+  try{ const s = JSON.stringify(P); if (s.length < 2500000) localStorage.setItem(EMERG_KEY, s); }catch(e){}
+}
+window.addEventListener("pagehide", () => { emergency(); saveNow(); });
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden"){ emergency(); saveNow(); } });
+
+/* snapshot / backup */
+function hashStr(s){ let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return h; }
+function projHash(){
+  let h = 0;
+  Object.keys(P.files).sort().forEach((k) => { h = (h * 31 + hashStr(k + "\0" + P.files[k])) | 0; });
+  return h;
+}
+let lastSnapHash = null;
+async function snap(note){
+  if (!P) return;
+  try{
+    const h = projHash();
+    if (note === "auto" && h === lastSnapHash) return;
+    lastSnapHash = h;
+    const ts = Date.now();
+    await kvPut("snap:" + String(ts).padStart(15, "0"), { ts, note, name: P.name, files: Object.assign({}, P.files) });
+    const keys = (await kvKeys("snap:")).sort();
+    while (keys.length > 12) await kvDel(keys.shift());
+  }catch(e){}
+}
+setInterval(() => { snap("auto"); }, 180000);
+
+/* ---------- prefs ---------- */
+function loadPrefs(){
+  try{ const p = JSON.parse(localStorage.getItem(PREF_KEY) || "null"); if (p && p.fs) prefs.fs = Math.min(22, Math.max(10, Number(p.fs) || 13)); }catch(e){}
+  applyPrefs();
+}
+function applyPrefs(){
+  const fs = prefs.fs;
+  document.documentElement.style.setProperty("--fs", fs + "px");
+  document.documentElement.style.setProperty("--lh", Math.round(fs * 1.6) + "px");
+  try{ localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); }catch(e){}
+  lastN = -1;
+  if (P) paintLines();
+}
+
+/* ---------- templates ---------- */
+const SC = "<" + "/script>";
+const HEAD = (t, css) => '<!DOCTYPE html>\n<html lang="hi">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>' + t + '</title>\n  <link rel="stylesheet" href="' + (css || "style.css") + '">\n</head>\n<body>\n';
+const TAIL = (js) => '\n  <script src="' + (js || "app.js") + '">' + SC + '\n</body>\n</html>';
+const DARK = 'body { font-family: system-ui; background: #0b0f19; color: white; padding: 16px; }\n';
+
+const TPL = {
+  hello: { name: "Hello page — sabse aasan", files: {
+    "index.html": HEAD("Mera pehla page") + '  <h1>Namaste!</h1>\n  <p>Ye mera pehla page hai.</p>\n  <button id="btn">Mujhe dabao</button>\n  <p id="out"></p>\n' + TAIL(),
+    "style.css": DARK + 'button { font-size: 16px; padding: 12px 18px; border-radius: 10px; border: 0; background: #7c6cf8; color: white; }',
+    "app.js": '// Button dabane par ye chalega\nconst btn = document.getElementById("btn");\nconst out = document.getElementById("out");\n\nbtn.onclick = function () {\n  out.textContent = "Shabash! Tumne button daba diya.";\n};'
+  }},
+  pahada: { name: "Pahada — number ka table", files: {
+    "index.html": HEAD("Pahada") + '  <h1>Pahada</h1>\n  <input id="num" type="number" value="5">\n  <button id="btn">Dikhao</button>\n  <div id="out"></div>\n' + TAIL(),
+    "style.css": DARK + 'input { font-size: 16px; padding: 10px; width: 90px; border-radius: 10px; border: 1px solid #26324b; background: #131b28; color: white; }\nbutton { font-size: 16px; padding: 10px 16px; border-radius: 10px; border: 0; background: #7c6cf8; color: white; }\n#out { margin-top: 14px; font-size: 17px; line-height: 1.8; }',
+    "app.js": '// 1 se 10 tak ka pahada\nconst num = document.getElementById("num");\nconst out = document.getElementById("out");\n\ndocument.getElementById("btn").onclick = function () {\n  const n = Number(num.value);\n  let text = "";\n  for (let i = 1; i <= 10; i++) {\n    text = text + n + " x " + i + " = " + (n * i) + "<br>";\n  }\n  out.innerHTML = text;\n};'
+  }},
+  khata: { name: "Khata — hisaab aur total", files: {
+    "index.html": HEAD("Khata") + '  <h1>Mera khata</h1>\n  <input id="naam" placeholder="Kis ka naam">\n  <input id="rupaye" type="number" placeholder="Kitne rupaye">\n  <button id="add">Jodo</button>\n  <div id="list"></div>\n  <p id="total"></p>\n' + TAIL(),
+    "style.css": DARK + 'input { font-size: 16px; padding: 12px; width: 100%; margin-bottom: 8px; border-radius: 10px; border: 1px solid #26324b; background: #131b28; color: white; }\nbutton { font-size: 16px; padding: 12px; width: 100%; border-radius: 10px; border: 0; background: #7c6cf8; color: white; font-weight: bold; }\n.ek { background: #131b28; border-radius: 10px; padding: 12px; margin-top: 8px; }\n#total { font-size: 19px; font-weight: bold; margin-top: 14px; }',
+    "app.js": '// Phone ki memory me save hota hai\nlet khata = [];\ntry { khata = JSON.parse(localStorage.getItem("khata") || "[]"); } catch (e) { khata = []; }\n\nfunction dikhao() {\n  const list = document.getElementById("list");\n  list.textContent = "";\n  let total = 0;\n  for (let i = 0; i < khata.length; i++) {\n    const d = document.createElement("div");\n    d.className = "ek";\n    d.textContent = khata[i].naam + " — Rs " + khata[i].rupaye;\n    list.appendChild(d);\n    total = total + Number(khata[i].rupaye);\n  }\n  document.getElementById("total").textContent = "Total: Rs " + total;\n  try { localStorage.setItem("khata", JSON.stringify(khata)); } catch (e) {}\n}\n\ndocument.getElementById("add").onclick = function () {\n  const n = document.getElementById("naam").value;\n  const r = document.getElementById("rupaye").value;\n  if (n === "" || r === "") return;\n  khata.push({ naam: n, rupaye: r });\n  document.getElementById("naam").value = "";\n  document.getElementById("rupaye").value = "";\n  dikhao();\n};\n\ndikhao();'
+  }},
+  quiz: { name: "Quiz — sawal aur score", files: {
+    "index.html": HEAD("Quiz") + '  <h1 id="sawal">Sawal</h1>\n  <div id="jawab"></div>\n  <p id="result"></p>\n' + TAIL(),
+    "style.css": DARK + 'button { display: block; width: 100%; font-size: 16px; padding: 15px; margin: 8px 0; border-radius: 12px; border: 1px solid #26324b; background: #131b28; color: white; text-align: left; }\n.sahi { background: #0f3d2a; border-color: #34d399; }\n.galat { background: #3d1520; border-color: #fb7185; }',
+    "app.js": '// Apne sawal yahan badlo\nconst sawal = [\n  { puchho: "Bharat ki rajdhani kaun hai?", jawab: ["Mumbai", "Delhi", "Patna"], sahi: 1 },\n  { puchho: "2 + 2 kitna hota hai?", jawab: ["3", "4", "5"], sahi: 1 }\n];\nlet kaunsa = 0;\nlet score = 0;\n\nfunction dikhao() {\n  if (kaunsa >= sawal.length) {\n    document.getElementById("sawal").textContent = "Khatam!";\n    document.getElementById("jawab").innerHTML = "";\n    document.getElementById("result").textContent = "Sahi: " + score + " / " + sawal.length;\n    return;\n  }\n  const s = sawal[kaunsa];\n  document.getElementById("sawal").textContent = (kaunsa + 1) + ". " + s.puchho;\n  document.getElementById("jawab").innerHTML = "";\n  for (let i = 0; i < s.jawab.length; i++) {\n    const b = document.createElement("button");\n    b.textContent = s.jawab[i];\n    b.onclick = function () {\n      if (i === s.sahi) { b.className = "sahi"; score++; } else { b.className = "galat"; }\n      setTimeout(function () { kaunsa++; dikhao(); }, 500);\n    };\n    document.getElementById("jawab").appendChild(b);\n  }\n}\ndikhao();'
+  }},
+  notes: { name: "Notes — jo likho wahi save", files: {
+    "index.html": HEAD("Notes") + '  <h1>Mere notes</h1>\n  <textarea id="likho" placeholder="Aaj kya padha..."></textarea>\n  <p id="bataya"></p>\n' + TAIL(),
+    "style.css": DARK + 'textarea { width: 100%; height: 60vh; font-size: 16px; padding: 14px; border-radius: 12px; border: 1px solid #26324b; background: #131b28; color: white; }\n#bataya { color: #94a3c4; font-size: 13px; }',
+    "app.js": '// Likhne par apne aap save\nconst likho = document.getElementById("likho");\ntry { likho.value = localStorage.getItem("notes") || ""; } catch (e) {}\nlikho.oninput = function () {\n  try { localStorage.setItem("notes", likho.value); } catch (e) {}\n  document.getElementById("bataya").textContent = "Save ho gaya — " + likho.value.length + " akshar";\n};'
+  }},
+  modules: { name: "Module project — folders + import/export", files: {
+    "index.html": HEAD("Module project", "css/style.css") + '  <h1 id="title"></h1>\n  <button id="btn">Gino</button>\n  <p id="out"></p>\n  <script type="module" src="src/main.js">' + SC + '\n</body>\n</html>',
+    "css/style.css": DARK + 'button { font-size: 16px; padding: 12px 18px; border-radius: 10px; border: 0; background: #7c6cf8; color: white; }',
+    "src/util.js": '// Chhota helper — dusri file se import hota hai\nexport const naam = "Module project";\n\nexport function jodo(a, b) {\n  return a + b;\n}',
+    "src/counter.js": 'import { jodo } from "./util.js";\n\nexport class Counter {\n  constructor() { this.n = 0; }\n  badhao() { this.n = jodo(this.n, 1); return this.n; }\n}',
+    "src/main.js": 'import { naam } from "./util.js";\nimport { Counter } from "./counter.js";\n\nconst c = new Counter();\ndocument.getElementById("title").textContent = naam;\ndocument.getElementById("btn").onclick = function () {\n  document.getElementById("out").textContent = "Ginti: " + c.badhao();\n  console.log("ginti", c.n);\n};'
+  }},
+  pages: { name: "Multi-page — do page, link ke saath", files: {
+    "index.html": HEAD("Home") + '  <h1>Home</h1>\n  <p>Ye pehla page hai.</p>\n  <a href="about.html">About page par jao</a>\n' + TAIL(),
+    "about.html": HEAD("About") + '  <h1>About</h1>\n  <p>Ye doosra page hai.</p>\n  <a href="index.html">Wapas Home</a>\n' + TAIL(),
+    "style.css": DARK + 'a { color: #22d3ee; font-size: 17px; }',
+    "app.js": 'console.log("page chala:", document.title);'
+  }}
+};
+const DEFAULT = {
+  name: "naya-project",
+  files: {
+    "index.html": HEAD("Mera app") + '  <h1>Namaste</h1>\n  <p>Ye Seetal Studio me bana hai.</p>\n' + TAIL(),
+    "style.css": 'body{margin:0;font-family:system-ui;background:#0b0f19;color:#eef2fb;padding:20px}\nh1{font-size:22px}',
+    "app.js": 'console.log("app chalu");'
+  }
+};
+
+/* ---------- history (undo / redo) ---------- */
+let hTimer = null;
+function hist(p){
+  let h = HIST.get(p);
+  if (!h){ h = { st: [{ v: P.files[p], s: 0, e: 0 }], i: 0 }; HIST.set(p, h); }
+  return h;
+}
+function pushHist(){
+  if (!P || !has(P.files, cur)) return;
+  const h = hist(cur), v = ta.value;
+  if (h.st[h.i].v === v) return;
+  h.st = h.st.slice(0, h.i + 1);
+  h.st.push({ v, s: ta.selectionStart, e: ta.selectionEnd });
+  if (h.st.length > 150) h.st.shift();
+  h.i = h.st.length - 1;
+}
+function flushHist(){ clearTimeout(hTimer); pushHist(); }
+function scheduleHist(){ clearTimeout(hTimer); hTimer = setTimeout(pushHist, 500); }
+function applyHist(s){
+  ta.value = s.v; P.files[cur] = s.v;
+  const a = Math.min(s.s, s.v.length), b = Math.min(s.e, s.v.length);
+  ta.setSelectionRange(a, b);
+  paintLines(); paintPos(); touch();
+}
+function undo(){
+  if (!P) return;
+  flushHist();
+  const h = hist(cur);
+  if (h.i > 0){ h.i--; applyHist(h.st[h.i]); }
+}
+function redo(){
+  if (!P) return;
+  flushHist();
+  const h = hist(cur);
+  if (h.i < h.st.length - 1){ h.i++; applyHist(h.st[h.i]); }
+}
+/* file ka text program se badlo (undo se wapas aa sakta hai) */
+function setFileText(p, text){
+  if (p === cur) flushHist();
+  const h = hist(p);
+  P.files[p] = text;
+  h.st = h.st.slice(0, h.i + 1);
+  h.st.push({ v: text, s: 0, e: 0 });
+  h.i = h.st.length - 1;
+  if (p === cur){ ta.value = text; paintLines(); paintPos(); }
+  touch();
+}
+function replaceProject(obj){
+  P = { name: slug(obj.name || P.name), files: obj.files, repo: obj.repo != null ? obj.repo : (P ? P.repo : ""), cur: "", updated: Date.now() };
+  HIST.clear(); COLL.clear();
+  const names = Object.keys(P.files).sort();
+  cur = has(P.files, "index.html") ? "index.html" : names[0];
+  P.cur = cur;
+  openFile(cur);
+  touch();
+}
+
+/* ---------- editor ---------- */
+let lastN = -1;
+function paintLines(){
+  const v = ta.value;
+  let n = 1;
+  for (let i = 0; i < v.length; i++) if (v.charCodeAt(i) === 10) n++;
+  if (n !== lastN){
+    lastN = n;
+    const a = new Array(n);
+    for (let i = 0; i < n; i++) a[i] = i + 1;
+    $("lines").textContent = a.join("\n");
+    document.documentElement.style.setProperty("--gw", Math.max(36, String(n).length * prefs.fs * 0.62 + 22) + "px");
+  }
+  $("stat").textContent = n + " line · " + v.length + " akshar";
+  $("sbLines").textContent = n + " line";
+}
+function paintPos(){
+  const s = ta.selectionStart, before = ta.value.slice(0, s).split("\n");
+  $("sbPos").textContent = before.length + ":" + (before[before.length - 1].length + 1);
+}
+function onEdited(){
+  P.files[cur] = ta.value;
+  paintLines(); paintPos(); touch(); scheduleHist();
+}
+function lineStart(v, i){ return i <= 0 ? 0 : v.lastIndexOf("\n", i - 1) + 1; }
+function replaceRange(a, b, text, selS, selE){
+  ta.setRangeText(text, a, b, "preserve");
+  ta.setSelectionRange(selS, selE);
+  onEdited();
+}
+function indentKey(shift){
+  const s = ta.selectionStart, e = ta.selectionEnd, v = ta.value;
+  if (s === e && !shift){ replaceRange(s, e, "  ", s + 2, s + 2); return; }
+  const ls = lineStart(v, s);
+  let end = e;
+  if (e > s && v.charAt(e - 1) === "\n") end = e - 1;
+  let le = v.indexOf("\n", end);
+  if (le < 0) le = v.length;
+  const lines = v.slice(ls, le).split("\n");
+  if (!shift){
+    replaceRange(ls, le, lines.map((l) => "  " + l).join("\n"), s + 2, e + 2 * lines.length);
+    return;
+  }
+  let first = 0, total = 0;
+  const nl = lines.map((l, i) => {
+    let r = 0, x = l;
+    if (l.indexOf("  ") === 0){ x = l.slice(2); r = 2; }
+    else if (l.charAt(0) === "\t" || l.charAt(0) === " "){ x = l.slice(1); r = 1; }
+    if (i === 0) first = r;
+    total += r;
+    return x;
+  });
+  replaceRange(ls, le, nl.join("\n"), Math.max(ls, s - first), Math.max(ls, e - total));
+}
+function smartEnter(){
+  const s = ta.selectionStart, e = ta.selectionEnd, v = ta.value;
+  const ls = lineStart(v, s);
+  const ind = /^[ \t]*/.exec(v.slice(ls, s))[0];
+  const before = v.charAt(s - 1), after = v.charAt(e);
+  const pair = { "{": "}", "(": ")", "[": "]" };
+  let ins = "\n" + ind, caret;
+  if (s > 0 && has(pair, before)){
+    if (pair[before] === after){ ins = "\n" + ind + "  " + "\n" + ind; caret = s + 1 + ind.length + 2; }
+    else { ins = "\n" + ind + "  "; caret = s + ins.length; }
+  } else caret = s + ins.length;
+  replaceRange(s, e, ins, caret, caret);
+}
+function gotoPos(f, lineIdx, col, len){
+  openFile(f);
+  const lines = ta.value.split("\n");
+  let off = 0;
+  for (let i = 0; i < lineIdx && i < lines.length; i++) off += lines[i].length + 1;
+  off += col;
+  ta.focus();
+  ta.setSelectionRange(off, off + len);
+  const lh = parseFloat(getComputedStyle(ta).lineHeight) || 20;
+  ta.scrollTop = Math.max(0, lineIdx * lh - ta.clientHeight / 3);
+  $("lines").scrollTop = ta.scrollTop;
+  paintPos();
+}
+
+/* ---------- file tree ---------- */
+function treeRows(){
+  const root = { dirs: Object.create(null), files: [] };
+  Object.keys(P.files).forEach((p) => {
+    const parts = p.split("/");
+    let n = root;
+    for (let i = 0; i < parts.length - 1; i++){
+      const d = parts[i];
+      n = n.dirs[d] || (n.dirs[d] = { dirs: Object.create(null), files: [], path: parts.slice(0, i + 1).join("/") });
+    }
+    n.files.push(p);
+  });
+  const rows = [];
+  (function walk(n, depth){
+    Object.keys(n.dirs).sort().forEach((d) => {
+      const c = n.dirs[d], open = !COLL.has(c.path);
+      rows.push({ t: "d", name: d, path: c.path, depth, open });
+      if (open) walk(c, depth + 1);
+    });
+    n.files.sort().forEach((p) => rows.push({ t: "f", name: p.split("/").pop(), path: p, depth }));
+  })(root, 0);
+  return rows;
+}
+function fileIco(f){ return isHTML(f) ? "🌐" : /\.css$/i.test(f) ? "🎨" : isJS(f) ? "⚙️" : /\.json$/i.test(f) ? "🧾" : "📄"; }
+function paintFiles(){
+  const box = $("side");
+  box.textContent = "";
+  treeRows().forEach((r) => {
+    const d = document.createElement("div");
+    d.className = "file" + (r.t === "d" ? " dir" : "") + (r.t === "f" && r.path === cur ? " on" : "");
+    d.style.paddingLeft = (8 + r.depth * 12) + "px";
+    d.textContent = (r.t === "d" ? (r.open ? "📂 " : "📁 ") : fileIco(r.name) + " ") + r.name;
+    d.title = r.path;
+    d.onclick = () => {
+      if (r.t === "d"){ if (COLL.has(r.path)) COLL.delete(r.path); else COLL.add(r.path); paintFiles(); }
+      else openFile(r.path);
+    };
+    box.appendChild(d);
+  });
+  $("projName").textContent = P.name || "project";
+}
+function openFile(p){
+  if (!P || !has(P.files, p)) return;
+  flushHist();
+  cur = p; P.cur = p;
+  ta.value = P.files[p];
+  hist(p);
+  lastN = -1;
+  paintLines(); paintPos();
+  ta.scrollTop = 0; ta.scrollLeft = 0; $("lines").scrollTop = 0;
+  $("curFile").textContent = p; $("sbFile").textContent = p;
+  paintFiles();
+}
+
+/* ---------- file actions ---------- */
+async function newFile(){
+  const d = dirname(cur);
+  const v = await dialog({ title: "Naya file", msg: "Folder ke saath bhi likh sakte ho: src/app.js", fields: [{ id: "p", label: "Path", value: d ? d + "/" : "", ph: "page2.html" }], ok: "Banao" });
+  if (!v) return;
+  const p = normPath(v.p);
+  if (!p){ showTab("out"); out("bad", "❌ Naam galat — sirf a-z 0-9 _ - . / rakho (space nahi)."); return; }
+  if (has(P.files, p)){ showTab("out"); out("bad", "❌ " + p + " pehle se hai."); return; }
+  P.files[p] = ""; touch(); openFile(p);
+}
+async function renameFile(){
+  const v = await dialog({ title: "Naam badlo / folder me bhejo", fields: [{ id: "p", label: "Naya path", value: cur }], ok: "Badlo" });
+  if (!v) return;
+  const np = normPath(v.p);
+  if (!np){ showTab("out"); out("bad", "❌ Naam galat."); return; }
+  if (np === cur) return;
+  if (has(P.files, np)){ showTab("out"); out("bad", "❌ " + np + " pehle se hai."); return; }
+  flushHist();
+  const old = cur;
+  P.files[np] = P.files[old]; delete P.files[old];
+  if (HIST.has(old)){ HIST.set(np, HIST.get(old)); HIST.delete(old); }
+  cur = np; touch(); openFile(np);
+}
+async function delFile(){
+  if (Object.keys(P.files).length <= 1){ showTab("out"); out("bad", "❌ Aakhri file nahi hata sakte."); return; }
+  if (!(await yesno(cur + " hatani hai?", "Hatao", true))) return;
+  await snap("file-delete");
+  const old = cur;
+  delete P.files[old]; HIST.delete(old);
+  cur = Object.keys(P.files).sort()[0];
+  touch(); openFile(cur);
+}
+async function delFolder(){
+  const v = await dialog({ title: "Folder hatao", msg: "Folder ki saari files hat jayengi (backup ban jayega).", fields: [{ id: "p", label: "Folder path", value: dirname(cur) }], ok: "Hatao", danger: true });
+  if (!v) return;
+  const f = normPath(v.p);
+  if (!f){ showTab("out"); out("bad", "❌ Folder ka naam galat."); return; }
+  const list = Object.keys(P.files).filter((k) => k.indexOf(f + "/") === 0);
+  if (!list.length){ showTab("out"); out("warn", "Is naam ka folder nahi mila."); return; }
+  if (list.length === Object.keys(P.files).length){ showTab("out"); out("bad", "❌ Saari files nahi hata sakte."); return; }
+  if (!(await yesno(f + "/ ki " + list.length + " file hatani hain?", "Hatao", true))) return;
+  await snap("folder-delete");
+  list.forEach((k) => { delete P.files[k]; HIST.delete(k); });
+  if (!has(P.files, cur)) cur = Object.keys(P.files).sort()[0];
+  touch(); openFile(cur);
+}
+async function renameProject(){
+  const v = await dialog({ title: "Project ka naam", fields: [{ id: "n", label: "Naam", value: P.name }] });
+  if (!v) return;
+  P.name = slug(v.n); touch(); paintFiles();
+}
+async function tplPick(){
+  const keys = Object.keys(TPL);
+  const v = await dialog({ title: "Template chuno", msg: "Purani files badal jayengi (backup ban jayega).", fields: [{ id: "k", label: "Template", type: "select", options: keys.map((k) => ({ v: k, t: TPL[k].name })) }], ok: "Lagao" });
+  if (!v) return;
+  await snap("template");
+  replaceProject({ name: v.k, files: clone(TPL[v.k].files) });
+  showTab("out"); out("ok", "🧩 Template laga: " + TPL[v.k].name);
+}
+
+/* ---------- build ---------- */
+function build(){
+  showTab("out");
+  $("outBody").textContent = "";
+  flushHist();
+  const r = projectCheck(P.files);
+  r.items.forEach((i) => out(i.cls, i.msg));
+  r.hints.forEach((h) => out("dim", "💡 " + h));
+  out(r.fail ? "bad" : (r.warn ? "warn" : "ok"),
+    (r.fail ? "🔴 BUILD FAIL" : "🟢 BUILD PASS") + " — " + r.total + " file, " + r.fail + " galti, " + r.warn + " chetavni");
+  $("sbBuild").textContent = r.fail ? "🔴 build fail" : (r.warn ? "🟡 build ok (" + r.warn + " chetavni)" : "🟢 build pass");
+  return r.fail === 0;
+}
+
+/* ---------- run / preview / console ---------- */
+let frame = null, urls = [], REV = Object.create(null), gotReady = false, gotTimer = null, runEntry = null, dataMode = false;
+let errCount = 0;
+function freeUrls(){ urls.forEach((u) => { try{ URL.revokeObjectURL(u); }catch(e){} }); urls = []; REV = Object.create(null); }
+function mkBlob(path, mime, text){
+  const u = URL.createObjectURL(new Blob([text], { type: mime + ";charset=utf-8" }));
+  urls.push(u); REV[u] = path; return u;
+}
+function mkData(path, mime, text){
+  const u = "data:" + mime + ";charset=utf-8;base64," + b64(text);
+  REV[u] = path; return u;
+}
+function conAdd(lvl, text, loc){
+  const b = $("conBody");
+  const d = document.createElement("div");
+  d.className = "con " + (lvl === "error" ? "bad" : lvl === "warn" ? "warn" : lvl === "info" ? "info" : "");
+  d.textContent = text;
+  if (loc){ const l = document.createElement("span"); l.className = "loc"; l.textContent = loc; d.appendChild(l); }
+  b.appendChild(d);
+  while (b.childNodes.length > 500) b.removeChild(b.firstChild);
+  b.scrollTop = b.scrollHeight;
+  if (lvl === "error"){ errCount++; $("tabCon").textContent = "Console (" + errCount + ")"; }
+}
+function conClear(){ $("conBody").textContent = ""; errCount = 0; $("tabCon").textContent = "Console"; }
+function pickEntry(){
+  if (isHTML(cur)) return cur;
+  if (has(P.files, "index.html")) return "index.html";
+  return Object.keys(P.files).sort().filter(isHTML)[0] || null;
+}
+function launch(entry){
+  freeUrls();
+  let r;
+  try{ r = buildRun(P.files, entry, dataMode ? mkData : mkBlob, { runtime: true, nav: true }); }
+  catch(e){ showTab("out"); out("bad", "❌ Run fail: " + e.message); return; }
+  runEntry = entry;
+  conClear();
+  conAdd("info", "▶ " + entry + (dataMode ? "  (data-URL mode)" : ""));
+  const pb = $("preBody");
+  pb.textContent = "";
+  frame = document.createElement("iframe");
+  frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals allow-forms allow-popups allow-downloads");
+  frame.style.cssText = "width:100%;height:100%;border:0;background:#fff";
+  pb.appendChild(frame);
+  gotReady = false;
+  clearTimeout(gotTimer);
+  gotTimer = setTimeout(() => { if (!gotReady) conAdd("warn", "Preview ka runtime shuru nahi hua — browser iframe rok raha ho sakta hai."); }, 3500);
+  frame.srcdoc = r.html;
+}
+async function doRun(){
+  if (!P) return;
+  flushHist();
+  const ent = pickEntry();
+  if (!ent){ showTab("out"); out("bad", "❌ Koi .html file nahi — index.html banao."); return; }
+  if (!build()){
+    if (!(await yesno("Build me galtiyan hain (Output dekho). Phir bhi chalao?", "Chalao"))) return;
+  }
+  launch(ent);
+  showTab("pre");
+  $("bottom").classList.add("big");
+}
+window.addEventListener("message", (e) => {
+  const d = e.data;
+  if (!d || !d.__seetal || !frame || e.source !== frame.contentWindow) return;
+  if (d.k === "ready"){ gotReady = true; return; }
+  if (d.k === "log"){ conAdd(d.lvl, d.t); return; }
+  if (d.k === "nav"){ if (has(P.files, d.p)) launch(d.p); return; }
+  if (d.k === "err"){
+    if (d.res){
+      const nm = REV[d.res];
+      if (!nm && /^blob:/.test(d.res) && !dataMode && runEntry){
+        dataMode = true;
+        conAdd("warn", "Blob load block hua — data-URL mode me dobara chala raha hoon.");
+        launch(runEntry);
+        return;
+      }
+      conAdd("error", "Load nahi hua: " + (nm || String(d.res).slice(0, 80)));
+      return;
+    }
+    const nm = REV[d.f];
+    conAdd("error", d.t, nm ? nm + ":" + d.l + ":" + d.c : (d.l ? "line " + d.l : ""));
+  }
+});
+
+/* ---------- tabs ---------- */
+const TABS = { out: "outBody", con: "conBody", pre: "preBody", kh: "khBody" };
+function showTab(t){
+  curTab = t;
+  Object.keys(TABS).forEach((k) => { $(TABS[k]).hidden = (k !== t); });
+  document.querySelectorAll("#outHead .tab").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
+  if (t === "out" || t === "kh") $("bottom").classList.remove("big");
+}
+
+/* ---------- khoj / badlo ---------- */
+function mkRe(q, cs, rx){
+  const src = rx ? q : q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(src, "g" + (cs ? "" : "i"));
+}
+function khMsg(cls, t){ const m = $("khMsg"); m.className = cls; m.textContent = t; }
+function khFind(){
+  const q = $("khQ").value, box = $("khRes");
+  box.textContent = ""; khMsg("dim", "");
+  if (!q) return;
+  let re;
+  try{ re = mkRe(q, $("khCase").checked, $("khRx").checked); }catch(e){ khMsg("bad", "Regex galat: " + e.message); return; }
+  let n = 0, files = 0;
+  const LIM = 200;
+  Object.keys(P.files).sort().forEach((f) => {
+    const lines = P.files[f].split("\n");
+    let fm = 0;
+    for (let i = 0; i < lines.length; i++){
+      re.lastIndex = 0;
+      const m = re.exec(lines[i]);
+      if (!m) continue;
+      n++; fm++;
+      if (n <= LIM){
+        const row = document.createElement("div"); row.className = "res";
+        const b = document.createElement("b"); b.textContent = f + ":" + (i + 1);
+        row.appendChild(b);
+        row.appendChild(document.createTextNode(" " + lines[i].trim().slice(0, 90)));
+        const col = m.index, len = Math.max(1, m[0].length), li = i;
+        row.onclick = () => gotoPos(f, li, col, len);
+        box.appendChild(row);
+      }
+    }
+    if (fm) files++;
+  });
+  khMsg(n ? "ok" : "warn", n ? n + " jagah, " + files + " file me" + (n > LIM ? " (pehli " + LIM + " dikha raha hoon)" : "") : "Kuch nahi mila.");
+}
+async function khReplace(){
+  const q = $("khQ").value, rep = $("khR").value, rx = $("khRx").checked;
+  if (!q) return;
+  let re;
+  try{ re = mkRe(q, $("khCase").checked, rx); }catch(e){ khMsg("bad", "Regex galat: " + e.message); return; }
+  let total = 0, nf = 0;
+  const plan = [];
+  Object.keys(P.files).sort().forEach((f) => {
+    const c = (P.files[f].match(re) || []).length;
+    if (c){ total += c; nf++; plan.push(f); }
+  });
+  if (!total){ khMsg("warn", "Kuch nahi mila."); return; }
+  if (!(await yesno(total + " jagah, " + nf + " file me badalna hai?\n(Backup ban jayega, Undo bhi chalega)", "Sab badlo", true))) return;
+  await snap("replace");
+  plan.forEach((f) => {
+    const nt = P.files[f].replace(re, rx ? rep : () => rep);
+    if (nt !== P.files[f]) setFileText(f, nt);
+  });
+  khMsg("ok", "✅ " + total + " jagah badal diya.");
+  $("khRes").textContent = "";
+}
+
+/* ---------- AI dimaag ---------- */
+const BRAINS = {
+  sarvam:    { url: "https://api.sarvam.ai/v1/chat/completions", model: "sarvam-m", auth: "api-subscription-key", prefix: "", openai: true },
+  gemini:    { gemini: true, model: "gemini-2.0-flash" },
+  anthropic: { url: "https://api.anthropic.com/v1/messages", model: "claude-haiku-5-5", anthropic: true },
+  openai:    { url: "https://api.openai.com/v1/chat/completions", model: "gpt-4o-mini", auth: "Authorization", prefix: "Bearer ", openai: true },
+  deepseek:  { url: "https://api.deepseek.com/v1/chat/completions", model: "deepseek-chat", auth: "Authorization", prefix: "Bearer ", openai: true },
+  kimi:      { url: "https://api.moonshot.cn/v1/chat/completions", model: "moonshot-v1-8k", auth: "Authorization", prefix: "Bearer ", openai: true },
+  groq:      { url: "https://api.groq.com/openai/v1/chat/completions", model: "llama-3.1-8b-instant", auth: "Authorization", prefix: "Bearer ", openai: true },
+  none:      { free: true, model: "free" }
+};
+function bGet(){ try{ return JSON.parse(localStorage.getItem(BRAIN_KEY) || "null"); }catch(e){ return null; } }
+function bSet(v){ try{ localStorage.setItem(BRAIN_KEY, JSON.stringify(v)); }catch(e){} }
+let aiErr = "";
+
+async function bAsk(prompt, ms){
+  aiErr = "";
+  const c = bGet();
+  if (c && c.key && c.provider && c.provider !== "none"){
+    const B = BRAINS[c.provider];
+    if (!B || B.free) aiErr = "provider galat";
+    else {
+      const model = c.model || B.model;
+      const ctl = new AbortController();
+      const to = setTimeout(() => ctl.abort(), ms || 30000);
+      try{
+        let r, j, t;
+        if (B.gemini){
+          const url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent?key=" + encodeURIComponent(c.key);
+          r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }), signal: ctl.signal });
+          j = await r.json();
+          if (j.error) throw new Error(j.error.message || "gemini error");
+          t = j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts && j.candidates[0].content.parts[0].text;
+        } else if (B.anthropic){
+          r = await fetch(B.url, { method: "POST",
+            headers: { "Content-Type": "application/json", "x-api-key": c.key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+            body: JSON.stringify({ model, max_tokens: 8000, messages: [{ role: "user", content: prompt }] }), signal: ctl.signal });
+          j = await r.json();
+          if (j.error) throw new Error(j.error.message || "anthropic error");
+          t = j.content && j.content[0] && j.content[0].text;
+        } else {
+          const headers = { "Content-Type": "application/json" };
+          headers[B.auth] = (B.prefix || "") + c.key;
+          r = await fetch(B.url, { method: "POST", headers, body: JSON.stringify({ model, temperature: 0.4, messages: [{ role: "user", content: prompt }] }), signal: ctl.signal });
+          j = await r.json();
+          if (j.error) throw new Error(typeof j.error === "string" ? j.error : (j.error.message || "api error"));
+          t = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+        }
+        if (t) return String(t).trim();
+        aiErr = "khali jawab aaya";
+      }catch(e){ aiErr = e && e.name === "AbortError" ? "time out" : (e && e.message ? e.message : "error"); }
+      finally{ clearTimeout(to); }
+    }
+  } else aiErr = "API key set nahi hai";
+  try{ if (window.SeetalAPIs && SeetalAPIs.ask){ const a = await SeetalAPIs.ask(prompt, { timeout: ms || 25000 }); if (a && a.ok) return a.text; } }catch(e){}
+  return null;
+}
+async function brainCfg(){
+  const c = bGet() || { provider: "none", key: "", model: "" };
+  const v = await dialog({ title: "🔌 AI dimaag", msg: "Key sirf is phone ke browser me rehti hai.", fields: [
+    { id: "prov", label: "Provider", type: "select", value: BRAINS[c.provider] ? c.provider : "none", options: Object.keys(BRAINS).map((k) => ({ v: k, t: k })) },
+    { id: "key", label: "API key", type: "password", value: c.key || "" },
+    { id: "model", label: "Model (optional)", value: c.model || "" }
+  ], ok: "Save" });
+  if (!v) return;
+  bSet({ provider: v.prov, key: v.key.trim(), model: v.model.trim() });
+  showTab("out"); out("ok", "🔌 Dimaag set: " + v.prov + " — test ke liye ☰ → AI se file badlo.");
+}
+async function aiEdit(){
+  const v = await dialog({ title: "🤖 AI se " + cur + " badlo", fields: [{ id: "q", label: "Kya karwana hai?", type: "textarea", ph: "jaise: is file me search box jodo" }], ok: "Bhejo" });
+  if (!v || !v.q.trim()) return;
+  showTab("out"); out("warn", "🤖 AI likh raha hai…");
+  const f = cur, old = P.files[f];
+  const pr = "Tum expert developer ho. Neeche ek file hai. User ne kaha: \"" + v.q.trim() + "\". "
+    + "Sirf poora naya file content do — koi explanation nahi. Mobile-first, Hinglish UI, bade touch buttons, chhote comments.\n\n"
+    + "File: " + f + "\n\n" + old;
+  const raw = await bAsk(pr, 40000);
+  if (!raw){ out("bad", "❌ AI se jawab nahi aaya" + (aiErr ? " (" + aiErr + ")" : "") + " — ☰ → Dimaag me key daalo."); return; }
+  const ans = unfence(raw);
+  if (!ans){ out("bad", "❌ AI ka jawab khali tha."); return; }
+  const ok = await yesno("AI ne " + ans.split("\n").length + " line ka code diya (pehle " + old.split("\n").length + "). Badal dun?\n(Undo se wapas aa sakta hai)", "Badlo");
+  if (!ok || !has(P.files, f)) return;
+  setFileText(f, ans);
+  out("ok", "✅ " + f + " update ho gayi — Build dabao.");
+}
+async function aiMake(){
+  const v = await dialog({ title: "✨ AI se poora app", fields: [{ id: "q", label: "Kaisa app banao?", type: "textarea", ph: "jaise: padhaai ka timetable jo save ho" }], ok: "Banao" });
+  if (!v || !v.q.trim()) return;
+  showTab("out"); out("warn", "✨ AI poora app bana raha hai… (10-40 second)");
+  const pr = "Tum expert web developer ho. Ek chhota app banao is idea par: \"" + v.q.trim() + "\".\n"
+    + "Sirf JSON do: {\"name\":\"app-naam\",\"files\":{\"index.html\":\"...\",\"style.css\":\"...\",\"app.js\":\"...\"}}\n"
+    + "Niyam: viewport meta, style.css/app.js se link, mobile-first, bade buttons, Hinglish, localStorage, try/catch, chhote comments. Sirf JSON.";
+  const raw = await bAsk(pr, 60000);
+  if (!raw){ out("bad", "❌ AI se jawab nahi aaya" + (aiErr ? " (" + aiErr + ")" : "") + " — ☰ → Dimaag me key daalo."); return; }
+  const d = parseApp(raw);
+  if (!d){ out("bad", "❌ AI ka jawab samajh nahi aaya — dobara bolo."); return; }
+  if (!(await yesno("AI ne " + Object.keys(d.files).length + " file banayi. Purani badal dun?\n(Backup ban jayega)", "Badlo"))) return;
+  await snap("ai-make");
+  replaceProject(d);
+  build();
+}
+
+/* ---------- import / export ---------- */
+async function ghFetchText(owner, name, branch, path, sha, token){
+  if (token){
+    const r = await fetch("https://api.github.com/repos/" + owner + "/" + name + "/git/blobs/" + sha, { headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" } });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    const bin = atob(String(j.content).replace(/\s/g, ""));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+  const url = "https://raw.githubusercontent.com/" + owner + "/" + name + "/" + branch.split("/").map(encodeURIComponent).join("/") + "/" + path.split("/").map(encodeURIComponent).join("/");
+  const r = await fetch(url);
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return await r.text();
+}
+async function importGH(){
+  const v = await dialog({ title: "⬇️ GitHub se import", fields: [
+    { id: "repo", label: "Repo (owner/naam)", value: (P && P.repo) || "" },
+    { id: "branch", label: "Branch (khali = default)", value: "" },
+    { id: "token", label: "Token (sirf private repo ke liye)", type: "password" }
+  ], ok: "La do" });
+  if (!v) return;
+  const repo = v.repo.trim();
+  if (!/^[\w.\-]+\/[\w.\-]+$/.test(repo)){ showTab("out"); out("bad", "❌ Repo aise likho: owner/naam"); return; }
+  const owner = repo.split("/")[0], name = repo.split("/")[1], token = v.token.trim();
+  showTab("out"); out("warn", "⬇️ La raha hoon…");
+  try{
+    const hd = token ? { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" } : { Accept: "application/vnd.github+json" };
+    let branch = v.branch.trim();
+    if (!branch){
+      const r0 = await fetch("https://api.github.com/repos/" + owner + "/" + name, { headers: hd });
+      if (!r0.ok) throw new Error("repo nahi mili (HTTP " + r0.status + ")");
+      branch = (await r0.json()).default_branch || "main";
+    }
+    const r = await fetch("https://api.github.com/repos/" + owner + "/" + name + "/git/trees/" + branch.split("/").map(encodeURIComponent).join("/") + "?recursive=1", { headers: hd });
+    if (!r.ok) throw new Error("tree nahi mila (HTTP " + r.status + ")");
+    const j = await r.json();
+    if (j.truncated) out("warn", "⚠️ Repo bahut bada hai — poori list nahi aayi.");
+    let skipped = 0;
+    const list = [];
+    (j.tree || []).forEach((x) => {
+      if (x.type !== "blob") return;
+      const p = normPath(x.path);
+      if (!p || !TEXT_EXT.test(p) || (x.size || 0) > 300000 || /(^|\/)(node_modules|\.git)\//.test(p)){ skipped++; return; }
+      list.push({ p, sha: x.sha });
+    });
+    if (!list.length){ out("bad", "Koi text file nahi mili."); return; }
+    const cut = list.slice(0, 200);
+    if (list.length > cut.length) out("warn", "⚠️ Sirf pehli 200 file li gayi.");
+    if (!(await yesno(cut.length + " file mili (" + skipped + " chhodi). Purani files badal dun?\n(Backup ban jayega)", "Badlo"))) return;
+    const files = {};
+    let failed = 0, doneN = 0;
+    await pool(cut, 4, async (it) => {
+      try{ files[it.p] = await ghFetchText(owner, name, branch, it.p, it.sha, token); }
+      catch(e){ failed++; out("bad", "❌ " + it.p + " — " + e.message); }
+      doneN++;
+      if (doneN % 20 === 0) out("dim", doneN + "/" + cut.length + "…");
+    });
+    if (!Object.keys(files).length){ out("bad", "❌ Koi file download nahi hui."); return; }
+    await snap("import");
+    replaceProject({ name: name, files, repo });
+    out("ok", "✅ " + Object.keys(files).length + " file aa gayi" + (failed ? " (" + failed + " fail)" : "") + ".");
+  }catch(e){ out("bad", "❌ Import fail: " + e.message); }
+}
+async function handleImported(list){
+  if (!list.length) return;
+  showTab("out");
+  if (list.length === 1 && /\.json$/i.test(list[0].name)){
+    try{
+      const d = JSON.parse(await list[0].text());
+      const files = d && cleanFiles(d.files);
+      if (files){
+        if (!(await yesno("Project file mili (" + Object.keys(files).length + " file). Purana badal dun?\n(Backup ban jayega)", "Badlo"))) return;
+        await snap("import-json");
+        replaceProject({ name: d.name || list[0].name.replace(/\.json$/i, ""), files, repo: d.repo || "" });
+        out("ok", "✅ Project aa gaya.");
+        return;
+      }
+    }catch(e){}
+  }
+  const added = {};
+  let skipped = 0;
+  for (const f of list){
+    const rel = f.webkitRelativePath ? f.webkitRelativePath.split("/").slice(1).join("/") : f.name;
+    const p = normPath(rel);
+    if (!p || !TEXT_EXT.test(p) || f.size > 500000 || /(^|\/)(node_modules|\.git)\//.test(p)){ skipped++; continue; }
+    try{ added[p] = await f.text(); }catch(e){ skipped++; }
+  }
+  const n = Object.keys(added).length;
+  if (!n){ out("bad", "❌ Koi text file nahi li (" + skipped + " chhodi)."); return; }
+  const v = await dialog({ title: n + " file mili", msg: skipped ? skipped + " file chhodi (text nahi / bahut badi)." : "", fields: [{ id: "m", label: "Kaise?", type: "select", options: [{ v: "merge", t: "Jod do (same naam badal jayenge)" }, { v: "replace", t: "Poora project badlo" }] }], ok: "Theek hai" });
+  if (!v) return;
+  await snap("import-files");
+  if (v.m === "replace") replaceProject({ name: P.name, files: added });
+  else {
+    Object.keys(added).forEach((p) => { if (has(P.files, p)) setFileText(p, added[p]); else P.files[p] = added[p]; });
+    touch(); paintFiles();
+  }
+  out("ok", "✅ " + n + " file aa gayi.");
+}
+function exportJSON(){
+  flushHist();
+  download(new Blob([JSON.stringify({ app: "seetal-studio", v: 2, name: P.name, repo: P.repo || "", files: P.files }, null, 1)], { type: "application/json" }), slug(P.name) + ".studio.json");
+  showTab("out"); out("ok", "📦 Project export ho gaya.");
+}
+function exportZip(){
+  flushHist();
+  download(new Blob(zipParts(P.files), { type: "application/zip" }), slug(P.name) + ".zip");
+  showTab("out"); out("ok", "🗜 ZIP download ho gaya.");
+}
+function dlHtml(){
+  flushHist();
+  const ent = pickEntry();
+  if (!ent){ showTab("out"); out("bad", "❌ Koi .html file nahi."); return; }
+  try{
+    const r = buildRun(P.files, ent, mkData, { runtime: false, nav: false });
+    download(new Blob([r.html], { type: "text/html;charset=utf-8" }), slug(P.name) + ".html");
+    showTab("out");
+    out("ok", "⬇️ " + slug(P.name) + ".html download — phone me offline chalega (" + ent + " se bana).");
+    if (r.missing.length) out("warn", "⚠️ Ye link nahi mile: " + r.missing.slice(0, 5).join(", "));
+    if (/<a\b[^>]*href="[^"#][^"]*\.html?"/i.test(P.files[ent])) out("warn", "⚠️ Dusre page ke link single file me nahi chalenge.");
+  }catch(e){ reportErr(e); }
+}
+async function backups(){
+  let keys;
+  try{ keys = (await kvKeys("snap:")).sort().reverse(); }catch(e){ reportErr(e); return; }
+  if (!keys.length){ showTab("out"); out("warn", "Abhi koi backup nahi — thodi der baad ban jayega."); return; }
+  const snaps = [];
+  for (const k of keys){ try{ const s = await kvGet(k); if (s && s.files) snaps.push(s); }catch(e){} }
+  if (!snaps.length){ showTab("out"); out("warn", "Backup padh nahi paya."); return; }
+  const v = await dialog({ title: "🕘 Backup se wapas jao", msg: "Abhi ka project bhi pehle backup ho jayega.", fields: [{ id: "k", label: "Backup", type: "select",
+    options: snaps.map((s, i) => ({ v: String(i), t: new Date(s.ts).toLocaleString() + " · " + (s.note || "") + " · " + Object.keys(s.files).length + " file" })) }], ok: "Wapas lao" });
+  if (!v) return;
+  const s = snaps[Number(v.k)];
+  await snap("before-restore");
+  replaceProject({ name: s.name, files: clone(s.files) });
+  showTab("out"); out("ok", "✅ Backup wapas aa gaya (" + new Date(s.ts).toLocaleString() + ").");
+}
+
+/* ---------- deploy (GitHub, ek hi commit me, folders ke saath) ---------- */
+async function gh(token, method, path, body){
+  const headers = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" };
+  if (body) headers["Content-Type"] = "application/json";
+  const r = await fetch("https://api.github.com" + path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+  let j = null;
+  try{ j = await r.json(); }catch(e){}
+  if (!r.ok){
+    const err = new Error((j && j.message) || ("HTTP " + r.status));
+    err.status = r.status; throw err;
+  }
+  return j;
+}
+async function deploy(){
+  flushHist();
+  const v = await dialog({ title: "🚀 GitHub par deploy", msg: "Saari files ek hi commit me jayengi.", fields: [
+    { id: "token", label: "GitHub token (Contents: write)", type: "password" },
+    { id: "repo", label: "Repo (owner/naam)", value: P.repo || "" },
+    { id: "branch", label: "Branch (khali = default)", value: "" },
+    { id: "msg", label: "Commit message", value: "Seetal Studio deploy" },
+    { id: "del", type: "check", label: "Remote ki wo files hatao jo yahan nahi hain", value: false }
+  ], ok: "Deploy" });
+  if (!v) return;
+  const token = v.token.trim(), repo = v.repo.trim();
+  if (!token || /\s/.test(token)){ showTab("out"); out("bad", "❌ Token khali ya galat hai."); return; }
+  if (!/^[\w.\-]+\/[\w.\-]+$/.test(repo)){ showTab("out"); out("bad", "❌ Repo aise likho: owner/naam"); return; }
+  const owner = repo.split("/")[0], name = repo.split("/")[1];
+  const enc = (b) => b.split("/").map(encodeURIComponent).join("/");
+  showTab("out"); $("outBody").textContent = "";
+  out("warn", "🚀 Deploy shuru…");
+  try{
+    await saveNow();
+    const info = await gh(token, "GET", "/repos/" + owner + "/" + name);
+    const branch = v.branch.trim() || info.default_branch || "main";
+    let ref;
+    try{ ref = await gh(token, "GET", "/repos/" + owner + "/" + name + "/git/ref/heads/" + enc(branch)); }
+    catch(e){
+      if (e.status === 404 || e.status === 409) throw new Error("branch '" + branch + "' nahi mili (ya repo khali hai — GitHub par ek README banake repo shuru karo)");
+      throw e;
+    }
+    const baseCommit = ref.object.sha;
+    const bc = await gh(token, "GET", "/repos/" + owner + "/" + name + "/git/commits/" + baseCommit);
+    const baseTree = bc.tree.sha;
+    out("dim", "branch: " + branch);
+
+    const entries = Object.keys(P.files).sort().map((k) => [k, P.files[k]]);
+    const treeItems = [];
+    let n = 0;
+    await pool(entries, 3, async (it) => {
+      const b = await gh(token, "POST", "/repos/" + owner + "/" + name + "/git/blobs", { content: it[1], encoding: "utf-8" });
+      treeItems.push({ path: it[0], mode: "100644", type: "blob", sha: b.sha });
+      n++;
+      out("ok", "✅ " + it[0] + " (" + n + "/" + entries.length + ")");
+    });
+
+    if (v.del){
+      const rt = await gh(token, "GET", "/repos/" + owner + "/" + name + "/git/trees/" + baseTree + "?recursive=1");
+      if (rt.truncated) out("warn", "⚠️ Remote tree bahut badi — hatana chhod diya.");
+      else {
+        const rem = (rt.tree || []).filter((x) => x.type === "blob" && !has(P.files, x.path) && !/(^|\/)\./.test(x.path) && x.path !== "CNAME");
+        if (rem.length){
+          const ok = await yesno("Remote se " + rem.length + " file hategi:\n" + rem.slice(0, 8).map((x) => x.path).join("\n") + (rem.length > 8 ? "\n…" : ""), "Hatao", true);
+          if (ok){ rem.forEach((x) => treeItems.push({ path: x.path, mode: "100644", type: "blob", sha: null })); out("warn", "🗑 " + rem.length + " file hategi."); }
+        }
+      }
+    }
+
+    const nt = await gh(token, "POST", "/repos/" + owner + "/" + name + "/git/trees", { base_tree: baseTree, tree: treeItems });
+    if (nt.sha === baseTree){ out("ok", "Koi badlav nahi — GitHub par sab pehle jaisa hi hai."); P.repo = repo; touch(); return; }
+    const cm = await gh(token, "POST", "/repos/" + owner + "/" + name + "/git/commits", { message: v.msg.trim() || "Seetal Studio deploy", tree: nt.sha, parents: [baseCommit] });
+    await gh(token, "PATCH", "/repos/" + owner + "/" + name + "/git/refs/heads/" + enc(branch), { sha: cm.sha, force: false });
+    P.repo = repo; touch();
+    const root = name.toLowerCase() === owner.toLowerCase() + ".github.io";
+    out("ok", "🚀 Deploy ho gaya — commit " + cm.sha.slice(0, 7));
+    out("ok", "Live link (1-2 min, Pages on hona chahiye): https://" + (root ? name.toLowerCase() : owner.toLowerCase() + ".github.io/" + name) + "/");
+  }catch(e){
+    let hint = "";
+    if (e.status === 401) hint = " — token galat ya expire";
+    else if (e.status === 403) hint = " — token me Contents: write nahi, ya rate limit";
+    else if (e.status === 404) hint = " — repo ka naam ya token ki permission check karo";
+    out("bad", "❌ Deploy fail: " + e.message + hint);
+  }
+}
+
+/* ---------- menu ---------- */
+function openMenu(){
+  sheet("Menu", [
+    { h: "FILE" },
+    { t: "＋ Naya file", f: newFile },
+    { t: "✏️ Naam badlo / folder me bhejo", f: renameFile },
+    { t: "🗑 Ye file hatao", f: delFile },
+    { t: "🗑 Folder hatao", f: delFolder },
+    { t: "🔎 Khoj / badlo (poore project me)", f: () => { showTab("kh"); setTimeout(() => $("khQ").focus(), 50); } },
+    { h: "PROJECT" },
+    { t: "✏️ Project ka naam", f: renameProject },
+    { t: "🧩 Template", f: tplPick },
+    { t: "🕘 Backup se wapas", f: backups },
+    { t: "📂 Phone se file / folder lo", f: () => $("fileIn").click() },
+    { t: "📁 Phone se poora folder lo", f: () => $("dirIn").click() },
+    { t: "⬇️ GitHub se import", f: importGH },
+    { h: "AI" },
+    { t: "🤖 AI se ye file badlo", f: aiEdit },
+    { t: "✨ AI se poora app", f: aiMake },
+    { t: "🔌 Dimaag (AI key)", f: brainCfg },
+    { h: "BAHAR BHEJO" },
+    { t: "🚀 GitHub par deploy", f: deploy },
+    { t: "⬇️ Single HTML download (offline)", f: dlHtml },
+    { t: "🗜 ZIP download", f: exportZip },
+    { t: "📦 Project export (.json)", f: exportJSON },
+    { h: "DIKHAWA" },
+    { t: "🔠 Font bada", f: () => { prefs.fs = Math.min(22, prefs.fs + 1); applyPrefs(); } },
+    { t: "🔡 Font chhota", f: () => { prefs.fs = Math.max(10, prefs.fs - 1); applyPrefs(); } }
+  ]);
+}
+
+/* ---------- bind ---------- */
+function bind(){
+  ta.addEventListener("input", onEdited);
+  ta.addEventListener("scroll", () => { $("lines").scrollTop = ta.scrollTop; });
+  ta.addEventListener("beforeinput", (e) => {
+    if (e.inputType === "historyUndo"){ e.preventDefault(); undo(); }
+    else if (e.inputType === "historyRedo"){ e.preventDefault(); redo(); }
+  });
+  ta.addEventListener("keydown", (e) => {
+    if (e.isComposing) return;
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && !e.altKey){
+      const k = e.key.toLowerCase();
+      if (k === "z"){ e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
+      else if (k === "y"){ e.preventDefault(); redo(); }
+      else if (k === "s"){ e.preventDefault(); saveNow(); }
+      else if (k === "enter"){ e.preventDefault(); doRun(); }
+      else if (k === "f"){ e.preventDefault(); showTab("kh"); $("khQ").focus(); }
+      return;
+    }
+    if (e.key === "Tab"){ e.preventDefault(); indentKey(e.shiftKey); return; }
+    if (e.key === "Enter" && !e.shiftKey && !e.altKey){ e.preventDefault(); smartEnter(); }
+  });
+  document.addEventListener("selectionchange", () => { if (document.activeElement === ta) paintPos(); });
+
+  $("bUndo").onclick = undo;
+  $("bRedo").onclick = redo;
+  $("bNew").onclick = () => newFile().catch(reportErr);
+  $("bSave").onclick = async () => { const ok = await saveNow(); if (ok) await snap("manual"); };
+  $("bBuild").onclick = build;
+  $("bRun").onclick = () => doRun().catch(reportErr);
+  $("bMenu").onclick = openMenu;
+  $("projName").onclick = () => renameProject().catch(reportErr);
+  $("sideT").onclick = () => { const s = $("side"); s.hidden = !s.hidden; };
+  $("expand").onclick = () => $("bottom").classList.toggle("big");
+  document.querySelectorAll("#outHead .tab").forEach((b) => { b.onclick = () => showTab(b.dataset.t); });
+  $("clearOut").onclick = () => {
+    if (curTab === "out") $("outBody").textContent = "";
+    else if (curTab === "con") conClear();
+    else if (curTab === "kh"){ $("khRes").textContent = ""; khMsg("dim", ""); }
+  };
+  $("khGo").onclick = khFind;
+  $("khAll").onclick = () => khReplace().catch(reportErr);
+  $("khQ").addEventListener("keydown", (e) => { if (e.key === "Enter"){ e.preventDefault(); khFind(); } });
+  $("fileIn").onchange = async () => { const l = Array.from($("fileIn").files); $("fileIn").value = ""; await handleImported(l); };
+  $("dirIn").onchange = async () => { const l = Array.from($("dirIn").files); $("dirIn").value = ""; await handleImported(l); };
+}
+
+/* ---------- start ---------- */
+window.addEventListener("error", (e) => {
+  try{ out("bad", "Studio error: " + (e.message || "?")); }catch(x){}
+});
+
+async function init(){
+  loadPrefs();
+  let note = "";
+  try{ db = await idbOpen(); }
+  catch(e){ useLS = true; note = "⚠️ IndexedDB nahi chala — localStorage use ho raha hai (chhota project hi rakho)."; }
+  let proj = null, migrated = false;
+  try{ proj = await kvGet("project"); }catch(e){}
+  try{
+    const em = JSON.parse(localStorage.getItem(EMERG_KEY) || "null");
+    if (em && em.files && (!proj || (em.updated || 0) > (proj.updated || 0))){ proj = em; migrated = true; }
+  }catch(e){}
+  if (!proj){
+    try{
+      const o = JSON.parse(localStorage.getItem(LS_OLD) || "null");
+      if (o && o.files){ proj = { name: o.name, files: o.files }; migrated = true; }
+    }catch(e){}
+  }
+  let files = proj && cleanFiles(proj.files);
+  if (!files){ proj = clone(DEFAULT); files = proj.files; }
+  P = { name: slug(proj.name || "project"), files, repo: proj.repo || "", cur: proj.cur || "", updated: proj.updated || Date.now() };
+  const names = Object.keys(files).sort();
+  cur = has(files, P.cur) ? P.cur : (has(files, "index.html") ? "index.html" : names[0]);
+  bind();
+  openFile(cur);
+  out("ok", "Seetal Studio Pro taiyar — " + names.length + " file. Build → Run → Deploy.");
+  if (note) out("warn", note);
+  if (migrated){ out("info", "Purana data naye storage me le aaya."); touch(); }
+  setSb(migrated ? "● badla hua" : "💾 taiyar");
+  try{ if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); }catch(e){}
+  snap("auto");
+}
+init().catch((e) => {
+  const b = $("outBody");
+  b.textContent = "❌ Studio shuru nahi hua: " + (e && e.message ? e.message : e);
+  b.className = "pane bad";
+});
+</script>
+<script src="assets/apis.js" onerror="this.remove()"></script>
+</body>
+</html>
