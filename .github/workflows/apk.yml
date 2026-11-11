@@ -32,6 +32,22 @@ jobs:
           packages: 'platforms;android-34 build-tools;34.0.0 platform-tools'
           log-accepted-android-sdk-licenses: true
 
+      - name: cmdline-tools latest install
+        run: |
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "SDK=$SDK"
+          ls "$SDK" || true
+          yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" --version >/dev/null 2>&1 || {
+            mkdir -p "$SDK/cmdline-tools"
+            curl -sSL -o /tmp/cmdtools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+            unzip -q -o /tmp/cmdtools.zip -d /tmp/cmdtools
+            rm -rf "$SDK/cmdline-tools/latest"
+            mv /tmp/cmdtools/cmdline-tools "$SDK/cmdline-tools/latest"
+          }
+          yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || true
+          "$SDK/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34" "build-tools;34.0.0" >/dev/null 2>&1 || true
+          ls "$SDK/cmdline-tools/latest/bin" | head
+
       - name: Bubblewrap install
         run: npm i -g @bubblewrap/cli
 
