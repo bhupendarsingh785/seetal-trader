@@ -38,8 +38,11 @@ jobs:
       - name: Bubblewrap config
         run: |
           mkdir -p apk
-          cd apk
-          echo '{"jdkPath":"'"$JAVA_HOME"'","androidSdkPath":"'"$ANDROID_SDK_ROOT"'"}' > ~/.bubblewrap/config.json
+          mkdir -p "$HOME/.bubblewrap"
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "JDK=$JAVA_HOME SDK=$SDK"
+          printf '{"jdkPath":"%s","androidSdkPath":"%s"}\n' "$JAVA_HOME" "$SDK" > "$HOME/.bubblewrap/config.json"
+          cat "$HOME/.bubblewrap/config.json"
 
       - name: Manifest banao (hamari app ke liye)
         run: |
