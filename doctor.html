@@ -51,6 +51,19 @@
 <main>
   <div class="sum" id="sum">Abhi jaanch nahi hui.</div>
 
+
+  <div class="card" style="border-color:rgba(34,211,238,.45)">
+    <h2 style="font-size:14px;margin:0 0 6px">🧠 Deep check — poora system ek nazar me</h2>
+    <p class="sub" style="margin:0 0 10px">Trader, Suno, Cloudflare API, Supabase, data ki umar, storage, cache — sab naapa jata hai. Score 100 me se.</p>
+    <div class="row">
+      <button class="btn primary" id="deepRun">🧪 Deep check chalao</button>
+      <button class="btn" id="deepFix">🔧 Jo toota ho theek karo</button>
+      <button class="btn" id="deepAI">🤖 AI se ilaaj batao</button>
+    </div>
+    <div id="deepScore" style="margin-top:12px;font-size:15px;font-weight:800"></div>
+    <div id="deepBox" style="margin-top:8px"><p class="sub">Abhi check nahi hua.</p></div>
+  </div>
+
   <div class="card" style="border-color:rgba(139,92,246,.45)">
     <h2 style="font-size:14px;margin:0 0 6px">🤖 AI Doctor — poori report padh kar ilaaj batata hai</h2>
     <p class="sub" style="margin:0 0 10px">Jaanch ke baad ye button dabao — main saari report AI ko dikha kar Hinglish mein bataungi: kya toota, kyun toota, aur kya karna hai.</p>
@@ -444,6 +457,147 @@ async function rvRestore(sha){
   }
 };
 
+
+/* ================= DEEP CHECK (v3) ================= */
+const DEEP_TARGETS = [
+  { name: "Trader (Pages)",  url: "https://bhupendarsingh785.github.io/seetal-trader/data/live.json", kind: "json" },
+  { name: "Netlify",         url: "https://seetal-trader.netlify.app/data/live.json", kind: "json" },
+  { name: "Vercel",          url: "https://bhupendarsingh785.vercel.app/data/live.json", kind: "json" },
+  { name: "Cloudflare API",  url: "https://seetal-api.bhupendarsingh785.workers.dev/status", kind: "json" },
+  { name: "Suno",            url: "https://bhupendarsingh785.github.io/suno-assistant/", kind: "html" },
+  { name: "Seetal Platform", url: "https://bhupendarsingh785.github.io/swag-page/platform/", kind: "html" },
+];
+
+let DEEP_ROWS = [];
+
+function deepLine(ok, name, detail){
+  const cls = ok ? "ok" : "bad";
+  return `<div class="it"><div><div class="n">${ok ? "✅" : "❌"} ${name}</div><div class="d">${detail}</div></div></div>`;
+}
+
+async function timedFetch(url){
+  const t0 = performance.now();
+  try{
+    const ctl = new AbortController();
+    const to = setTimeout(() => ctl.abort(), 9000);
+    const r = await fetch(url + (url.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store", signal: ctl.signal });
+    clearTimeout(to);
+    return { ok: r.ok, ms: Math.round(performance.now() - t0), status: r.status, res: r };
+  }catch(e){
+    return { ok: false, ms: Math.round(performance.now() - t0), status: 0, err: String(e.message || e) };
+  }
+}
+
+async function deepCheck(){
+  const box = $("deepBox"), score = $("deepScore");
+  box.innerHTML = '<p class="sub">Check chal raha hai…</p>';
+  DEEP_ROWS = [];
+  let pass = 0, total = 0;
+
+  // 1) saare raste
+  for (const t of DEEP_TARGETS){
+    total++;
+    const r = await timedFetch(t.url);
+    let detail = r.ok ? (r.ms + " ms") : ("jawab nahi (" + r.status + ")");
+    if (r.ok && t.kind === "json"){
+      try{
+        const j = await r.res.json();
+        const d = j && j.data ? j.data : j;
+        const gen = d.generated_at || d.ts || j.generated_at || null;
+        if (j.age_minutes !== undefined) detail += " · data " + j.age_minutes + " min purana";
+        else if (gen){
+          const age = Math.round((Date.now() - new Date(gen).getTime()) / 60000);
+          detail += " · data " + age + " min purana";
+          if (age > 60) { DEEP_ROWS.push({ ok:false, name:t.name, detail:"data purana ("+age+" min)", fix:"pulse" }); continue; }
+        }
+      }catch(e){ detail += " · JSON kharab"; }
+    }
+    if (r.ms > 4000) detail += " · thoda dheema";
+    if (r.ok) pass++;
+    DEEP_ROWS.push({ ok: r.ok, name: t.name, detail });
+  }
+
+  // 2) storage
+  total++;
+  try{
+    let used = 0;
+    for (const k in localStorage) if (Object.prototype.hasOwnProperty.call(localStorage, k)) used += (localStorage[k] || "").length;
+    const ok = used < 3_000_000;
+    if (ok) pass++;
+    DEEP_ROWS.push({ ok, name: "Storage", detail: Math.round(used/1024) + " KB bhara" + (ok ? "" : " — bhut zyada, purana data hatao") });
+  }catch(e){ DEEP_ROWS.push({ ok:false, name:"Storage", detail:"band hai (incognito?)" }); }
+
+  // 3) cache / service worker
+  total++;
+  try{
+    const keys = ('caches' in window) ? await caches.keys() : [];
+    const regs = ('serviceWorker' in navigator) ? await navigator.serviceWorker.getRegistrations() : [];
+    const ok = keys.length <= 3;
+    if (ok) pass++;
+    DEEP_ROWS.push({ ok, name:"Cache", detail: keys.length + " cache · " + regs.length + " worker" + (ok ? "" : " — purana cache pada hai") });
+  }catch(e){ DEEP_ROWS.push({ ok:false, name:"Cache", detail:"check nahi hua" }); }
+
+  // 4) sync code
+  total++;
+  const sc = (localStorage.getItem("seetal.synccode") || "").trim();
+  if (sc) pass++;
+  DEEP_ROWS.push({ ok: !!sc, name:"Cloud sync", detail: sc ? "code laga hua hai" : "code nahi — dusre device par data nahi jayega" });
+
+  // 5) mirrors
+  total++;
+  let mirrors = [];
+  try{ mirrors = JSON.parse(localStorage.getItem("mirrors") || "[]"); }catch(e){}
+  if (mirrors.length) pass++;
+  DEEP_ROWS.push({ ok: mirrors.length > 0, name:"Mirror links", detail: mirrors.length ? (mirrors.length + " jude") : "koi nahi" });
+
+  box.innerHTML = DEEP_ROWS.map(r => deepLine(r.ok, r.name, r.detail)).join("");
+  const pct = Math.round(pass / total * 100);
+  const color = pct >= 90 ? "var(--green)" : pct >= 60 ? "var(--amber)" : "var(--red)";
+  score.innerHTML = `<span style="color:${color}">Score: ${pct} / 100</span> <span class="sub">(${pass}/${total} theek)</span>`;
+  return { pct, rows: DEEP_ROWS };
+}
+
+$("deepRun").onclick = deepCheck;
+
+$("deepFix").onclick = async () => {
+  const out = $("deepBox");
+  out.innerHTML = '<p class="sub">Theek kar raha hoon…</p>';
+  const fixed = [];
+  try{
+    if ('caches' in window){ const ks = await caches.keys(); for (const k of ks){ await caches.delete(k); } if (ks.length) fixed.push(ks.length + " purana cache saaf"); }
+  }catch(e){}
+  try{
+    if ('serviceWorker' in navigator){ const rs = await navigator.serviceWorker.getRegistrations(); for (const r of rs) await r.unregister(); if (rs.length) fixed.push(rs.length + " worker hataye"); }
+  }catch(e){}
+  try{
+    let m = JSON.parse(localStorage.getItem("mirrors") || "[]");
+    if (!m.length){
+      m = ["https://bhupendarsingh785.github.io/seetal-trader/", "https://seetal-trader.netlify.app/", "https://bhupendarsingh785.vercel.app/"];
+      localStorage.setItem("mirrors", JSON.stringify(m));
+      fixed.push("3 mirror link bhar diye");
+    }
+  }catch(e){}
+  await deepCheck();
+  out.insertAdjacentHTML("afterbegin", `<p class="sub" style="color:var(--green)">🔧 ${fixed.length ? fixed.join(" · ") : "kuch theek karne ki zaroorat nahi thi"}</p>`);
+};
+
+$("deepAI").onclick = async () => {
+  const out = $("deepBox");
+  out.insertAdjacentHTML("afterbegin", '<p class="sub">AI se poochh raha hoon…</p>');
+  const report = DEEP_ROWS.map(r => (r.ok ? "OK " : "FAIL ") + r.name + " — " + r.detail).join("\n");
+  let ans = null;
+  try{
+    if (window.SeetalAPIs && SeetalAPIs.ask){
+      const a = await SeetalAPIs.ask("Tum system doctor ho. Neeche jaanch ka report hai. Sirf 3 sabse zaroori kaam batao, numbered, Hinglish me, chhoti line me.\n\n" + report, { timeout: 15000 });
+      if (a && a.ok) ans = a.text;
+    }
+  }catch(e){}
+  if (!ans && typeof tryAI === "function"){
+    try{ ans = await tryAI("Is report ka ilaaj 3 numbered line me batao (Hinglish):\n" + report, "code"); }catch(e){}
+  }
+  out.insertAdjacentHTML("afterbegin", `<div class="it"><div><div class="n">🤖 AI Doctor</div><div class="d">${(ans || "AI se jawab nahi aaya — report upar dekh lo.").replace(/\n/g,"<br>")}</div></div></div>`);
+};
+
 async function runAll(){
   const btn = $("run");
   btn.disabled = true;
@@ -468,5 +622,6 @@ paintSkills();
 $("run").onclick = runAll;
 runAll();
 </script>
+  <script src="assets/apis.js"></script>
 </body>
 </html>
