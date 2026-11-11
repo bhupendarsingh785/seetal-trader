@@ -4,6 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Seetal — poora system, ek file</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#0b0f19" />
+<link rel="icon" href="icon-192.png" />
 <style>
   :root{--bg:#0b0f19;--card:#141d2b;--card2:#1a2434;--line:#26324b;--txt:#eef2fb;--dim:#94a3c4;
         --green:#34d399;--red:#fb7185;--amber:#fbbf24;--violet:#7c6cf8;--cyan:#22d3ee}
@@ -359,6 +362,11 @@ $("refresh").onclick = () => { loadData(true).then(() => toast("Refresh ho gaya"
 $("syncCode").value = LS.get("synccode", "");
 loadData();
 paintVault();
+
+/* app ki tarah install + offline */
+if ('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
 </script>
 </body>
 </html>
