@@ -105,6 +105,7 @@
   <div class="logo">Seetal<span>.</span>Studio</div>
   <div id="projName">project</div>
   <div class="spacer"></div>
+  <button class="ibtn" id="quickRun" style="background:linear-gradient(135deg,#34d399,#22d3ee);color:#04170c;font-weight:800">▶</button>
   <button class="ibtn" id="menu">☰</button>
 </header>
 
@@ -134,9 +135,9 @@
 
 <nav>
   <button data-v="files" class="on"><span class="ic">📁</span>Files</button>
-  <button data-v="code"><span class="ic">⌨️</span>Code</button>
-  <button data-v="build"><span class="ic">🔨</span>Build</button>
-  <button data-v="prev"><span class="ic">▶️</span>Run</button>
+  <button data-v="code"><span class="ic">⌨️</span>Likho</button>
+  <button data-v="build"><span class="ic">🔨</span>Jaanch</button>
+  <button data-v="prev"><span class="ic">▶️</span>Chalao</button>
 </nav>
 
 <div id="sheet2">
@@ -266,14 +267,16 @@ function openFile(f){
   cur = f;
   $("code").value = P.files[f];
   $("fname").textContent = f;
-  paintLines(); paintFiles();
+  paintLines();
 }
 
-function paintLines(){
+let _lastLines = 0;
+function paintLinesLite(){
   const n = ($("code").value.match(/\n/g) || []).length + 1;
-  $("lines").textContent = Array.from({length:n}, (_,i) => i+1).join("\n");
+  if (n !== _lastLines){ $("lines").textContent = Array.from({length:n}, (_,i) => i+1).join("\n"); _lastLines = n; }
   $("stat").textContent = n + " line";
 }
+function paintLines(){ _lastLines = 0; paintLinesLite(); }
 
 $("addFile").onclick = () => {
   const n = prompt("File ka naam (jaise page2.html, app.js, style.css):");
@@ -284,7 +287,13 @@ $("addFile").onclick = () => {
   save(); openFile(name); go("code");
 };
 
-$("code").addEventListener("input", () => { P.files[cur] = $("code").value; paintLines(); save(); });
+let saveTimer = null;
+$("code").addEventListener("input", () => {
+  P.files[cur] = $("code").value;
+  paintLinesLite();                       // halka update — sirf line count
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(save, 500);      // 500ms baad ek baar save
+});
 $("code").addEventListener("scroll", () => { $("lines").scrollTop = $("code").scrollTop; });
 
 /* touch snippets */
@@ -639,6 +648,13 @@ document.addEventListener("keydown", (e) => {
 document.querySelectorAll('nav button').forEach(b => {
   if (b.dataset.v === "prev") b.addEventListener("click", () => { $("prev").srcdoc = bundle(); });
 });
+
+$("quickRun").onclick = () => {
+  const ok = build();
+  $("prev").srcdoc = bundle();
+  go("prev");
+  if (!ok) go("build");
+};
 
 /* ---------------- start ---------------- */
 paintFiles(); openFile(cur);
