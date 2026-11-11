@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Seetal Studio — code likho, build karo, chalao</title>
+<style>
+  :root{--bg:#0b0f19;--panel:#121a26;--panel2:#182231;--line:#26324b;--txt:#eef2fb;--dim:#94a3c4;
+        --green:#34d399;--red:#fb7185;--amber:#fbbf24;--violet:#7c6cf8;--cyan:#22d3ee}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+       display:flex;flex-direction:column;overflow:hidden}
+  header{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#0e1520;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .logo{font-weight:800;font-size:14.5px}
+  .logo span{color:var(--green)}
+  .spacer{flex:1}
+  button{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:7px 10px;
+         font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+  button.pri{background:linear-gradient(135deg,var(--violet),#3b82f6);border:none}
+  button.ok{background:var(--green);color:#04170c;border:none}
+  button:disabled{opacity:.45}
+  main{flex:1;display:flex;min-height:0}
+  #side{width:150px;min-width:110px;background:#0e1520;border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:auto}
+  .file{padding:8px 10px;font-size:12.5px;color:var(--dim);cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);
+        white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .file.on{background:var(--panel2);color:var(--txt);border-left:3px solid var(--green)}
+  #editorWrap{flex:1;display:flex;flex-direction:column;min-width:0}
+  #tabbar{display:flex;gap:6px;padding:6px 8px;background:#0e1520;border-bottom:1px solid var(--line);font-size:12px;color:var(--dim);overflow:auto}
+  #codeArea{flex:1;display:flex;min-height:0;position:relative}
+  #lines{width:44px;background:#0a0f18;color:#4b5b73;font:13px/1.55 ui-monospace,Menlo,Consolas,monospace;
+         text-align:right;padding:10px 6px;overflow:hidden;user-select:none}
+  #code{flex:1;background:#0a0f18;color:#e8f0fb;border:0;outline:none;resize:none;
+        font:13px/1.55 ui-monospace,Menlo,Consolas,monospace;padding:10px;tab-size:2}
+  #bottom{height:38%;min-height:120px;border-top:1px solid var(--line);display:flex;flex-direction:column;background:var(--panel)}
+  #outHead{display:flex;gap:6px;padding:6px 8px;border-bottom:1px solid var(--line);align-items:center;font-size:12px;color:var(--dim)}
+  #outBody{flex:1;overflow:auto;padding:8px 10px;font-size:12.5px;line-height:1.65}
+  iframe{width:100%;height:100%;border:0;background:#fff}
+  .ok{color:var(--green)} .bad{color:var(--red)} .warn{color:var(--amber)}
+  .pill{background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:2px 8px;font-size:11px}
+  @media(max-width:640px){ #side{width:112px} #bottom{height:44%} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Seetal<span>.</span>Studio</div>
+  <span class="pill" id="projName">naya-project</span>
+  <div class="spacer"></div>
+  <button id="newFile">＋ File</button>
+  <button id="delFile">🗑</button>
+  <button class="pri" id="build">🔨 Build</button>
+  <button class="ok" id="run">▶ Run</button>
+  <button id="deploy">🚀 Deploy</button>
+  <button id="saveAll">💾 Save</button>
+</header>
+
+<main>
+  <div id="side"></div>
+  <div id="editorWrap">
+    <div id="tabbar"><span id="curFile">index.html</span><span class="spacer"></span><span id="stat"></span></div>
+    <div id="codeArea">
+      <div id="lines">1</div>
+      <textarea id="code" spellcheck="false" wrap="off"></textarea>
+    </div>
+  </div>
+</main>
+
+<div id="bottom">
+  <div id="outHead">
+    <span>Output</span>
+    <span class="spacer" style="flex:1"></span>
+    <button id="clearOut" style="padding:4px 8px;font-size:11px">saaf</button>
+  </div>
+  <div id="outBody"><div class="ok">Taiyar. File chuno, likho, Build dabao — phir Run.</div></div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const LS = "seetal.studio.v1";
+
+/* ---------- project ---------- */
+const DEFAULT = {
+  name: "naya-project",
+  files: {
+    "index.html": `<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mera app</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Namaste</h1>
+  <p>Ye Seetal Studio me bana hai.</p>
+  <script src="app.js"><\/script>
+</body>
+</html>`,
+    "style.css": `body{margin:0;font-family:system-ui;background:#0b0f19;color:#eef2fb;padding:20px}
+h1{font-size:22px}`,
+    "app.js": `console.log("app chalu");`,
+  },
+};
+
+let P = load();
+let cur = "index.html";
+
+function load(){
+  try{
+    const raw = localStorage.getItem(LS);
+    if (raw){ const p = JSON.parse(raw); if (p && p.files && Object.keys(p.files).length) return p; }
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT));
+}
+function save(){
+  try{ localStorage.setItem(LS, JSON.stringify(P)); return true; }catch(e){ return false; }
+}
+
+/* ---------- ui ---------- */
+function paintFiles(){
+  const box = $("side");
+  box.innerHTML = Object.keys(P.files).map(f =>
+    `<div class="file${f === cur ? " on" : ""}" data-f="${f}">${f}</div>`).join("");
+  box.querySelectorAll("[data-f]").forEach(el => el.onclick = () => openFile(el.dataset.f));
+  $("projName").textContent = P.name || "project";
+}
+
+function openFile(f){
+  if (!(f in P.files)) return;
+  cur = f;
+  $("code").value = P.files[f];
+  $("curFile").textContent = f;
+  paintLines(); paintFiles();
+}
+
+function paintLines(){
+  const n = ($("code").value.match(/\n/g) || []).length + 1;
+  $("lines").textContent = Array.from({length: n}, (_, i) => i + 1).join("\n");
+  $("stat").textContent = n + " line · " + $("code").value.length + " akshar";
+}
+
+$("code").addEventListener("input", () => { P.files[cur] = $("code").value; paintLines(); save(); });
+$("code").addEventListener("scroll", () => { $("lines").scrollTop = $("code").scrollTop; });
+$("code").addEventListener("keydown", (e) => {
+  if (e.key === "Tab"){ e.preventDefault();
+    const el = $("code"), s = el.selectionStart, en = el.selectionEnd;
+    el.value = el.value.slice(0, s) + "  " + el.value.slice(en);
+    el.selectionStart = el.selectionEnd = s + 2;
+    P.files[cur] = el.value; paintLines(); save();
+  }
+});
+
+$("newFile").onclick = () => {
+  const n = prompt("File ka naam (jaise page2.html, app.js, style.css):");
+  if (!n) return;
+  const name = n.trim().replace(/[^\w.\-]/g, "");
+  if (!name) return;
+  P.files[name] = "";
+  save(); openFile(name);
+};
+
+$("delFile").onclick = () => {
+  if (Object.keys(P.files).length <= 1){ out("bad", "Aakhri file nahi hata sakte."); return; }
+  if (!confirm(cur + " hatana hai?")) return;
+  delete P.files[cur];
+  cur = Object.keys(P.files)[0];
+  save(); openFile(cur);
+};
+
+$("saveAll").onclick = () => { out(save() ? "ok" : "bad", save() ? "Save ho gaya (is phone me)." : "Save nahi hua — storage bhara hai."); };
+$("clearOut").onclick = () => { $("outBody").innerHTML = ""; };
+
+function out(cls, msg){
+  const d = document.createElement("div");
+  d.className = cls; d.innerHTML = msg;
+  $("outBody").appendChild(d);
+  $("outBody").scrollTop = $("outBody").scrollHeight;
+}
+
+/* ---------- build (asli jaanch) ---------- */
+function checkJS(code){
+  try{ new Function(code); return { ok: true }; }
+  catch(e){ return { ok: false, why: String(e.message).slice(0, 90) }; }
+}
+function checkHTML(code){
+  if (!/<html[\s>]/i.test(code)) return { ok: false, why: "<html> nahi mila" };
+  if (!/<\/html>/i.test(code)) return { ok: false, why: "</html> band nahi hua" };
+  if (!/<body/i.test(code)) return { ok: false, why: "<body> nahi mila" };
+  return { ok: true };
+}
+function checkCSS(code){
+  const o = (code.match(/{/g) || []).length, c = (code.match(/}/g) || []).length;
+  return Math.abs(o - c) > 2 ? { ok: false, why: "braces mel nahi kha rahe (" + o + "/" + c + ")" } : { ok: true };
+}
+
+function build(){
+  $("outBody").innerHTML = "";
+  const names = Object.keys(P.files);
+  let fail = 0, warn = 0;
+
+  names.forEach(f => {
+    const code = P.files[f];
+    let r = { ok: true };
+    if (/\.js$/i.test(f)) r = checkJS(code);
+    else if (/\.html$/i.test(f)) r = checkHTML(code);
+    else if (/\.css$/i.test(f)) r = checkCSS(code);
+
+    if (!r.ok){ fail++; out("bad", "❌ " + f + " — " + r.why); }
+    else out("ok", "✅ " + f + " theek (" + code.split("\n").length + " line)");
+  });
+
+  // link check
+  const html = P.files["index.html"] || "";
+  const refs = [...html.matchAll(/(?:href|src)="((?!https?:|#|data:)[^"]+)"/g)].map(m => m[1]);
+  refs.forEach(r => {
+    if (r.includes("${")) return;
+    if (!(r in P.files)){ warn++; out("warn", "⚠️ " + r + " ka file nahi hai (link toota)"); }
+  });
+
+  // quality hints
+  if (!/<meta[^>]+viewport/i.test(html)) { warn++; out("warn", "⚠️ mobile viewport nahi — phone par theek nahi dikhega"); }
+  if (!/localStorage/i.test(names.map(n => P.files[n]).join(""))) { warn++; out("warn", "⚠️ data save (localStorage) nahi hai — refresh par sab chala jayega"); }
+  if (!/try\s*\{/.test(names.map(n => P.files[n]).join(""))) { warn++; out("warn", "⚠️ try/catch nahi — kuch toota to page blank ho sakta hai"); }
+
+  const total = names.length;
+  out(fail ? "bad" : (warn ? "warn" : "ok"),
+      (fail ? "🔴 BUILD FAIL" : "🟢 BUILD PASS") + " — " + total + " file, " + fail + " tooti, " + warn + " chetavni");
+  save();
+  return fail === 0;
+}
+
+/* ---------- run ---------- */
+function bundle(){
+  let html = P.files["index.html"] || Object.values(P.files)[0] || "";
+  const css = P.files["style.css"], js = P.files["app.js"];
+  if (css) html = html.replace(/<link[^>]*style\.css[^>]*>/i, "<style>" + css + "</style>");
+  if (js){
+    const open = '<script src="app.js"></' + "script>";
+    html = html.split(open).join("<script>" + js + "</" + "script>");
+  }
+  return html;
+}
+
+$("run").onclick = () => {
+  if (!build()){ out("bad", "Pehle build theek karo."); }
+  const html = bundle();
+  const box = document.createElement("iframe");
+  box.style.cssText = "width:100%;height:100%;border:0;background:#fff";
+  $("outBody").innerHTML = "";
+  $("outBody").style.padding = "0";
+  $("outBody").appendChild(box);
+  box.srcdoc = html;
+  out("ok", "▶ Chal raha hai — upar preview.");
+  $("outBody").style.padding = "0";
+};
+
+/* ---------- deploy (GitHub) ---------- */
+$("deploy").onclick = async () => {
+  const token = prompt("GitHub token (Contents: write):");
+  if (!token) return;
+  const repo = prompt("repo — jaise bhupendarsingh785/my-app");
+  if (!repo || !repo.includes("/")){ out("bad", "repo galat hai."); return; }
+  const [owner, name] = repo.split("/");
+  $("outBody").innerHTML = ""; $("outBody").style.padding = "8px 10px";
+  out("warn", "Deploy kar raha hoon…");
+
+  for (const f of Object.keys(P.files)){
+    const api = "https://api.github.com/repos/" + owner + "/" + name + "/contents/" + encodeURIComponent(f);
+    const headers = { Authorization: "Bearer " + token.trim(), Accept: "application/vnd.github+json", "Content-Type": "application/json" };
+    try{
+      let sha = null;
+      const r0 = await fetch(api + "?ref=main", { headers });
+      if (r0.ok) sha = (await r0.json()).sha;
+      const body = { message: "Seetal Studio: " + f, content: btoa(unescape(encodeURIComponent(P.files[f]))), branch: "main" };
+      if (sha) body.sha = sha;
+      const r = await fetch(api, { method: "PUT", headers, body: JSON.stringify(body) });
+      if (!r.ok){ const j = await r.json().catch(() => ({})); out("bad", "❌ " + f + " — " + (j.message || r.status)); }
+      else out("ok", "✅ " + f + " chala gaya");
+    }catch(e){ out("bad", "❌ " + f + " — " + e.message); }
+  }
+  out("ok", "Live link (1-2 min): https://" + owner.toLowerCase() + ".github.io/" + name + "/");
+};
+
+/* ---------- start ---------- */
+paintFiles(); openFile(cur);
+out("ok", "Seetal Studio taiyar — " + Object.keys(P.files).length + " file. Build → Run → Deploy.");
+</script>
+</body>
+</html>
