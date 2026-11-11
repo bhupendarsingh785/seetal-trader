@@ -8,7 +8,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: "0 */6 * * *"     # har 6 ghante khud check + sync
+    - cron: "*/15 * * * *"    # har 15 minute — khud check + sync
   workflow_dispatch:
 
 permissions:
