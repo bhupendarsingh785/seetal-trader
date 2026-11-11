@@ -55,6 +55,7 @@
   <button id="find">🔎</button>
   <button class="pri" id="build">🔨 Build</button>
   <button class="ok" id="run">▶ Run</button>
+  <button id="dl">⬇️ Download</button>
   <button id="deploy">🚀 Deploy</button>
   <button id="saveAll">💾 Save</button>
 </header>
@@ -257,6 +258,21 @@ $("run").onclick = () => {
   box.srcdoc = html;
   out("ok", "▶ Chal raha hai — upar preview.");
   $("outBody").style.padding = "0";
+};
+
+
+/* ================= download (phone me rakhne ke liye) ================= */
+$("dl").onclick = () => {
+  const html = bundle();
+  const name = (P.name || "app").replace(/[^\w\-]/g, "") + ".html";
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  out("ok", "⬇️ " + name + " download ho gaya — ek hi file, phone me offline chalega.");
 };
 
 /* ---------- deploy (GitHub) ---------- */
