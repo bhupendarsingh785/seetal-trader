@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Seetal — ek code, sab device same</title>
+<style>
+  :root{--bg:#0b0f19;--card:#161e30;--line:#26324b;--txt:#eef2fb;--dim:#94a3c4;--green:#34d399;--red:#fb7185;--violet:#7c6cf8;--cyan:#22d3ee}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:radial-gradient(120% 60% at 50% -10%,#20264f,#0b0f19 45%,#060911);color:var(--txt);
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans Devanagari",sans-serif;padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
+  h1{font-size:19px;margin:0}
+  .sub{color:var(--dim);font-size:12.5px;margin:0;text-align:center;max-width:460px;line-height:1.6}
+  .card{width:100%;max-width:460px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+  label{font-size:12.5px;color:var(--dim);display:block;margin-bottom:6px}
+  input{width:100%;background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:12px;border-radius:12px;font-size:14.5px;letter-spacing:.02em}
+  .row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  button{flex:1;min-width:120px;background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:12px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer}
+  button.primary{background:linear-gradient(135deg,var(--violet),#3b82f6);border:none}
+  .out{width:100%;max-width:460px;font-size:13px;color:var(--dim);line-height:1.7;min-height:24px;text-align:center}
+  .list{font-size:12.5px;color:var(--dim);line-height:1.8;margin-top:8px}
+  code{background:#0b1119;padding:2px 6px;border-radius:6px;color:var(--cyan);font-size:12px}
+</style>
+</head>
+<body>
+
+<h1>Ek code — sab device same</h1>
+<p class="sub">Yahan code daalo. Jis bhi phone ya browser me wahi code daaloge, tumhari keys, notes, yaaddasht aur skills wahi milengi.</p>
+
+<div class="card">
+  <label>Tumhara sync code (lamba rakho — yehi chaabi hai)</label>
+  <input id="code" placeholder="jaise seetal-ghar-4821-lamba-code" autocomplete="off" />
+  <div class="row">
+    <button class="primary" id="save">Code save karo</button>
+    <button id="gen">Naya code banao</button>
+  </div>
+  <div class="row">
+    <button id="up">⬆️ Abhi bhejo (upload)</button>
+    <button id="down">⬇️ Abhi laao (download)</button>
+  </div>
+  <div class="list" id="keys"></div>
+</div>
+
+<div class="out" id="out">Code daal kar "Code save karo" dabao.</div>
+
+<script src="assets/sync.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+
+function paint(){
+  const c = SeetalSync.code();
+  $("code").value = c || "";
+  $("keys").innerHTML = "Sync hone wali cheezein: " + SeetalSync.FIELDS.map(f => "<code>" + f + "</code>").join(" ");
+  if (!c) $("out").textContent = "Code daal kar 'Code save karo' dabao.";
+}
+
+$("save").onclick = async () => {
+  const c = ($("code").value || "").trim();
+  if (c.length < 8){ $("out").textContent = "Code kam se kam 8 akshar ka rakho."; return; }
+  SeetalSync.setCode(c);
+  $("out").textContent = "Code save ho gaya — ab download kar raha hoon…";
+  const r = await SeetalSync.pull();
+  if (r.ok) $("out").textContent = "✅ " + r.keys + " cheezein is device par aa gayi.";
+  else {
+    const u = await SeetalSync.push();
+    $("out").textContent = u.ok ? "✅ Pehli baar save ho gaya (" + u.keys + " cheezein)." : ("⚠️ " + u.error);
+  }
+  SeetalSync.autoStart();
+};
+
+$("gen").onclick = () => {
+  const rnd = Math.random().toString(36).slice(2, 8) + Math.random().toString(36).slice(2, 8);
+  $("code").value = "seetal-" + rnd;
+  $("out").textContent = "Naya code bana — 'Code save karo' dabao, phir doosre device par wahi code daalo.";
+};
+
+$("up").onclick = async () => {
+  $("out").textContent = "Bhej raha hoon…";
+  const r = await SeetalSync.push();
+  $("out").textContent = r.ok ? ("✅ " + r.keys + " cheezein bhej di.") : ("❌ " + r.error);
+};
+
+$("down").onclick = async () => {
+  $("out").textContent = "La raha hoon…";
+  const r = await SeetalSync.pull();
+  $("out").textContent = r.ok ? ("✅ " + r.keys + " cheezein aa gayi — page refresh karo.") : ("❌ " + r.error);
+};
+
+paint();
+</script>
+</body>
+</html>
