@@ -110,7 +110,7 @@
   <div class="topbar">
     <h1>YouMe</h1><span class="dot"></span>
     <div class="spacer"></div>
-    <span style="font-size:11.5px;color:var(--dim)">prototype</span>
+    <button id="openDm" style="background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:7px 11px;font-size:13px">💬 DM</button>
   </div>
   <div class="scroll">
     <div class="stories" id="stories"></div>
@@ -138,6 +138,28 @@
       <button class="postbtn" id="doPost">Post karo</button>
       <p class="note" style="margin-top:12px">Ye prototype hai — post sirf tumhare phone me save hota hai, kahin upload nahi hota.</p>
     </div>
+  </div>
+</section>
+
+<!-- ================= DM ================= -->
+<section class="screen" id="dmScreen">
+  <div class="topbar">
+    <button id="dmBack" style="background:transparent;border:0;color:var(--txt);font-size:19px">←</button>
+    <h1 id="dmTitle">Messages</h1>
+  </div>
+  <div class="scroll" id="dmList"></div>
+</section>
+
+<!-- ================= CHAT ================= -->
+<section class="screen" id="chatScreen">
+  <div class="topbar">
+    <button id="chatBack" style="background:transparent;border:0;color:var(--txt);font-size:19px">←</button>
+    <h1 id="chatTitle">Chat</h1>
+  </div>
+  <div class="scroll" id="chatBody" style="padding:12px"></div>
+  <div style="display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:#0b111a">
+    <input id="chatIn" placeholder="Message likho…" style="flex:1;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:20px;padding:12px 14px;font-family:inherit;font-size:14.5px" />
+    <button id="chatSend" style="background:linear-gradient(135deg,var(--violet),var(--pink));border:0;color:#fff;border-radius:50%;width:46px;height:46px;font-size:18px">➤</button>
   </div>
 </section>
 
@@ -336,6 +358,86 @@ $("clearBtn").onclick = () => {
 };
 
 function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+
+/* ================= DM sub-system ================= */
+const CHATS_SEED = [
+  { id:"seetal", name:"Seetal", av:"🟢", last:"System check ho gaya — sab theek", t:"2m" },
+  { id:"trader", name:"Trader Bot", av:"📈", last:"Nifty 24936.60 · WAIT", t:"18m" },
+  { id:"suno", name:"Suno", av:"🎙️", last:"Bolo, sun rahi hoon", t:"1h" },
+];
+let chats = LS.get("chats", CHATS_SEED);
+let msgs = LS.get("msgs", {
+  seetal: [{ me:false, t:"Sab theek hai. 76 tests pass.", ts:Date.now()-120000 }],
+  trader: [{ me:false, t:"Nifty abhi WAIT par hai, 0.58% door.", ts:Date.now()-900000 }],
+  suno: [{ me:false, t:"Kuch poochhna ho to bolo.", ts:Date.now()-3600000 }],
+});
+let openChat = null;
+
+$("openDm").onclick = () => { paintDm(); go("dm"); };
+$("dmBack").onclick = () => go("home");
+$("chatBack").onclick = () => { paintDm(); go("dm"); };
+
+function paintDm(){
+  $("dmList").innerHTML = chats.map(c => `
+    <div class="pcard" data-c="${c.id}" style="display:flex;gap:11px;align-items:center;margin:10px 12px">
+      <div class="av">${c.av}</div>
+      <div style="flex:1;min-width:0">
+        <b style="font-size:13.5px">${esc(c.name)}</b>
+        <div class="note" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(c.last)}</div>
+      </div>
+      <span class="note">${esc(c.t)}</span>
+    </div>`).join("") || `<p class="note" style="padding:16px">Koi chat nahi.</p>`;
+
+  $("dmList").querySelectorAll("[data-c]").forEach(el => el.onclick = () => openChatWith(el.dataset.c));
+}
+
+function openChatWith(id){
+  openChat = id;
+  const c = chats.find(x => x.id === id);
+  $("chatTitle").textContent = c ? c.name : "Chat";
+  paintChat();
+  go("chat");
+}
+
+function paintChat(){
+  const list = msgs[openChat] || [];
+  $("chatBody").innerHTML = list.map(m => `
+    <div style="display:flex;justify-content:${m.me ? "flex-end" : "flex-start"};margin-bottom:8px">
+      <div style="max-width:78%;background:${m.me ? "linear-gradient(135deg,#7c6cf8,#f472b6)" : "var(--card2)"};
+                  color:#fff;padding:10px 13px;border-radius:${m.me ? "16px 16px 4px 16px" : "16px 16px 16px 4px"};
+                  font-size:14px;line-height:1.5">${esc(m.t)}</div>
+    </div>`).join("") || `<p class="note">Pehla message bhejo.</p>`;
+  $("chatBody").scrollTop = $("chatBody").scrollHeight;
+}
+
+$("chatSend").onclick = () => {
+  const v = $("chatSend") && $("chatIn").value.trim();
+  if (!v) return;
+  msgs[openChat] = msgs[openChat] || [];
+  msgs[openChat].push({ me:true, t:v, ts:Date.now() });
+  $("chatIn").value = "";
+  LS.set("msgs", msgs);
+  paintChat();
+
+  // auto jawab (demo) — asli AI baad me
+  const reply = autoReply(v);
+  setTimeout(() => {
+    msgs[openChat].push({ me:false, t:reply, ts:Date.now() });
+    LS.set("msgs", msgs);
+    if (openChat) paintChat();
+    const c = chats.find(x => x.id === openChat);
+    if (c){ c.last = reply; c.t = "abhi"; LS.set("chats", chats); }
+  }, 700);
+};
+
+function autoReply(t){
+  const x = t.toLowerCase();
+  if (/kaise|haal/.test(x)) return "Main theek hoon. Tum batao?";
+  if (/market|nifty/.test(x)) return "Nifty abhi WAIT par hai. Trader tab me detail hai.";
+  if (/kya kar/.test(x)) return "Main feed, reels, DM aur wallet sambhalti hoon.";
+  return "Samajh gayi. (Demo jawab — asli AI key jodne par aayega.)";
+}
 
 /* ---------- start ---------- */
 paintStories(); paintFeed(); paintReels(); paintProfile();
