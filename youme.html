@@ -135,10 +135,27 @@
         <button data-media="📊 Poll">📊 Poll</button>
       </div>
       <div id="mediaPick" class="note" style="margin-top:10px">Kuch chuna nahi.</div>
+      <div id="pollBox" style="display:none;margin-top:10px">
+        <input id="pollA" placeholder="Option 1" style="width:100%;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:12px;font-family:inherit;margin-bottom:8px" />
+        <input id="pollB" placeholder="Option 2" style="width:100%;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:12px;font-family:inherit" />
+      </div>
       <button class="postbtn" id="doPost">Post karo</button>
       <p class="note" style="margin-top:12px">Ye prototype hai — post sirf tumhare phone me save hota hai, kahin upload nahi hota.</p>
     </div>
   </div>
+</section>
+
+<!-- ================= STORY VIEWER ================= -->
+<section class="screen" id="storyScreen" style="background:#000;padding-bottom:0">
+  <div style="position:absolute;top:0;left:0;right:0;display:flex;gap:5px;padding:10px;z-index:5" id="storyBars"></div>
+  <div style="position:absolute;top:34px;left:14px;right:14px;display:flex;align-items:center;gap:9px;z-index:5">
+    <div class="av" id="storyAv">🟢</div>
+    <b id="storyName" style="font-size:14px">Seetal</b>
+    <div class="spacer"></div>
+    <button id="storyClose" style="background:transparent;border:0;color:#fff;font-size:20px">✕</button>
+  </div>
+  <div id="storyBody" style="height:100%;display:flex;align-items:center;justify-content:center;font-size:90px"></div>
+  <div id="storyCap" style="position:absolute;bottom:40px;left:20px;right:20px;color:#fff;font-size:15px;text-align:center"></div>
 </section>
 
 <!-- ================= DM ================= -->
@@ -290,6 +307,9 @@ function paintReels(){
         <div><button>↗️</button><small>share</small></div>
       </div>
       <div class="meta"><b>${r.u}</b><p>${esc(r.cap)}</p></div>
+      <div style="position:absolute;top:14px;right:14px;z-index:3">
+        <button class="pickImg" style="background:rgba(10,15,24,.6);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:20px;padding:8px 12px;font-size:12px">📷 Photo lagao</button>
+      </div>
       <div class="filterbar">
         ${["none","anime","cyber","film","noir"].map(f =>
           `<button data-f="${f}" class="${f === currentFilter ? "on" : ""}">${f === "none" ? "Original" : f}</button>`).join("")}
@@ -298,9 +318,8 @@ function paintReels(){
 
   $("reels").querySelectorAll("[data-f]").forEach(b => b.onclick = () => {
     currentFilter = b.dataset.f;
-    document.querySelectorAll(".reel .big").forEach(el => {
-      el.className = "big f-" + currentFilter;
-    });
+    document.querySelectorAll(".reel .big").forEach(el => { el.className = "big"; });
+    if (typeof applyFilter === "function") applyFilter(currentFilter);
     document.querySelectorAll("[data-f]").forEach(x => x.classList.toggle("on", x.dataset.f === currentFilter));
     toast("Filter: " + (currentFilter === "none" ? "Original" : currentFilter) + " (CSS demo — asli AI baad me)");
   });
@@ -437,6 +456,108 @@ function autoReply(t){
   if (/market|nifty/.test(x)) return "Nifty abhi WAIT par hai. Trader tab me detail hai.";
   if (/kya kar/.test(x)) return "Main feed, reels, DM aur wallet sambhalti hoon.";
   return "Samajh gayi. (Demo jawab — asli AI key jodne par aayega.)";
+}
+
+
+/* ================= STORIES viewer ================= */
+const STORY_DATA = [
+  { n:"Seetal", a:"🟢", items:[ {c:"🟢", cap:"System check: sab theek"},{c:"📈", cap:"Nifty WAIT par"},{c:"✅", cap:"76 tests pass"} ] },
+  { n:"Swag", a:"🧑", items:[ {c:"🎬", cap:"Naya reel banaya"},{c:"🌄", cap:"Subah ki thandi hawa"} ] },
+  { n:"Suno", a:"🎙️", items:[ {c:"🎙️", cap:"Bolo, sun rahi hoon"} ] },
+];
+let sIdx = 0, sItem = 0, sTimer = null;
+
+document.addEventListener("click", (e) => {
+  const st = e.target.closest(".story");
+  if (st && !st.classList.contains("add")){
+    const i = [...document.querySelectorAll(".story")].indexOf(st);
+    openStory(Math.max(0, i - 1));   // pehla 'Tum' add-story hai
+  }
+});
+
+function openStory(i){
+  sIdx = i; sItem = 0;
+  go("story");
+  paintStory();
+}
+function paintStory(){
+  const s = STORY_DATA[sIdx];
+  if (!s){ closeStory(); return; }
+  $("storyAv").textContent = s.a;
+  $("storyName").textContent = s.n;
+  $("storyBars").innerHTML = s.items.map((_, k) =>
+    `<div style="flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.28);overflow:hidden">
+       <div style="height:100%;width:${k < sItem ? 100 : 0}%;background:#fff;transition:width 3s linear" data-bar="${k}"></div>
+     </div>`).join("");
+
+  const it = s.items[sItem] || s.items[0];
+  $("storyBody").textContent = it.c;
+  $("storyCap").textContent = it.cap || "";
+
+  const bar = document.querySelector(`[data-bar="${sItem}"]`);
+  if (bar) requestAnimationFrame(() => { bar.style.width = "100%"; });
+
+  clearTimeout(sTimer);
+  sTimer = setTimeout(() => {
+    sItem++;
+    if (sItem >= s.items.length){ sIdx++; sItem = 0; }
+    if (sIdx >= STORY_DATA.length) closeStory(); else paintStory();
+  }, 3000);
+}
+function closeStory(){ clearTimeout(sTimer); go("home"); }
+$("storyClose").onclick = closeStory;
+
+/* ================= POLL post ================= */
+const _oldMedia = document.querySelectorAll("[data-media]");
+_oldMedia.forEach(b => b.addEventListener("click", () => {
+  $("pollBox").style.display = b.dataset.media === "📊 Poll" ? "block" : "none";
+}));
+
+/* ================= REELS: asli photo + canvas filter ================= */
+const FILTERS = {
+  none:   { b:0, c:1, s:1, h:0 },
+  anime:  { b:8, c:1.25, s:1.9, h:-14 },
+  cyber:  { b:0, c:1.2, s:1.6, h:180 },
+  film:   { b:-6, c:1.12, s:1.05, h:0, sepia:.35 },
+  noir:   { b:0, c:1.3, s:0, h:0 },
+};
+
+document.addEventListener("change", (e) => {
+  if (e.target.id !== "reelImg") return;
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  const url = URL.createObjectURL(f);
+  const reels = document.querySelectorAll(".reel .big");
+  reels.forEach(el => {
+    el.textContent = "";
+    el.style.backgroundImage = `url(${url})`;
+    el.style.backgroundSize = "cover";
+    el.style.backgroundPosition = "center";
+    el.style.width = "100%"; el.style.height = "100%";
+    el.style.fontSize = "0";
+  });
+  applyFilter(currentFilter);
+  toast("Photo lagi — filter try karo");
+});
+
+document.addEventListener("click", (e) => {
+  if (!e.target.classList.contains("pickImg")) return;
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = "image/*"; inp.id = "reelImg";
+  inp.style.display = "none";
+  document.body.appendChild(inp);
+  inp.click();
+});
+
+function applyFilter(name){
+  const f = FILTERS[name] || FILTERS.none;
+  const parts = [];
+  if (f.s === 0) parts.push("grayscale(1)"); else parts.push(`saturate(${f.s})`);
+  parts.push(`contrast(${f.c})`);
+  parts.push(`brightness(${1 + f.b/100})`);
+  if (f.h) parts.push(`hue-rotate(${f.h}deg)`);
+  if (f.sepia) parts.push(`sepia(${f.sepia})`);
+  document.querySelectorAll(".reel .big").forEach(el => { el.style.filter = parts.join(" "); });
 }
 
 /* ---------- start ---------- */
