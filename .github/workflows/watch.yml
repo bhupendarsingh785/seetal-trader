@@ -16,29 +16,36 @@ jobs:
       - name: Data aur system check karo
         run: |
           python3 - <<'PY'
-          import json, datetime, sys
+          import json, datetime, sys, zoneinfo
+
+          IST = zoneinfo.ZoneInfo("Asia/Kolkata")
+          now_ist = datetime.datetime.now(IST)
+          market_open = now_ist.weekday() < 5 and (datetime.time(9, 15) <= now_ist.time() <= datetime.time(15, 35))
+
           try:
               d = json.load(open('data/live.json'))
           except Exception as e:
-              print("::error::live.json padha nahi ja saka:", e); sys.exit(1)
+              print("::error::live.json padha nahi ja saka:", e)
+              sys.exit(1)
 
           gen = d.get('generated_at') or d.get('ts') or ''
           try:
               t = datetime.datetime.fromisoformat(gen.replace('Z', '+00:00'))
-              now = datetime.datetime.now(datetime.timezone.utc)
-              age = (now - t).total_seconds() / 60
+              age = (datetime.datetime.now(datetime.timezone.utc) - t).total_seconds() / 60
           except Exception:
               age = -1
 
           rows = d.get('symbols') or d.get('data') or d.get('rows') or []
           n = len(rows) if hasattr(rows, '__len__') else 0
-          print(f"data age: {age:.0f} min | symbols: {n}")
+          print(f"data age: {age:.0f} min | symbols: {n} | market open: {market_open}")
 
-          if age > 45:
-              print(f"::error::Data purana hai — {age:.0f} minute. Pulse Action check karo.")
-              sys.exit(1)
+          limit = 45 if market_open else 720   # market band ho to 12 ghante tak theek
+          if age > limit:
+              msg = f"Data purana hai — {age:.0f} min (limit {limit}). Pulse Action check karo."
+              if market_open:
+                  print("::error::" + msg); sys.exit(1)
+              print("::warning::" + msg)   # market band — sirf warning
           if n < 3:
-              print(f"::error::Sirf {n} symbols hain — data pipeline check karo.")
-              sys.exit(1)
-          print("Sab theek hai ✅")
+              print(f"::error::Sirf {n} symbols hain — data pipeline check karo."); sys.exit(1)
+          print("Sab theek hai")
           PY
