@@ -1,0 +1,36 @@
+name: OpenYug — seekho
+
+# OpenYug khud duniya se seekhta hai (din me 3 baar) aur capability naapta hai.
+
+on:
+  schedule:
+    - cron: "30 2,10,18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  learn:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Paused hai?
+        id: chk
+        run: |
+          P=$(python3 -c "import json;print(json.load(open('agent/state.json')).get('paused', False))")
+          echo "paused=$P" >> $GITHUB_OUTPUT
+
+      - name: Seekho
+        if: steps.chk.outputs.paused == 'False'
+        run: python3 agent/learn.py
+
+      - name: Commit
+        if: steps.chk.outputs.paused == 'False'
+        run: |
+          git config user.name "OpenYug"
+          git config user.email "openyug@seetal.local"
+          git add agent/ || true
+          git commit -m "openyug: seekha $(date -u +%FT%TZ)" || echo "kuch naya nahi"
+          git push || echo "push skip"

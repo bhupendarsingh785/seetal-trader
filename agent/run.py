@@ -26,6 +26,18 @@ def http_ok(url, timeout=15):
     except Exception:
         return False, 0
 
+def load_state():
+    try:
+        return json.load(open(os.path.join(ROOT, "agent", "state.json"), encoding="utf-8"))
+    except Exception:
+        return {"paused": False}
+
+def save_state(st):
+    try:
+        json.dump(st, open(os.path.join(ROOT, "agent", "state.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
 def read_orders():
     if not os.path.exists(ORDERS):
         return []
@@ -101,6 +113,23 @@ HANDLERS = [
 
 def main():
     os.makedirs(REPORTS, exist_ok=True)
+    st = load_state()
+
+    # pause / resume aadesh
+    raw = open(ORDERS, encoding="utf-8").read() if os.path.exists(ORDERS) else ""
+    if re.search(r"^- \[ \]\s*pause", raw, re.M | re.I):
+        st["paused"] = True; save_state(st)
+        print("⏸️ OpenYug paused — Swag ke 'resume' tak kaam band.")
+        return
+    if re.search(r"^- \[ \]\s*resume", raw, re.M | re.I):
+        st["paused"] = False; save_state(st)
+        raw = raw.replace("- [ ] resume", "- [x] resume")
+        open(ORDERS, "w", encoding="utf-8").write(raw)
+        print("▶️ OpenYug resume ho gaya.")
+    if st.get("paused"):
+        print("⏸️ OpenYug paused hai.")
+        return
+
     orders = read_orders()
     lines = [f"# OpenYug report — {NOW}", "", f"Orders mile: {len(orders)}", ""]
     if not orders:
