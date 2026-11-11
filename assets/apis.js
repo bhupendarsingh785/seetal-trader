@@ -13,7 +13,6 @@
     { id: "pollinations-mistral", url: (p) => "https://text.pollinations.ai/" + encodeURIComponent(p) + "?model=mistral" },
     { id: "pollinations-qwen", url: (p) => "https://text.pollinations.ai/" + encodeURIComponent(p) + "?model=qwen-coder" },
     { id: "pollinations-llama", url: (p) => "https://text.pollinations.ai/" + encodeURIComponent(p) + "?model=llama" },
-    { id: "pollinations-deepseek", url: (p) => "https://text.pollinations.ai/" + encodeURIComponent(p) + "?model=deepseek" },
   ];
 
   /* proxy raste — jab seedha CORS rok de */
@@ -138,11 +137,15 @@
     return h.ok - h.fail * 2;
   }
 
+  let lastLimitAt = 0;
+  function limitedRecently(){ return (Date.now() - lastLimitAt) < 45000; }
+
   async function fetchText(url, ms) {
     const ctl = new AbortController();
     const to = setTimeout(() => ctl.abort(), ms || 12000);
     try {
       const r = await fetch(url, { cache: "no-store", signal: ctl.signal });
+      if (r.status === 402 || r.status === 429){ lastLimitAt = Date.now(); return null; }
       if (!r.ok) return null;
       const t = (await r.text() || "").trim();
       if (!t || /^<!doctype|^<html/i.test(t)) return null;
@@ -165,7 +168,16 @@
       mark("custom:" + api.name, false);
     }
 
-    // 2) free models
+    // 2) wahi sawal pehle poochha tha? — turant wahi jawab
+    try{
+      const cache = JSON.parse(localStorage.getItem("seetal.aicache.v1") || "{}");
+      const key = prompt.slice(0, 120);
+      if (cache[key] && (Date.now() - cache[key].t) < 6 * 60 * 60 * 1000){
+        return { ok: true, text: cache[key].v, model: "cache", via: "cached" };
+      }
+    }catch(e){}
+
+    // 3) free models
     const list = AI_FREE.slice().sort((a, b) => score(b.id) - score(a.id));
     for (const model of list) {
       const base = model.url(prompt);
@@ -174,13 +186,28 @@
         const t = await fetchText(px.wrap(base), opts.timeout || 12000);
         if (t && t.length > 2) {
           mark(model.id, true); mark(px.id, true);
+          try{
+            const cache = JSON.parse(localStorage.getItem("seetal.aicache.v1") || "{}");
+            cache[prompt.slice(0, 120)] = { v: t, t: Date.now() };
+            const keys = Object.keys(cache).slice(-60);
+            const small = {}; keys.forEach(k => small[k] = cache[k]);
+            localStorage.setItem("seetal.aicache.v1", JSON.stringify(small));
+          }catch(e){}
           return { ok: true, text: t, model: model.id, via: px.id };
         }
         mark(px.id, false);
       }
       mark(model.id, false);
     }
-    return { ok: false, text: null, tried: AI_FREE.length * PROXIES.length };
+    return {
+      ok: false,
+      text: null,
+      tried: AI_FREE.length * PROXIES.length,
+      reason: limitedRecently() ? "free-limit" : "no-answer",
+      hint: limitedRecently()
+        ? "Free AI 45 second me sirf ek jawab deta hai. Key daalo (Sarvam/Gemini/GPT) to tez chalega."
+        : "Koi rasta jawab nahi de paya — net ya key check karo.",
+    };
   }
 
   /* data laao — jo pehla chale wahi */
