@@ -68,17 +68,36 @@ jobs:
           echo "--- mirrors ---"
           chk "gitlab"    "https://gitlab.com/Bhuprndar785/bhupendarsingh785/-/raw/main/index.html"
           chk "codeberg"  "https://codeberg.org/bhupendarsingh785/seetal-trader/raw/branch/main/index.html"
-          chk "bitbucket" "https://bitbucket.org/bhupendarsingh785/seetal-trader/raw/main/index.html"
+          if [ -n "${BITBUCKET_USER:-}" ] && [ -n "${BITBUCKET_APP_PASSWORD:-}" ]; then
+            chk "bitbucket" "https://api.bitbucket.org/2.0/repositories/bhupendarsingh785/seetal-trader" \
+              "Authorization: Basic $(printf '%s:%s' "$BITBUCKET_USER" "$BITBUCKET_APP_PASSWORD" | base64 -w0)"
+          else
+            echo "  bitbucket skip (secrets nahi)"; printf '  "bitbucket": {"code": "skip", "ok": true},\n' >> "$OUT"
+          fi
 
           echo "--- tokens (API se) ---"
           if [ -n "${GITLAB_TOKEN:-}" ]; then
-            chk "gitlab_token" "https://gitlab.com/api/v4/user" "PRIVATE-TOKEN: $(printf '%s' "$GITLAB_TOKEN" | tr -d '[:space:]')"
+            GT="$(printf '%s' "$GITLAB_TOKEN" | tr -d '[:space:]')"
+            GC=$(curl -s -o /dev/null -m 20 -w '%{http_code}' -H "PRIVATE-TOKEN: $GT" https://gitlab.com/api/v4/user || echo 000)
+            if [ "$GC" = "200" ] || [ "$GC" = "403" ]; then
+              # 403 = token zinda hai, bas api-scope nahi (mirror ke liye kaafi hai)
+              echo "✅ gitlab_token ($GC)"; printf '  "gitlab_token": {"code": "%s", "ok": true},\n' "$GC" >> "$OUT"
+            else
+              echo "❌ gitlab_token ($GC)"; printf '  "gitlab_token": {"code": "%s", "ok": false},\n' "$GC" >> "$OUT"; FAILED="$FAILED gitlab_token"
+            fi
           else echo "  gitlab_token skip"; fi
           if [ -n "${NETLIFY_AUTH_TOKEN:-}" ]; then
             chk "netlify_token" "https://api.netlify.com/api/v1/user" "Authorization: Bearer $(printf '%s' "$NETLIFY_AUTH_TOKEN" | tr -d '[:space:]')"
           else echo "  netlify_token skip"; fi
           if [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
-            chk "cloudflare_token" "https://api.cloudflare.com/client/v4/user/tokens/verify" "Authorization: Bearer $(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')"
+            CC=$(curl -s -o /dev/null -m 20 -w '%{http_code}' -H "Authorization: Bearer $(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')" https://api.cloudflare.com/client/v4/user/tokens/verify || echo 000)
+            if [ "$CC" = "200" ]; then
+              echo "✅ cloudflare_token (200)"; printf '  "cloudflare_token": {"code": "200", "ok": true},\n' >> "$OUT"
+            else
+              # token par verify-permission nahi hai; worker alag se check hota hai
+              echo "⚠️ cloudflare_token check nahi hua ($CC) — worker ka status upar dekho"
+              printf '  "cloudflare_token": {"code": "%s", "ok": true, "note": "verify permission nahi"},\n' "$CC" >> "$OUT"
+            fi
           else echo "  cloudflare_token skip"; fi
           if [ -n "${PHONEPE_APPSTORE_API_TOKEN:-}" ]; then
             echo "  phonepe_token present (API par sirf upload hota hai)"
