@@ -13,7 +13,7 @@ STATE = os.path.join(ROOT, "agent", "state.json")
 NOW = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 SOURCES = [
-    "https://hnrss.org/newest?points=120",
+    "https://hnrss.org/newest",
     "https://github.blog/changelog/feed/",
 ]
 
