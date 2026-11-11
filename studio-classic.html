@@ -50,6 +50,13 @@
   <div class="spacer"></div>
   <button id="newFile">＋ File</button>
   <button id="delFile">🗑</button>
+  <button id="tpl">🧩 Template</button>
+  <button id="ai">🤖 AI</button>
+  <button id="make">✨ Poora app</button>
+  <button id="brain">🔌 Dimaag</button>
+  <button id="imp">⬇️ Import</button>
+  <button id="find">🔎</button>
+  <button id="dl">⬇️ Download</button>
   <button class="pri" id="build">🔨 Build</button>
   <button class="ok" id="run">▶ Run</button>
   <button id="deploy">🚀 Deploy</button>
@@ -295,9 +302,203 @@ $("deploy").onclick = async () => {
   out("ok", "Live link (1-2 min): https://" + owner.toLowerCase() + ".github.io/" + name + "/");
 };
 
+
+/* ================= dimaag: kai model ================= */
+const CLOSE_S = "<" + "/script>";
+const BRAIN_KEY = "seetal.studio.brain.v1";
+const BRAINS = {
+  sarvam:   { url:"https://api.sarvam.ai/v1/chat/completions", model:"sarvam-m", auth:"api-subscription-key", prefix:"", openai:true },
+  gemini:   { gemini:true, model:"gemini-2.0-flash" },
+  anthropic:{ url:"https://api.anthropic.com/v1/messages", model:"claude-3-5-haiku-20241022", anthropic:true },
+  openai:   { url:"https://api.openai.com/v1/chat/completions", model:"gpt-4o-mini", auth:"Authorization", prefix:"Bearer ", openai:true },
+  deepseek: { url:"https://api.deepseek.com/v1/chat/completions", model:"deepseek-chat", auth:"Authorization", prefix:"Bearer ", openai:true },
+  kimi:     { url:"https://api.moonshot.cn/v1/chat/completions", model:"moonshot-v1-8k", auth:"Authorization", prefix:"Bearer ", openai:true },
+  groq:     { url:"https://api.groq.com/openai/v1/chat/completions", model:"llama-3.1-8b-instant", auth:"Authorization", prefix:"Bearer ", openai:true },
+  none:     { free:true, model:"free" }
+};
+function bGet(){ try{ return JSON.parse(localStorage.getItem(BRAIN_KEY) || "null"); }catch(e){ return null; } }
+function bSet(v){ try{ localStorage.setItem(BRAIN_KEY, JSON.stringify(v)); }catch(e){} }
+
+async function bAsk(prompt, ms){
+  const c = bGet();
+  if (c && c.key && c.provider && c.provider !== "none"){
+    const B = BRAINS[c.provider];
+    if (B && !B.free){
+      const model = c.model || B.model;
+      const ctl = new AbortController();
+      const to = setTimeout(() => ctl.abort(), ms || 30000);
+      try{
+        if (B.gemini){
+          const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(c.key);
+          const r = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" },
+            body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] }), signal: ctl.signal });
+          const j = await r.json();
+          if (j.error) throw new Error("gemini");
+          const t = j.candidates && j.candidates[0].content.parts[0].text;
+          if (t) return t.trim();
+        } else if (B.anthropic){
+          const r = await fetch(B.url, { method:"POST",
+            headers:{ "Content-Type":"application/json", "x-api-key": c.key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
+            body: JSON.stringify({ model, max_tokens: 3000, messages:[{ role:"user", content: prompt }] }), signal: ctl.signal });
+          const j = await r.json();
+          if (j.error) throw new Error("anthropic");
+          const t = j.content && j.content[0] && j.content[0].text;
+          if (t) return t.trim();
+        } else {
+          const headers = { "Content-Type":"application/json" };
+          headers[B.auth] = (B.prefix || "") + c.key;
+          const r = await fetch(B.url, { method:"POST", headers,
+            body: JSON.stringify({ model, temperature:0.4, messages:[{ role:"user", content: prompt }] }), signal: ctl.signal });
+          const j = await r.json();
+          if (j.error) throw new Error("api");
+          const t = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+          if (t) return t.trim();
+        }
+      }catch(e){}
+      finally{ clearTimeout(to); }
+    }
+  }
+  try{ if (window.SeetalAPIs){ const a = await SeetalAPIs.ask(prompt, { timeout: ms || 25000 }); if (a.ok) return a.text; } }catch(e){}
+  return null;
+}
+
+/* ================= templates (simple) ================= */
+const TPL = {
+  hello: { name:"Hello page — sabse aasan", files:{
+    "index.html": '<!DOCTYPE html>\n<html lang="hi">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Mera pehla page</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Namaste!</h1>\n  <p>Ye mera pehla page hai.</p>\n  <button id="btn">Mujhe dabao</button>\n  <p id="out"></p>\n\n  <script src="app.js">' + CLOSE_S + '\n</body>\n</html>',
+    "style.css": 'body { font-family: system-ui; background: #0b0f19; color: white; padding: 20px; }\nbutton { font-size: 16px; padding: 12px 18px; border-radius: 10px; border: 0; background: #7c6cf8; color: white; }',
+    "app.js": '// Button dabane par ye chalega\nconst btn = document.getElementById("btn");\nconst out = document.getElementById("out");\n\nbtn.onclick = function () {\n  out.textContent = "Shabash! Tumne button daba diya.";\n};'
+  }},
+  pahada: { name:"Pahada — number ka table", files:{
+    "index.html": '<!DOCTYPE html>\n<html lang="hi">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Pahada</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Pahada</h1>\n  <input id="num" type="number" value="5">\n  <button id="btn">Dikhao</button>\n  <div id="out"></div>\n\n  <script src="app.js">' + CLOSE_S + '\n</body>\n</html>',
+    "style.css": 'body { font-family: system-ui; background: #0b0f19; color: white; padding: 20px; }\ninput { font-size: 16px; padding: 10px; width: 90px; border-radius: 10px; border: 1px solid #26324b; background: #131b28; color: white; }\nbutton { font-size: 16px; padding: 10px 16px; border-radius: 10px; border: 0; background: #7c6cf8; color: white; }\n#out { margin-top: 14px; font-size: 17px; line-height: 1.8; }',
+    "app.js": '// 1 se 10 tak ka pahada\nconst num = document.getElementById("num");\nconst out = document.getElementById("out");\n\ndocument.getElementById("btn").onclick = function () {\n  const n = Number(num.value);\n  let text = "";\n  for (let i = 1; i <= 10; i++) {\n    text = text + n + " x " + i + " = " + (n * i) + "<br>";\n  }\n  out.innerHTML = text;\n};'
+  }},
+  khata: { name:"Khata — hisaab aur total", files:{
+    "index.html": '<!DOCTYPE html>\n<html lang="hi">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Khata</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Mera khata</h1>\n  <input id="naam" placeholder="Kis ka naam">\n  <input id="rupaye" type="number" placeholder="Kitne rupaye">\n  <button id="add">Jodo</button>\n  <div id="list"></div>\n  <p id="total"></p>\n\n  <script src="app.js">' + CLOSE_S + '\n</body>\n</html>',
+    "style.css": 'body { font-family: system-ui; background: #0b0f19; color: white; padding: 16px; }\ninput { font-size: 16px; padding: 12px; width: 100%; margin-bottom: 8px; border-radius: 10px; border: 1px solid #26324b; background: #131b28; color: white; }\nbutton { font-size: 16px; padding: 12px; width: 100%; border-radius: 10px; border: 0; background: #7c6cf8; color: white; font-weight: bold; }\n.ek { background: #131b28; border-radius: 10px; padding: 12px; margin-top: 8px; }\n#total { font-size: 19px; font-weight: bold; margin-top: 14px; }',
+    "app.js": '// Phone ki memory me save hota hai\nlet khata = JSON.parse(localStorage.getItem("khata") || "[]");\n\nfunction dikhao() {\n  let html = "";\n  let total = 0;\n  for (let i = 0; i < khata.length; i++) {\n    html = html + \'<div class="ek">\' + khata[i].naam + " — Rs " + khata[i].rupaye + "</div>";\n    total = total + Number(khata[i].rupaye);\n  }\n  document.getElementById("list").innerHTML = html;\n  document.getElementById("total").textContent = "Total: Rs " + total;\n  localStorage.setItem("khata", JSON.stringify(khata));\n}\n\ndocument.getElementById("add").onclick = function () {\n  const n = document.getElementById("naam").value;\n  const r = document.getElementById("rupaye").value;\n  if (n === "" || r === "") return;\n  khata.push({ naam: n, rupaye: r });\n  document.getElementById("naam").value = "";\n  document.getElementById("rupaye").value = "";\n  dikhao();\n};\n\ndikhao();'
+  }},
+  quiz: { name:"Quiz — sawal aur score", files:{
+    "index.html": '<!DOCTYPE html>\n<html lang="hi">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Quiz</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1 id="sawal">Sawal</h1>\n  <div id="jawab"></div>\n  <p id="result"></p>\n\n  <script src="app.js">' + CLOSE_S + '\n</body>\n</html>',
+    "style.css": 'body { font-family: system-ui; background: #0b0f19; color: white; padding: 16px; }\nbutton { display: block; width: 100%; font-size: 16px; padding: 15px; margin: 8px 0; border-radius: 12px; border: 1px solid #26324b; background: #131b28; color: white; text-align: left; }\n.sahi { background: #0f3d2a; border-color: #34d399; }\n.galat { background: #3d1520; border-color: #fb7185; }',
+    "app.js": '// Apne sawal yahan badlo\nconst sawal = [\n  { puchho: "Bharat ki rajdhani kaun hai?", jawab: ["Mumbai", "Delhi", "Patna"], sahi: 1 },\n  { puchho: "2 + 2 kitna hota hai?", jawab: ["3", "4", "5"], sahi: 1 }\n];\nlet kaunsa = 0;\nlet score = 0;\n\nfunction dikhao() {\n  if (kaunsa >= sawal.length) {\n    document.getElementById("sawal").textContent = "Khatam!";\n    document.getElementById("jawab").innerHTML = "";\n    document.getElementById("result").textContent = "Sahi: " + score + " / " + sawal.length;\n    return;\n  }\n  const s = sawal[kaunsa];\n  document.getElementById("sawal").textContent = (kaunsa + 1) + ". " + s.puchho;\n  document.getElementById("jawab").innerHTML = "";\n  for (let i = 0; i < s.jawab.length; i++) {\n    const b = document.createElement("button");\n    b.textContent = s.jawab[i];\n    b.onclick = function () {\n      if (i === s.sahi) { b.className = "sahi"; score++; } else { b.className = "galat"; }\n      setTimeout(function () { kaunsa++; dikhao(); }, 500);\n    };\n    document.getElementById("jawab").appendChild(b);\n  }\n}\ndikhao();'
+  }},
+  notes: { name:"Notes — jo likho wahi save", files:{
+    "index.html": '<!DOCTYPE html>\n<html lang="hi">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Notes</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Mere notes</h1>\n  <textarea id="likho" placeholder="Aaj kya padha..."></textarea>\n  <p id="bataya"></p>\n\n  <script src="app.js">' + CLOSE_S + '\n</body>\n</html>',
+    "style.css": 'body { font-family: system-ui; background: #0b0f19; color: white; padding: 16px; }\ntextarea { width: 100%; height: 60vh; font-size: 16px; padding: 14px; border-radius: 12px; border: 1px solid #26324b; background: #131b28; color: white; }\n#bataya { color: #94a3c4; font-size: 13px; }',
+    "app.js": '// Likhne par apne aap save\nconst likho = document.getElementById("likho");\nlikho.value = localStorage.getItem("notes") || "";\nlikho.oninput = function () {\n  localStorage.setItem("notes", likho.value);\n  document.getElementById("bataya").textContent = "Save ho gaya — " + likho.value.length + " akshar";\n};'
+  }}
+};
+
+/* ================= buttons ================= */
+$("tpl").onclick = () => {
+  const keys = Object.keys(TPL);
+  const pick = prompt("Kaunsa template?\n" + keys.map((k,i) => (i+1) + ". " + TPL[k].name).join("\n") + "\n\nNumber likho:");
+  const k = keys[Number(pick) - 1];
+  if (!k) return;
+  if (!confirm("Purani files badal jayengi. Theek hai?")) return;
+  P = JSON.parse(JSON.stringify(TPL[k]));
+  cur = "index.html"; save(); paintFiles(); openFile(cur);
+  out("ok", "🧩 Template laga: " + TPL[k].name);
+};
+
+$("brain").onclick = () => {
+  const c = bGet() || { provider:"none", key:"", model:"" };
+  const prov = prompt("Provider? (" + Object.keys(BRAINS).join(", ") + ")", c.provider || "none");
+  if (prov === null) return;
+  const key = prompt("API key (na ho to khali chhodo):", c.key || "");
+  const model = prompt("Model (optional):", c.model || "");
+  bSet({ provider: prov.trim(), key: (key || "").trim(), model: (model || "").trim() });
+  out("ok", "🔌 Dimaag set: " + prov + " — test ke liye 🤖 AI dabao.");
+};
+
+$("ai").onclick = async () => {
+  const ask = prompt("AI se kya karwana hai? (jaise: 'is file me search box jodo')");
+  if (!ask) return;
+  out("warn", "🤖 AI likh raha hai…");
+  const prompt2 = "Tum expert developer ho. Neeche ek file hai. User ne kaha: \"" + ask + "\". "
+    + "Sirf poora naya file content do — koi explanation nahi, koi code fence nahi. Mobile-first, Hinglish UI, bade touch buttons, chhote comments.\n\n"
+    + "File: " + cur + "\n\n" + P.files[cur];
+  const ansRaw = await bAsk(prompt2, 30000);
+  if (!ansRaw){ out("bad", "❌ AI se jawab nahi aaya — 🔌 Dimaag me key daalo."); return; }
+  const ans = ansRaw.replace(/^```[a-z]*\n?/i, "").replace(/```$/, "").trim();
+  if (!confirm("AI ne naya code bheja. Badal dun?")) return;
+  P.files[cur] = ans; $("code").value = ans; paintLines(); save();
+  out("ok", "✅ " + cur + " update ho gayi — Build dabao.");
+};
+
+$("make").onclick = async () => {
+  const idea = prompt("Kaisa app banao? ek line me:\n(jaise: 'padhaai ka timetable jo save ho')");
+  if (!idea) return;
+  out("warn", "✨ AI poora app bana raha hai… (10-20 second)");
+  const prompt2 = "Tum expert web developer ho. Ek chhota app banao is idea par: \"" + idea + "\".\n"
+    + "Sirf JSON do: {\"name\":\"app-naam\",\"files\":{\"index.html\":\"...\",\"style.css\":\"...\",\"app.js\":\"...\"}}\n"
+    + "Niyam: viewport meta, style.css/app.js se link, mobile-first, bade buttons, Hinglish, localStorage, try/catch, chhote comments. Sirf JSON.";
+  let ans = await bAsk(prompt2, 40000);
+  if (!ans){ out("bad", "❌ AI se jawab nahi aaya — 🔌 Dimaag me key daalo."); return; }
+  ans = ans.replace(/^```[a-z]*\n?/i, "").replace(/```$/, "").trim();
+  const a = ans.indexOf("{"), b = ans.lastIndexOf("}");
+  let data = null;
+  try{ data = JSON.parse(ans.slice(a, b + 1)); }catch(e){}
+  if (!data || !data.files){ out("bad", "❌ AI ka jawab samajh nahi aaya — dobara bolo."); return; }
+  if (!confirm("AI ne " + Object.keys(data.files).length + " file banayi. Purani badal dun?")) return;
+  P = { name: (data.name || "ai-app").replace(/[^\w\-]/g, ""), files: data.files };
+  cur = P.files["index.html"] ? "index.html" : Object.keys(P.files)[0];
+  save(); paintFiles(); openFile(cur); build();
+};
+
+$("imp").onclick = async () => {
+  const repo = prompt("GitHub repo — jaise bhupendarsingh785/my-app");
+  if (!repo || !repo.includes("/")) return;
+  const [owner, name] = repo.split("/");
+  out("warn", "⬇️ La raha hoon…");
+  try{
+    const r = await fetch("https://api.github.com/repos/" + owner + "/" + name + "/git/trees/main?recursive=1");
+    const j = await r.json();
+    const list = (j.tree || []).filter(x => x.type === "blob" && /\.(html|css|js|json|md)$/i.test(x.path) && x.size < 200000).slice(0, 12);
+    if (!list.length){ out("bad", "Koi text file nahi mili."); return; }
+    if (!confirm(list.length + " file mili. Purani badal dun?")) return;
+    const files = {};
+    for (const f of list){
+      const raw = await fetch("https://raw.githubusercontent.com/" + owner + "/" + name + "/main/" + f.path);
+      if (raw.ok) files[f.path] = await raw.text();
+    }
+    P = { name: name, files };
+    cur = files["index.html"] ? "index.html" : Object.keys(files)[0];
+    save(); paintFiles(); openFile(cur);
+    out("ok", "✅ " + Object.keys(files).length + " file aa gayi.");
+  }catch(e){ out("bad", "❌ Import fail: " + e.message); }
+};
+
+$("find").onclick = () => {
+  const q = prompt("Kya dhoondhna hai?");
+  if (!q) return;
+  $("outBody").innerHTML = "";
+  let n = 0;
+  Object.keys(P.files).forEach(f => {
+    P.files[f].split("\n").forEach((line, i) => {
+      if (line.toLowerCase().includes(q.toLowerCase())){ n++; out("ok", "<b>" + f + ":" + (i+1) + "</b> — " + line.trim().slice(0,80)); }
+    });
+  });
+  if (!n) out("warn", "Kuch nahi mila.");
+};
+
+$("dl").onclick = () => {
+  const html = bundle();
+  const name = (P.name || "app").replace(/[^\w\-]/g, "") + ".html";
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  out("ok", "⬇️ " + name + " download — phone me offline chalega.");
+};
+
 /* ---------- start ---------- */
 paintFiles(); openFile(cur);
 out("ok", "Seetal Studio taiyar — " + Object.keys(P.files).length + " file. Build → Run → Deploy.");
 </script>
+<script src="assets/apis.js"></script>
 </body>
 </html>
