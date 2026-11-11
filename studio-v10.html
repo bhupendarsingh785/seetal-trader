@@ -122,7 +122,8 @@ main{flex:1;display:flex;min-height:0;position:relative}
   <button id="imp" title="Import">⬇️</button>
   <button id="find" class="btn-icon" title="Search">🔎</button>
   <button id="dl" title="Download">⬇️</button>
-  <button id="installBtn" style="display:none">📲</button>
+  <button id="bAsk" title="System se poochho">💬</button>
+<button id="installBtn" style="display:none">📲</button>
   <button class="pri" id="build">🔨</button>
   <button class="ok" id="run">▶</button>
   <button id="deploy" title="Deploy">🚀</button>
@@ -1369,5 +1370,22 @@ if (!localStorage.getItem("seetal.help.seen")){
 setInterval(()=>{ if(dirty) save(); },45000);
 </script>
 <script src="assets/apis.js"></script>
+
+<div id="askSheet" style="position:fixed;inset:0;background:rgba(4,8,14,.78);display:none;z-index:70;align-items:flex-end">
+  <div style="background:#121a26;border:1px solid #26324b;border-top-left-radius:18px;border-top-right-radius:18px;
+              width:100%;max-height:88vh;overflow:auto;padding:14px">
+    <h3 style="margin:0 0 4px;font-size:16px">💬 System se poochho</h3>
+    <p style="color:#94a3c4;font-size:12.5px;margin:0 0 10px;line-height:1.6">
+      Poochho: "kya chal raha hai", "kya nahi chal raha", "kya dikkat hai", "kab tak hoga" — main apne system ke baare me bataungi.
+    </p>
+    <input id="askIn" placeholder="kya poochhna hai?" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:12px;border-radius:10px;margin-bottom:8px">
+    <div style="display:flex;gap:8px">
+      <button id="askGo" style="flex:1;background:#7c6cf8;border:0;color:#fff;padding:12px;border-radius:10px;font-weight:700">Poochho</button>
+      <button id="askCheck" style="flex:1;background:#182231;border:1px solid #26324b;color:#fff;padding:12px;border-radius:10px;font-weight:700">🩺 Live check</button>
+    </div>
+    <div id="askOut" style="color:#cfe0f5;font-size:13.5px;margin-top:12px;line-height:1.75;white-space:pre-wrap"></div>
+    <button id="askClose" style="width:100%;margin-top:12px;background:transparent;border:1px solid #26324b;color:#94a3c4;padding:12px;border-radius:10px">Band karo</button>
+  </div>
+</div>
 </body>
 </html>
