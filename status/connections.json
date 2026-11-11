@@ -1,0 +1,14 @@
+{
+  "pages": {"code": "200", "ok": true},
+  "youme": {"code": "200", "ok": true},
+  "suno": {"code": "200", "ok": true},
+  "vercel": {"code": "200", "ok": true},
+  "cloudflare": {"code": "200", "ok": true},
+  "gitlab": {"code": "200", "ok": true},
+  "codeberg": {"code": "200", "ok": true},
+  "bitbucket": {"code": "404", "ok": false},
+  "gitlab_token": {"code": "403", "ok": false},
+  "netlify_token": {"code": "200", "ok": true},
+  "cloudflare_token": {"code": "401", "ok": false},
+  "_end": true
+}
