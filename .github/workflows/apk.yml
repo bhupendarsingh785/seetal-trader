@@ -1,0 +1,102 @@
+name: Build APK (PWA se)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "seetal-app.html"
+      - "manifest-app.webmanifest"
+      - ".github/workflows/apk.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Bubblewrap install
+        run: npm i -g @bubblewrap/cli
+
+      - name: Bubblewrap config
+        run: |
+          mkdir -p apk
+          cd apk
+          echo '{"jdkPath":"'"$JAVA_HOME"'","androidSdkPath":"'"$ANDROID_SDK_ROOT"'"}' > ~/.bubblewrap/config.json
+
+      - name: Manifest banao (hamari app ke liye)
+        run: |
+          cat > apk/twa-manifest.json <<'JSON'
+          {
+            "packageId": "io.github.bhupendarsingh785.seetal",
+            "host": "bhupendarsingh785.github.io",
+            "name": "Seetal",
+            "launcherName": "Seetal",
+            "display": "standalone",
+            "themeColor": "#0b0f19",
+            "navigationColor": "#0b0f19",
+            "backgroundColor": "#0b0f19",
+            "startUrl": "/seetal-trader/seetal-app.html",
+            "iconUrl": "https://bhupendarsingh785.github.io/seetal-trader/icon-512.png",
+            "maskableIconUrl": "https://bhupendarsingh785.github.io/seetal-trader/icon-512.png",
+            "appVersionName": "1.0.0",
+            "appVersionCode": 1,
+            "shortcuts": [],
+            "generatorApp": "bubblewrap-cli",
+            "webManifestUrl": "https://bhupendarsingh785.github.io/seetal-trader/manifest-app.webmanifest",
+            "fallbackType": "customtabs",
+            "features": {},
+            "enableNotifications": false,
+            "signingKey": { "path": "./android.keystore", "alias": "seetal" },
+            "orientation": "portrait",
+            "fingerprints": [],
+            "additionalTrustedOrigins": [],
+            "retainedBundles": []
+          }
+          JSON
+
+      - name: Keystore banao (agar secret na ho to naya)
+        run: |
+          cd apk
+          if [ -n "${{ secrets.ANDROID_KEYSTORE_B64 }}" ]; then
+            echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 -d > android.keystore
+            echo "purana keystore use hua"
+          else
+            keytool -genkeypair -v -keystore android.keystore -alias seetal \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass seetal123 -keypass seetal123 \
+              -dname "CN=Seetal, OU=App, O=Seetal, L=India, S=India, C=IN"
+            echo "naya keystore bana"
+          fi
+
+      - name: Bubblewrap build
+        run: |
+          cd apk
+          bubblewrap build --skipPwaValidation \
+            --signingKeyPath ./android.keystore \
+            --signingKeyAlias seetal \
+            --keystorePassword seetal123 \
+            --keyPassword seetal123
+
+      - name: APK upload karo (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: seetal-apk
+          path: |
+            apk/*.apk
+            apk/*.aab
+          if-no-files-found: error
