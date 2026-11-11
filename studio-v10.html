@@ -1416,6 +1416,170 @@ if (!localStorage.getItem("seetal.help.seen")){
 
 // light auto-save
 setInterval(()=>{ if(dirty) save(); },45000);
+/* ================= ＋ PLUS: file daalo → khud build ================= */
+(function(){
+  const $p = (id) => document.getElementById(id);
+
+  function paintPlusApi(){
+    const box = $p("plusApi"); if (!box) return;
+    let keys = {}, customs = [];
+    try{ keys = JSON.parse(localStorage.getItem("seetal.apikeys.v1") || "{}"); }catch(e){}
+    try{ customs = JSON.parse(localStorage.getItem("seetal.customapis.v1") || "[]"); }catch(e){}
+    const names = Object.keys(keys).filter(k => keys[k] && keys[k].key);
+    if (names.length || customs.length){
+      box.innerHTML = '✅ <b>API juda hai</b> — ' + names.join(", ") + (customs.length ? (names.length ? " + " : "") + customs.length + " custom" : "") + '.';
+      box.style.borderColor = "#34d399";
+    } else {
+      box.innerHTML = '⚠️ <b>API nahi juda</b> — free AI se koshish karunga (45s limit). Key ke liye 🔌 API dabao.';
+      box.style.borderColor = "#fbbf24";
+    }
+  }
+
+  function guessType(name, code){
+    if (/\.css$/i.test(name)) return "css";
+    if (/\.js$/i.test(name)) return "js";
+    if (/\.json$/i.test(name)) return "json";
+    if (/\.md$/i.test(name)) return "md";
+    if (/<html[\s>]/i.test(code)) return "html";
+    return "js";
+  }
+
+  function splitHtml(html){
+    let css = "", js = "";
+    let out = html.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, (_, c) => { css += (css ? "\n" : "") + c.trim(); return ""; });
+    out = out.replace(/<script(?![^>]*\bsrc\b)[^>]*>([\s\S]*?)<\/script>/gi, (_, c) => { js += (js ? "\n" : "") + c.trim(); return ""; });
+    const cl = "<" + "/script>";
+    if (css && !/<link[^>]*style\.css/i.test(out))
+      out = /<\/head>/i.test(out) ? out.replace(/<\/head>/i, '<link rel="stylesheet" href="style.css">\n</head>') : '<link rel="stylesheet" href="style.css">\n' + out;
+    if (js && !/<script[^>]*app\.js/i.test(out))
+      out = /<\/body>/i.test(out) ? out.replace(/<\/body>/i, '<script src="app.js">' + cl + '\n</body>') : out + '\n<script src="app.js">' + cl;
+    return { html: out, css, js };
+  }
+
+  async function processPlus(){
+    const out = $p("plusOut");
+    const text = ($p("plusText").value || "").trim();
+    const fileList = $p("plusFile").files;
+    out.textContent = "";
+    const say = (m) => { out.textContent += m + "\n"; };
+    paintPlusApi();
+
+    if (!text && (!fileList || !fileList.length)){ say("Kuch daalo — paste ya file chuno."); return; }
+
+    if (text){
+      const type = guessType("", text);
+      if (type === "html"){
+        const sp = splitHtml(text);
+        P.files["index.html"] = sp.html;
+        if (sp.css) P.files["style.css"] = sp.css;
+        if (sp.js) P.files["app.js"] = sp.js;
+        cur = "index.html";
+        say("📄 HTML → index.html" + (sp.css ? " + style.css" : "") + (sp.js ? " + app.js" : ""));
+      } else {
+        const nm = type === "css" ? "style.css" : type === "json" ? "data.json" : "app.js";
+        P.files[nm] = text;
+        if (!P.files["index.html"]) P.files["index.html"] = '<!DOCTYPE html>\n<html lang="hi">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>App</title>\n<link rel="stylesheet" href="style.css">\n</head>\n<body>\n<h1>App</h1>\n<script src="app.js">' + "<" + "/script>" + '\n</body>\n</html>';
+        say("📄 " + type.toUpperCase() + " → " + nm);
+      }
+    }
+
+    if (fileList && fileList.length){
+      for (const f of fileList){
+        const code = await f.text();
+        const type = guessType(f.name, code);
+        if (type === "html"){
+          const sp = splitHtml(code);
+          P.files["index.html"] = sp.html;
+          if (sp.css) P.files["style.css"] = sp.css;
+          if (sp.js) P.files["app.js"] = sp.js;
+          cur = "index.html";
+          say("📂 " + f.name + " → index.html" + (sp.css ? " + style.css" : "") + (sp.js ? " + app.js" : ""));
+        } else {
+          P.files[f.name] = code;
+          say("📂 " + f.name);
+        }
+      }
+    }
+
+    try{ save(); }catch(e){}
+    try{ paintFiles(); openFile(cur); }catch(e){}
+
+    say("");
+    say("🔨 Build chal raha hai…");
+    let ok = false;
+    try{ ok = (typeof doBuild === "function") ? doBuild() : false; }catch(e){}
+
+    if (ok){
+      say("✅ Build pass — sab theek.");
+      try{ if (typeof doRun === "function") doRun(true); }catch(e){}
+      const dl = document.getElementById("dl");
+      if (dl) dl.classList.add("glow");
+      say("⬇️ Download chamak raha hai — dabao, file mil jayegi.");
+      try{ toast("Ho gaya — Download dabao", "ok"); }catch(e){}
+      setTimeout(() => { $p("plusSheet").style.display = "none"; }, 1200);
+    } else {
+      say("❌ Build fail — Output me dekho kaunsi file tooti.");
+      try{ toast("Build fail", "warn"); }catch(e){}
+    }
+  }
+
+  function bind(){
+    const b = document.getElementById("bPlus");
+    if (b) b.onclick = () => { $p("plusSheet").style.display = "flex"; paintPlusApi(); $p("plusText").focus(); };
+    const c = $p("plusClose"); if (c) c.onclick = () => { $p("plusSheet").style.display = "none"; };
+    const pk = $p("plusPick"); if (pk) pk.onclick = () => $p("plusFile").click();
+    const r = $p("plusRun"); if (r) r.onclick = processPlus;
+    const f = $p("plusFile"); if (f) f.onchange = () => {
+      const fs = f.files;
+      if (fs && fs.length) $p("plusOut").textContent = fs.length + " file chuni: " + [...fs].map(x => x.name).join(", ");
+    };
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind);
+  else bind();
+})();
+
+/* ================= 💬 SYSTEM SE POOCHHO ================= */
+(function(){
+  const $a = (id) => document.getElementById(id);
+  const SELF_MAP = "SEETAL SYSTEM: Trader (live market), Hub (ek darwaza), Studio v10 (editor+build+AI+API), Studio Classic, Studio Pro, Builder, Doctor (jaanch+score+ilaaj+revert), Sync (ek code, sab device), seetal-one (poora system ek file), Cloudflare API (seetal-api), Suno (awaaz). JO NAHI: APK build nahi, phone settings control nahi, server kaam Studio se nahi, free AI 45s limit, vault plain text.";
+
+  function local(q){
+    const t = String(q || "").toLowerCase();
+    if (/kya chal raha|status|haal|theek hai/.test(t)) return "Chal raha: Trader, Hub, Studio v10, Builder, Doctor, Sync, Cloudflare API, Suno. Data har 10 min, watchdog har 5 min, tests har push par (76 checks).";
+    if (/kya nahi|dikkat|problem|error/.test(t)) return "Nahi chalta: APK build nahi, phone settings control nahi, server kaam Studio se nahi, free AI par 45s limit, vault plain text, kuch providers browser se blocked.";
+    if (/kab tak|time/.test(t)) return "Chhota app 1-2 min. Naya page 10-20 min. Backend jodna 1-2 ghante. Bina test 'ban gaya' nahi bolti.";
+    if (/api|key|model/.test(t)) return "API panel me: Sarvam, Gemini, Claude, GPT, DeepSeek, Kimi, Groq, xAI-Grok + custom. Key pehle, phir free AI.";
+    return null;
+  }
+
+  function bind(){
+    const b = document.getElementById("bAsk");
+    if (b) b.onclick = () => { $a("askSheet").style.display = "flex"; $a("askIn").focus(); };
+    const c = $a("askClose"); if (c) c.onclick = () => { $a("askSheet").style.display = "none"; };
+    const g = $a("askGo"); if (g) g.onclick = async () => {
+      const q = $a("askIn").value.trim(); if (!q) return;
+      const out = $a("askOut");
+      const l = local(q);
+      out.textContent = l || "Soch rahi hoon…";
+      try{
+        const ans = await bAsk(SELF_MAP + "\n\nSwag: \"" + q + "\"\nChhota sach jawab do (Hinglish 3-5 line).", 20000);
+        if (ans) out.textContent = ans;
+      }catch(e){}
+    };
+    const ch = $a("askCheck"); if (ch) ch.onclick = async () => {
+      const out = $a("askOut"); out.textContent = "Live check…";
+      const t = [["Trader","https://bhupendarsingh785.github.io/seetal-trader/data/live.json"],["Cloudflare","https://seetal-api.bhupendarsingh785.workers.dev/status"],["Suno","https://bhupendarsingh785.github.io/suno-assistant/"]];
+      const lines = []; let ok = 0;
+      for (const [n,u] of t){
+        try{ const r = await fetch(u + "?t=" + Date.now(), { cache:"no-store" }); lines.push((r.ok?"✅ ":"❌ ")+n); if (r.ok) ok++; }
+        catch(e){ lines.push("❌ "+n); }
+      }
+      out.textContent = "Score: " + Math.round(ok/t.length*100) + "/100\n\n" + lines.join("\n");
+    };
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind);
+  else bind();
+})();
 </script>
 <script src="assets/apis.js"></script>
 
