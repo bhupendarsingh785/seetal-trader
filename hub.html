@@ -83,7 +83,7 @@ $("grid").innerHTML = APPS.map(a => `
 
 $("tabs").innerHTML = APPS.map(a => `<div class="tab" data-open="${a.id}">${esc(a.name)}</div>`).join("");
 
-function open(id){
+function openApp(id){
   const app = APPS.find(a => a.id === id); if (!app) return;
   $("home").style.display = "none";
   const f = $("frame");
@@ -102,7 +102,7 @@ function goHome(){
 }
 document.addEventListener("click", e => {
   const el = e.target.closest("[data-open]");
-  if (el) open(el.dataset.open);
+  if (el) openApp(el.dataset.open);
 });
 $("homeBtn").onclick = goHome;
 
@@ -126,7 +126,7 @@ async function check(){
 check();
 
 const h = (location.hash || "").replace("#", "");
-if (h && h !== "home" && APPS.some(a => a.id === h)) open(h); else goHome();
+if (h && h !== "home" && APPS.some(a => a.id === h)) openApp(h); else goHome();
 </script>
 </body>
 </html>

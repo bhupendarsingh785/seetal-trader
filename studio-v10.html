@@ -348,7 +348,7 @@ h1{font-size:22px}`,
 let P = load();
 let cur = "index.html";
 let dirty = false;
-let history = [];
+let hist = [];
 let histIdx = -1;
 let lastBuildOk = false;
 let previewMode = false;
@@ -470,19 +470,19 @@ function formatSize(n){
   return (n/1048576).toFixed(1)+" MB";
 }
 
-/* ---------- history ---------- */
+/* ---------- hist ---------- */
 function pushHist(){
   const snap = {file:cur, content:$("code").value};
-  if (history[histIdx] && history[histIdx].file===snap.file && history[histIdx].content===snap.content) return;
-  history = history.slice(0, histIdx+1);
-  history.push(snap);
-  if (history.length > HISTORY_MAX) history.shift();
-  histIdx = history.length - 1;
+  if (hist[histIdx] && hist[histIdx].file===snap.file && hist[histIdx].content===snap.content) return;
+  hist = hist.slice(0, histIdx+1);
+  hist.push(snap);
+  if (hist.length > HISTORY_MAX) hist.shift();
+  histIdx = hist.length - 1;
 }
 function undo(){
   if (histIdx<=0){ toast("Aur undo nahi", "warn"); return; }
   histIdx--;
-  const h = history[histIdx];
+  const h = hist[histIdx];
   if (h.file !== cur) openFile(h.file);
   $("code").value = h.content;
   P.files[cur] = h.content;
