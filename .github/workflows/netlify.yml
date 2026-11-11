@@ -1,8 +1,8 @@
 name: Deploy to Netlify
 
 # Har push par site Netlify par bhi publish ho jaye.
-# Chahiye: repo secret NETLIFY_AUTH_TOKEN (Netlify personal access token).
-# Secret na ho to chup-chaap skip - kuch tootta nahi.
+# Chahiye: secret NETLIFY_AUTH_TOKEN (Netlify personal access token)
+# Token na ho / mara ho to workflow chup-chaap skip — pipeline kharab nahi hoti.
 
 on:
   push:
@@ -11,29 +11,60 @@ on:
 
 permissions:
   contents: read
+  issues: write
+
+concurrency:
+  group: netlify-deploy
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check token
+      - name: Token hai?
         id: chk
         env:
           TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: |
           if [ -z "$TOKEN" ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "NETLIFY_AUTH_TOKEN nahi hai - deploy skip"
+            echo "NETLIFY_AUTH_TOKEN nahi hai — deploy skip (kuch nahi tootega)"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Deploy
+      - name: Token jaanch lo (API se)
         if: steps.chk.outputs.ready == 'true'
+        id: verify
+        env:
+          TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          T="$(printf '%s' "$TOKEN" | tr -d '[:space:]')"
+          CODE=$(curl -s -o /tmp/nl.json -w '%{http_code}' -H "Authorization: Bearer $T" https://api.netlify.com/api/v1/user || echo 000)
+          echo "token_status=$CODE"
+          if [ "$CODE" = "200" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+            python3 -c "import json;d=json.load(open('/tmp/nl.json'));print('user:', d.get('email'))" || true
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Netlify token kaam nahi kar raha (HTTP $CODE) — naya token banao: https://app.netlify.com/user/applications"
+          fi
+
+      - name: Deploy (retry ke saath)
+        if: steps.chk.outputs.ready == 'true' && steps.verify.outputs.ok == 'true'
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           SITE_ID: b15d2624-8421-4d97-875e-a0fb702bd678
         run: |
-          npx --yes netlify-cli@latest deploy --prod --dir . --site "$SITE_ID" --message "GitHub ${GITHUB_SHA::7}"
+          for i in 1 2 3; do
+            echo "=== koshish $i ==="
+            if npx --yes netlify-cli@latest deploy --prod --dir . --site "$SITE_ID" --message "GitHub ${GITHUB_SHA::7}"; then
+              echo "✅ Netlify deploy ho gaya"; exit 0
+            fi
+            sleep $((i * 10))
+          done
+          echo "::error::Netlify deploy 3 koshish ke baad bhi fail"
+          exit 1
