@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Seetal Studio — Intelligent System (v10)</title>
+<link rel="manifest" href="manifest-studio.webmanifest" />
+<meta name="theme-color" content="#0b0f19" />
+<link rel="icon" href="icon-192.png" />
+<meta name="theme-color" content="#0b0f19" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<style>
+:root{
+  --bg:#0b0f19;--panel:#121a26;--panel2:#182231;--line:#26324b;
+  --txt:#eef2fb;--dim:#94a3c4;--green:#34d399;--red:#fb7185;
+  --amber:#fbbf24;--violet:#7c6cf8;--cyan:#22d3ee;--blue:#3b82f6;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column}
+
+header{display:flex;align-items:center;gap:5px;padding:5px 7px;background:#0e1520;border-bottom:1px solid var(--line);flex-wrap:wrap;flex-shrink:0;z-index:10}
+.logo{font-weight:800;font-size:13px;white-space:nowrap}.logo span{color:var(--green)}
+.ver{font-size:9px;color:var(--dim);margin-left:2px}
+.spacer{flex:1}
+.pill{background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:2px 7px;font-size:10.5px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+button{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:5px 8px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:opacity .12s,transform .08s}
+button:active{transform:scale(.95)}
+button.pri{background:linear-gradient(135deg,var(--violet),var(--blue));border:none}
+button.ok{background:var(--green);color:#04170c;border:none}
+button.warn{background:var(--amber);color:#1a1200;border:none}
+button:disabled{opacity:.4;pointer-events:none}
+.btn-icon{padding:5px 7px;font-size:13px}
+
+main{flex:1;display:flex;min-height:0;position:relative}
+#side{width:132px;min-width:96px;background:#0e1520;border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:auto;flex-shrink:0;transition:width .18s}
+#side.collapsed{width:0;min-width:0;overflow:hidden;border:none}
+.file{padding:9px 7px;font-size:12px;color:var(--dim);cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px;user-select:none}
+.file .ico{font-size:11px;opacity:.85;flex-shrink:0}
+.file.on{background:var(--panel2);color:var(--txt);border-left:3px solid var(--green);font-weight:700}
+.file:active{background:var(--panel)}
+.side-tools{padding:5px;display:flex;gap:3px;border-bottom:1px solid var(--line)}
+.side-tools button{flex:1;padding:4px;font-size:10.5px}
+
+#editorWrap{flex:1;display:flex;flex-direction:column;min-width:0}
+#tabbar{display:flex;gap:4px;padding:4px 6px;background:#0e1520;border-bottom:1px solid var(--line);font-size:11px;color:var(--dim);overflow-x:auto;flex-shrink:0;align-items:center}
+.tab{padding:3px 9px;border-radius:6px;background:var(--panel);border:1px solid transparent;cursor:pointer;white-space:nowrap}
+.tab.on{background:var(--panel2);border-color:var(--line);color:var(--txt);font-weight:700}
+#codeArea{flex:1;display:flex;min-height:0;position:relative}
+#lines{width:36px;background:#0a0f18;color:#4b5b73;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;text-align:right;padding:7px 4px;overflow:hidden;user-select:none;flex-shrink:0}
+#code{flex:1;background:#0a0f18;color:#e8f0fb;border:0;outline:none;resize:none;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:7px;tab-size:2;-webkit-overflow-scrolling:touch}
+
+#statusbar{display:flex;gap:8px;align-items:center;padding:3px 7px;background:#0b1017;border-top:1px solid var(--line);font-size:10.5px;color:var(--dim);flex-shrink:0}
+#sbBuild.pass{color:var(--green)}#sbBuild.fail{color:var(--red)}#sbBuild.warn{color:var(--amber)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--dim);display:inline-block}
+.dot.saved{background:var(--green)}.dot.unsaved{background:var(--amber)}
+
+#bottom{height:32%;min-height:100px;border-top:1px solid var(--line);display:flex;flex-direction:column;background:var(--panel);flex-shrink:0}
+#outHead{display:flex;gap:5px;padding:4px 7px;border-bottom:1px solid var(--line);align-items:center;font-size:11.5px;color:var(--dim);flex-shrink:0}
+#outBody{flex:1;overflow:auto;padding:7px 9px;font-size:12px;line-height:1.55}
+#outBody iframe{width:100%;height:100%;border:0;background:#fff;display:block}
+.ok{color:var(--green)}.bad{color:var(--red)}.warn{color:var(--amber)}.info{color:var(--cyan)}
+.out-line{margin:2px 0;word-break:break-word}
+
+/* Build banner */
+#buildBanner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:50;background:linear-gradient(135deg,#0f3d2a,#134e4a);border-top:2px solid var(--green);padding:11px 12px;align-items:center;gap:8px;animation:slideUp .25s ease}
+#buildBanner.show{display:flex}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+#buildBanner .msg{flex:1;font-size:13px;font-weight:600}
+#buildBanner button{padding:7px 12px;font-size:12px}
+
+/* Toast */
+#toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:9px 16px;font-size:12.5px;font-weight:600;z-index:100;transition:transform .25s ease;pointer-events:none;max-width:92%;box-shadow:0 8px 28px rgba(0,0,0,.4)}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.ok{border-color:var(--green)}#toast.bad{border-color:var(--red)}#toast.warn{border-color:var(--amber)}
+
+/* Sheets */
+.sheet{position:fixed;inset:0;background:rgba(4,8,14,.8);display:none;z-index:60;align-items:flex-end;justify-content:center}
+.sheet.open{display:flex}
+.sheet-inner{background:#121a26;border:1px solid var(--line);border-top-left-radius:16px;border-top-right-radius:16px;width:100%;max-width:480px;max-height:90vh;overflow:auto;padding:13px}
+.sheet h3{margin:0 0 5px;font-size:15px}
+.sheet p{color:var(--dim);font-size:12px;margin:0 0 10px;line-height:1.5}
+.sheet input,.sheet select,.sheet textarea{width:100%;background:#0b1119;border:1px solid var(--line);color:#fff;padding:10px;border-radius:9px;margin-bottom:6px;font-size:13px;font-family:inherit}
+.sheet textarea{min-height:70px;resize:vertical}
+.sheet .row{display:flex;gap:7px;margin-top:8px}
+.sheet .row button{flex:1;padding:11px;border-radius:9px;font-weight:700}
+
+/* Simple mode big entry */
+#simpleBar{display:none;padding:8px;background:#0e1520;border-bottom:1px solid var(--line);flex-shrink:0}
+#simpleBar.open{display:block}
+#simpleInput{width:100%;background:#0b1119;border:1px solid var(--line);color:#fff;padding:12px 14px;border-radius:12px;font-size:14px;font-family:inherit}
+#simpleGo{width:100%;margin-top:7px;padding:12px;font-size:14px;border:none;border-radius:12px}
+
+/* Mode badge */
+.mode-badge{font-size:9.5px;padding:1px 6px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);color:var(--dim)}
+.mode-badge.simple{border-color:var(--green);color:var(--green)}
+.mode-badge.pro{border-color:var(--violet);color:var(--violet)}
+
+@media(max-width:640px){#side{width:110px}header{padding:4px 5px;gap:3px}button{padding:4px 6px;font-size:11px}#bottom{height:36%}.logo{font-size:12px}}
+@media(max-width:400px){#side{width:96px}.pill{max-width:70px}}
+</style>
+</head>
+<body>
+
+<header>
+  <button class="btn-icon" id="toggleSide" title="Files">☰</button>
+  <div class="logo">Seetal<span>.</span>Studio <span class="ver">v10</span></div>
+  <span class="mode-badge" id="modeBadge">PRO</span>
+  <span class="pill" id="projName" title="Naam badlo">naya-project</span>
+  <div class="spacer"></div>
+  <button id="modeBtn" title="Simple / Pro">🧒</button>
+  <button id="newFile" class="btn-icon" title="Nayi file">＋</button>
+  <button id="delFile" class="btn-icon" title="Hatao">🗑</button>
+  <button id="tpl" title="Template">🧩</button>
+  <button id="ai" title="AI file">🤖</button>
+  <button id="make" class="pri" title="Poora system banao">✨ Banao</button>
+  <button id="brain" title="Models / API">🔌</button>
+  <span id="apiBadge" class="pill" style="font-size:10px">API:0</span>
+  <button id="snap" title="Snapshot">📸</button>
+  <button id="imp" title="Import">⬇️</button>
+  <button id="find" class="btn-icon" title="Search">🔎</button>
+  <button id="dl" title="Download">⬇️</button>
+  <button id="installBtn" style="display:none">📲</button>
+  <button class="pri" id="build">🔨</button>
+  <button class="ok" id="run">▶</button>
+  <button id="deploy" title="Deploy">🚀</button>
+  <button id="saveAll" title="Save">💾</button>
+</header>
+
+<!-- Simple mode bar -->
+<div id="simpleBar">
+  <input id="simpleInput" placeholder="Batao kya banana hai? (jaise: school ka timetable jo save ho)" />
+  <button id="simpleGo" class="pri">✨ Bana do</button>
+</div>
+
+<main>
+  <div id="side">
+    <div class="side-tools">
+      <button id="renameFile" title="Rename">✏️</button>
+      <button id="dupFile" title="Copy">⧉</button>
+      <button id="exportJson" title="Export project">📦</button>
+    </div>
+    <div id="fileList"></div>
+  </div>
+  <div id="editorWrap">
+    <div id="tabbar">
+      <span id="curFile" class="tab on">index.html</span>
+      <span class="spacer"></span>
+      <span id="stat" style="font-size:10.5px;color:var(--dim)"></span>
+    </div>
+    <div id="codeArea">
+      <div id="lines">1</div>
+      <textarea id="code" spellcheck="false" wrap="off" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+    </div>
+  </div>
+</main>
+
+<div id="statusbar">
+  <span class="dot" id="saveDot"></span>
+  <span id="sbFile">index.html</span>
+  <span id="sbLines">0 line</span>
+  <span id="sbSize">0 B</span>
+  <span id="sbModels" style="color:var(--cyan)"></span>
+  <span class="spacer" style="flex:1"></span>
+  <span id="sbBuild">taiyar</span>
+</div>
+
+<div id="bottom">
+  <div id="outHead">
+    <span style="font-weight:700">Output</span>
+    <button id="tabLog" style="padding:2px 7px;font-size:10.5px">Log</button>
+    <button id="tabPreview" style="padding:2px 7px;font-size:10.5px">Preview</button>
+    <span class="spacer" style="flex:1"></span>
+    <button id="clearOut" style="padding:2px 7px;font-size:10.5px">saaf</button>
+  </div>
+  <div id="outBody"><div class="ok out-line">Seetal Studio <b>v10</b> taiyar. Simple mode me sirf batao kya chahiye — system bana dega.</div></div>
+</div>
+
+<div id="buildBanner">
+  <div class="msg">🟢 System build ho chuka hai!</div>
+  <button class="ok" id="bannerDl">⬇️ Download</button>
+  <button id="bannerRun">▶ Run</button>
+  <button id="bannerClose" style="background:transparent;border:1px solid var(--line)">✕</button>
+</div>
+<div id="toast"></div>
+
+<!-- API Sheet -->
+<div id="apiSheet" class="sheet">
+  <div class="sheet-inner">
+    <h3>🔌 Models jodo — koi bhi</h3>
+    <p>Jo pehle chalega wahi use hoga. Fail ho to agla. Key sirf is device me rehti hai.</p>
+    <div id="apiList"></div>
+    <h3 style="margin:12px 0 5px;font-size:13.5px">➕ Custom API (OpenAI-style)</h3>
+    <input id="cuName" placeholder="naam">
+    <input id="cuUrl" placeholder="URL — .../v1/chat/completions">
+    <input id="cuKey" placeholder="key">
+    <input id="cuModel" placeholder="model">
+    <button id="cuAdd" class="pri" style="width:100%;padding:11px;border:none;border-radius:9px;margin-bottom:6px">➕ Jodo</button>
+    <div class="row">
+      <button id="apiTestAll">🧪 Test sab</button>
+      <button id="apiClose">Band</button>
+    </div>
+    <div id="apiOut" style="color:var(--dim);font-size:12.5px;margin-top:8px;line-height:1.65"></div>
+  </div>
+</div>
+
+<!-- Template -->
+<div id="tplSheet" class="sheet">
+  <div class="sheet-inner">
+    <h3>🧩 Ready templates</h3>
+    <p>Ek click me project lagao.</p>
+    <div id="tplList"></div>
+    <div class="row"><button id="tplClose">Band</button></div>
+  </div>
+</div>
+
+<!-- Find -->
+<div id="findSheet" class="sheet">
+  <div class="sheet-inner">
+    <h3>🔎 Search / Replace</h3>
+    <input id="findQ" placeholder="Kya dhoondhna hai?">
+    <input id="findReplace" placeholder="Replace with (optional)">
+    <div class="row">
+      <button id="findGo" class="pri" style="border:none">Dhoondo</button>
+      <button id="findRepAll">Replace All</button>
+      <button id="findClose">Band</button>
+    </div>
+    <div id="findOut" style="margin-top:8px;font-size:12.5px;line-height:1.55;color:var(--dim)"></div>
+  </div>
+</div>
+
+<!-- Snapshot -->
+<div id="snapSheet" class="sheet">
+  <div class="sheet-inner">
+    <h3>📸 Project Snapshots</h3>
+    <p>Important stage save karo. Baad me wapas laa sakte ho.</p>
+    <input id="snapName" placeholder="Snapshot ka naam (jaise: pehla version)">
+    <button id="snapSave" class="pri" style="width:100%;padding:11px;border:none;border-radius:9px;margin-bottom:8px">📸 Save snapshot</button>
+    <div id="snapList"></div>
+    <div class="row"><button id="snapClose">Band</button></div>
+  </div>
+</div>
+
+<!-- Help / Welcome for simple -->
+<div id="helpSheet" class="sheet">
+  <div class="sheet-inner">
+    <h3>👋 Seetal Studio kaise chalaye</h3>
+    <p style="line-height:1.7">
+      <b>Simple mode (🧒)</b><br>
+      1. Upar box me likho kya banana hai<br>
+      2. “Bana do” dabao<br>
+      3. System files bana dega<br>
+      4. Build → Download<br><br>
+      <b>Pro mode</b><br>
+      Files khud likho, AI se improve karo, templates use karo.<br><br>
+      API key ek baar jod lo (🔌) — phir AI kaam karega.
+    </p>
+    <div class="row"><button id="helpClose" class="pri" style="border:none">Samajh gaya</button></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   SEETAL STUDIO v10 — Intelligent, Robust, Lightweight System
+   Phone-first · Kid-simple · AI-powered · Large-project capable
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const LS = "seetal.studio.v10";
+const LS_SNAP = "seetal.studio.snaps.v10";
+const BRAIN_KEY = "seetal.studio.brain.v1";
+const HISTORY_MAX = 25;
+const MAX_FILES = 40;
+const MAX_FILE_SIZE = 400000;
+
+const DEFAULT = {
+  name: "naya-project",
+  files: {
+    "index.html": `<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mera app</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Namaste</h1>
+  <p>Ye Seetal Studio me bana hai.</p>
+  <script src="app.js"><\/script>
+</body>
+</html>`,
+    "style.css": `body{margin:0;font-family:system-ui;background:#0b0f19;color:#eef2fb;padding:20px}
+h1{font-size:22px}`,
+    "app.js": `console.log("app chalu");`
+  }
+};
+
+let P = load();
+let cur = "index.html";
+let dirty = false;
+let history = [];
+let histIdx = -1;
+let lastBuildOk = false;
+let previewMode = false;
+let simpleMode = localStorage.getItem("seetal.simple") === "1";
+let deferredInstall = null;
+
+/* ---------- persistence ---------- */
+function load(){
+  try{
+    const raw = localStorage.getItem(LS);
+    if (raw){
+      const p = JSON.parse(raw);
+      if (p && p.files && Object.keys(p.files).length) return p;
+    }
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT));
+}
+function save(){
+  try{
+    // size guard
+    const s = JSON.stringify(P);
+    if (s.length > 4.5e6){ toast("Project bahut bada — kuch files hatao", "bad"); return false; }
+    localStorage.setItem(LS, s);
+    dirty = false; updateSaveDot(); return true;
+  }catch(e){ toast("Save fail — storage full?", "bad"); return false; }
+}
+function markDirty(){ dirty = true; updateSaveDot(); }
+function updateSaveDot(){
+  const d = $("saveDot");
+  if (d){ d.className = "dot " + (dirty ? "unsaved" : "saved"); d.title = dirty ? "Unsaved" : "Saved"; }
+}
+
+/* ---------- toast / banner ---------- */
+let toastTimer;
+function toast(msg, cls){
+  const t = $("toast");
+  t.textContent = msg;
+  t.className = (cls||"") + " show";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+}
+function showBuildBanner(ok){
+  const b = $("buildBanner");
+  if (ok){
+    b.classList.add("show");
+    b.querySelector(".msg").textContent = "🟢 System build ho chuka hai! Download ya Run karo.";
+  } else b.classList.remove("show");
+}
+function tryNotify(title, body){
+  if (!("Notification" in window)) return;
+  if (Notification.permission === "granted"){
+    try{ new Notification(title,{body}); }catch(e){}
+  } else if (Notification.permission !== "denied"){
+    Notification.requestPermission().then(p => { if (p==="granted") try{ new Notification(title,{body}); }catch(e){} });
+  }
+}
+
+/* ---------- mode ---------- */
+function applyMode(){
+  const bar = $("simpleBar");
+  const badge = $("modeBadge");
+  if (simpleMode){
+    bar.classList.add("open");
+    badge.textContent = "SIMPLE";
+    badge.className = "mode-badge simple";
+    $("modeBtn").textContent = "🧠";
+  } else {
+    bar.classList.remove("open");
+    badge.textContent = "PRO";
+    badge.className = "mode-badge pro";
+    $("modeBtn").textContent = "🧒";
+  }
+  localStorage.setItem("seetal.simple", simpleMode ? "1" : "0");
+}
+$("modeBtn").onclick = () => { simpleMode = !simpleMode; applyMode(); toast(simpleMode ? "Simple mode — sirf batao kya chahiye" : "Pro mode", "ok"); };
+
+/* ---------- files UI ---------- */
+function ico(f){
+  if (/\.html$/i.test(f)) return "🌐";
+  if (/\.css$/i.test(f)) return "🎨";
+  if (/\.js$/i.test(f)) return "⚙️";
+  if (/\.json$/i.test(f)) return "📋";
+  if (/\.md$/i.test(f)) return "📝";
+  return "📄";
+}
+function paintFiles(){
+  const box = $("fileList");
+  const names = Object.keys(P.files).sort((a,b) => {
+    if (a==="index.html") return -1; if (b==="index.html") return 1;
+    return a.localeCompare(b);
+  });
+  box.innerHTML = names.map(f =>
+    `<div class="file${f===cur?" on":""}" data-f="${f}"><span class="ico">${ico(f)}</span>${f}</div>`
+  ).join("");
+  box.querySelectorAll("[data-f]").forEach(el => el.onclick = () => openFile(el.dataset.f));
+  $("projName").textContent = P.name || "project";
+}
+function openFile(f){
+  if (!(f in P.files)) return;
+  pushHist();
+  cur = f;
+  $("code").value = P.files[f] || "";
+  $("curFile").textContent = f;
+  paintLines(); paintFiles();
+  previewMode = false;
+}
+function paintLines(){
+  const val = $("code").value;
+  const n = (val.match(/\n/g)||[]).length + 1;
+  $("lines").textContent = Array.from({length:n},(_,i)=>i+1).join("\n");
+  $("stat").textContent = n + " line · " + val.length;
+  if ($("sbLines")) $("sbLines").textContent = n + " line";
+  if ($("sbSize")) $("sbSize").textContent = formatSize(val.length);
+  if ($("sbFile")) $("sbFile").textContent = cur;
+}
+function formatSize(n){
+  if (n<1024) return n+" B";
+  if (n<1048576) return (n/1024).toFixed(1)+" KB";
+  return (n/1048576).toFixed(1)+" MB";
+}
+
+/* ---------- history ---------- */
+function pushHist(){
+  const snap = {file:cur, content:$("code").value};
+  if (history[histIdx] && history[histIdx].file===snap.file && history[histIdx].content===snap.content) return;
+  history = history.slice(0, histIdx+1);
+  history.push(snap);
+  if (history.length > HISTORY_MAX) history.shift();
+  histIdx = history.length - 1;
+}
+function undo(){
+  if (histIdx<=0){ toast("Aur undo nahi", "warn"); return; }
+  histIdx--;
+  const h = history[histIdx];
+  if (h.file !== cur) openFile(h.file);
+  $("code").value = h.content;
+  P.files[cur] = h.content;
+  paintLines(); markDirty();
+  toast("Undo", "info");
+}
+
+/* ---------- editor ---------- */
+$("code").addEventListener("input", () => {
+  P.files[cur] = $("code").value;
+  paintLines(); markDirty();
+});
+$("code").addEventListener("scroll", () => { $("lines").scrollTop = $("code").scrollTop; });
+$("code").addEventListener("keydown", e => {
+  if (e.key==="Tab"){
+    e.preventDefault();
+    const el=$("code"), s=el.selectionStart, en=el.selectionEnd;
+    el.value = el.value.slice(0,s)+"  "+el.value.slice(en);
+    el.selectionStart = el.selectionEnd = s+2;
+    P.files[cur]=el.value; paintLines(); markDirty();
+  }
+  if ((e.ctrlKey||e.metaKey) && e.key==="s"){ e.preventDefault(); if(save()) toast("💾 Saved","ok"); }
+  if ((e.ctrlKey||e.metaKey) && e.key==="b"){ e.preventDefault(); doBuild(); }
+  if ((e.ctrlKey||e.metaKey) && e.key==="Enter"){ e.preventDefault(); doRun(); }
+  if ((e.ctrlKey||e.metaKey) && e.key==="z" && !e.shiftKey){ e.preventDefault(); undo(); }
+});
+
+/* ---------- SMART PASTE — koi bhi format safely handle ---------- */
+function tryParseProjectJSON(text){
+  try{
+    const a=text.indexOf("{"), b=text.lastIndexOf("}");
+    if (a<0||b<=a) return null;
+    const data=JSON.parse(text.slice(a,b+1));
+    if (data && data.files && typeof data.files==="object") return data;
+    // also accept raw { "index.html": "...", ... }
+    const keys=Object.keys(data);
+    if (keys.some(k=>/\.(html|css|js)$/i.test(k)) && keys.every(k=>typeof data[k]==="string")){
+      return { name:"pasted-project", files:data };
+    }
+  }catch(e){}
+  return null;
+}
+function extractCodeBlocks(text){
+  // ```html ... ``` or ```css ... ``` or ```js ... ```
+  const blocks=[];
+  const re=/```(\w+)?\s*\n([\s\S]*?)```/g;
+  let m;
+  while((m=re.exec(text))){
+    const lang=(m[1]||"").toLowerCase();
+    const body=m[2].trim();
+    if (!body) continue;
+    let name=null;
+    if (lang==="html"||lang==="htm") name="index.html";
+    else if (lang==="css") name="style.css";
+    else if (lang==="js"||lang==="javascript") name="app.js";
+    else if (lang==="json") name="data.json";
+    else name = lang ? ("file."+lang) : null;
+    if (name) blocks.push({name, body});
+  }
+  return blocks;
+}
+function looksLikeFullHTML(text){
+  const t=text.trim();
+  return /<!DOCTYPE\s+html/i.test(t) || (/<html[\s>]/i.test(t) && /<\/html>/i.test(t));
+}
+function smartPaste(text){
+  if (!text || text.length < 8) return false;
+  const trimmed=text.trim();
+
+  // 1) Full project JSON (Seetal / AI format)
+  const proj=tryParseProjectJSON(trimmed);
+  if (proj && Object.keys(proj.files).length){
+    if (!confirm("Project JSON mila ("+Object.keys(proj.files).length+" files).\nPurani files badal kar load karun?")) return true;
+    const files={};
+    Object.keys(proj.files).slice(0,MAX_FILES).forEach(f=>{
+      let v=proj.files[f];
+      if (typeof v!=="string") v=String(v||"");
+      if (v.length>MAX_FILE_SIZE) v=v.slice(0,MAX_FILE_SIZE);
+      files[f]=v;
+    });
+    P={ name:(proj.name||"pasted").replace(/[^\w\-]/g,"").slice(0,40), files };
+    cur=P.files["index.html"]?"index.html":Object.keys(P.files)[0];
+    save(); paintFiles(); openFile(cur);
+    const ok=doBuild();
+    toast(ok?"✅ Project paste + build OK":"Paste OK, build me errors","ok");
+    if (ok) setTimeout(()=>doRun(true),300);
+    return true;
+  }
+
+  // 2) Markdown code blocks (multiple files)
+  const blocks=extractCodeBlocks(trimmed);
+  if (blocks.length>=1 && (blocks.length>1 || trimmed.length>400)){
+    if (!confirm(blocks.length+" code block mile.\nFiles bana/update karun?")) return true;
+    blocks.forEach(b=>{
+      if (!(b.name in P.files) && Object.keys(P.files).length>=MAX_FILES) return;
+      P.files[b.name]=b.body.slice(0,MAX_FILE_SIZE);
+    });
+    const first=blocks[0].name;
+    cur=first;
+    save(); paintFiles(); openFile(cur);
+    const ok=doBuild();
+    toast("Blocks se files ban gayi","ok");
+    if (ok) setTimeout(()=>doRun(true),300);
+    return true;
+  }
+
+  // 3) Full HTML document pasted into any file → put into index.html + extract inline
+  if (looksLikeFullHTML(trimmed)){
+    if (!confirm("Poora HTML page lag raha hai.\nindex.html me rakhun aur Build+Run karun?")) return true;
+    // extract style and script if present for cleaner split
+    let html=trimmed;
+    let css="", js="";
+    html=html.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi,(_,c)=>{ css+=(css?"\n":"")+c.trim(); return ""; });
+    html=html.replace(/<script(?![^>]*\bsrc\b)[^>]*>([\s\S]*?)<\/script>/gi,(_,c)=>{ js+=(js?"\n":"")+c.trim(); return ""; });
+    // ensure links
+    if (css && !/<link[^>]*style\.css/i.test(html)){
+      if (/<\/head>/i.test(html)) html=html.replace(/<\/head>/i,'<link rel="stylesheet" href="style.css">\n</head>');
+      else html='<link rel="stylesheet" href="style.css">\n'+html;
+    }
+    if (js && !/<script[^>]*app\.js/i.test(html)){
+      if (/<\/body>/i.test(html)) html=html.replace(/<\/body>/i,'<script src="app.js"><\/script>\n</body>');
+      else html+='\n<script src="app.js"><\/script>';
+    }
+    P.files["index.html"]=html;
+    if (css) P.files["style.css"]=css;
+    if (js) P.files["app.js"]=js;
+    cur="index.html";
+    save(); paintFiles(); openFile(cur);
+    const ok=doBuild();
+    toast(ok?"HTML paste + build OK":"HTML paste OK","ok");
+    if (ok) setTimeout(()=>doRun(true),300);
+    return true;
+  }
+
+  // 4) Normal paste — let browser handle (current file)
+  return false;
+}
+
+$("code").addEventListener("paste", e => {
+  const text=(e.clipboardData||window.clipboardData).getData("text");
+  if (!text || text.length < 40) return; // small pastes normal
+  // only intercept if it looks structured
+  const t=text.trim();
+  const structured = tryParseProjectJSON(t) || extractCodeBlocks(t).length>=1 || looksLikeFullHTML(t);
+  if (!structured) return;
+  e.preventDefault();
+  smartPaste(text);
+});
+
+/* ---------- file ops ---------- */
+function defaultContent(name){
+  if (/\.html$/i.test(name)) return `<!DOCTYPE html>\n<html lang="hi">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>${name}</title>\n</head>\n<body>\n  <h1>${name}</h1>\n</body>\n</html>`;
+  if (/\.css$/i.test(name)) return `/* ${name} */\n`;
+  if (/\.js$/i.test(name)) return `// ${name}\n`;
+  return "";
+}
+$("newFile").onclick = () => {
+  if (Object.keys(P.files).length >= MAX_FILES){ toast("Max "+MAX_FILES+" files", "warn"); return; }
+  const n = prompt("File ka naam (jaise page2.html):");
+  if (!n) return;
+  const name = n.trim().replace(/[^\w.\-\/]/g,"");
+  if (!name || name in P.files){ toast("Naam galat / pehle se hai","bad"); return; }
+  P.files[name] = defaultContent(name);
+  save(); openFile(name); toast("File: "+name,"ok");
+};
+$("delFile").onclick = () => {
+  if (Object.keys(P.files).length<=1){ toast("Aakhri file nahi hata sakte","bad"); return; }
+  if (!confirm(cur+" hatana hai?")) return;
+  delete P.files[cur];
+  cur = Object.keys(P.files)[0];
+  save(); openFile(cur); toast("Hata diya","ok");
+};
+$("renameFile").onclick = () => {
+  const n = prompt("Naya naam:", cur);
+  if (!n || n===cur) return;
+  const name = n.trim().replace(/[^\w.\-\/]/g,"");
+  if (!name || name in P.files){ toast("Naam galat","bad"); return; }
+  P.files[name]=P.files[cur]; delete P.files[cur]; cur=name;
+  save(); openFile(cur); toast("Rename: "+name,"ok");
+};
+$("dupFile").onclick = () => {
+  let base=cur.replace(/(\.\w+)$/,""), ext=(cur.match(/(\.\w+)$/)||[""])[0];
+  let name=base+"-copy"+ext, i=2;
+  while(name in P.files){ name=base+"-copy"+i+ext; i++; }
+  if (Object.keys(P.files).length>=MAX_FILES){ toast("Max files","warn"); return; }
+  P.files[name]=P.files[cur]; save(); openFile(name); toast("Copy: "+name,"ok");
+};
+$("projName").onclick = () => {
+  const n = prompt("Project naam:", P.name||"");
+  if (n===null) return;
+  P.name = (n.trim()||"project").replace(/[^\w\- ]/g,"").slice(0,40);
+  save(); paintFiles(); toast("Project: "+P.name,"ok");
+};
+$("saveAll").onclick = () => { if(save()) toast("💾 Saved","ok"); };
+$("toggleSide").onclick = () => $("side").classList.toggle("collapsed");
+
+/* ---------- export / import project JSON ---------- */
+$("exportJson").onclick = () => {
+  const data = JSON.stringify(P, null, 2);
+  const blob = new Blob([data], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = (P.name||"project").replace(/[^\w\-]/g,"") + ".seetal.json";
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+  toast("📦 Project JSON download","ok");
+};
+
+/* ---------- output ---------- */
+function out(cls, msg){
+  if (previewMode) exitPreview();
+  const d = document.createElement("div");
+  d.className = (cls||"") + " out-line";
+  d.innerHTML = msg;
+  $("outBody").appendChild(d);
+  $("outBody").scrollTop = $("outBody").scrollHeight;
+}
+function clearOut(){ $("outBody").innerHTML=""; $("outBody").style.padding="7px 9px"; previewMode=false; }
+$("clearOut").onclick = clearOut;
+$("tabLog").onclick = () => { if(previewMode) exitPreview(); };
+$("tabPreview").onclick = () => { if(!previewMode && lastBuildOk) doRun(true); };
+function exitPreview(){ previewMode=false; $("outBody").style.padding="7px 9px"; }
+
+/* ---------- validators ---------- */
+function checkJS(code){
+  if (!code.trim()) return {ok:true};
+  try{ new Function(code); return {ok:true}; }
+  catch(e){ return {ok:false, why:String(e.message).slice(0,100)}; }
+}
+function checkHTML(code){
+  if (!code.trim()) return {ok:false, why:"khali HTML"};
+  if (!/<html[\s>]/i.test(code)) return {ok:false, why:"<html> nahi mila"};
+  if (!/<\/html>/i.test(code)) return {ok:false, why:"</html> band nahi"};
+  if (!/<body[\s>]/i.test(code)) return {ok:false, why:"<body> nahi mila"};
+  return {ok:true};
+}
+function checkCSS(code){
+  if (!code.trim()) return {ok:true};
+  const o=(code.match(/{/g)||[]).length, c=(code.match(/}/g)||[]).length;
+  if (Math.abs(o-c)>1) return {ok:false, why:"braces "+o+"/"+c};
+  return {ok:true};
+}
+
+/* ---------- BUILD (VS Code / Android Studio style stages) ---------- */
+let building = false;
+let lastArtifact = null; // { html, size, time }
+
+function setBuildUI(state, label){
+  // state: idle | building | pass | fail
+  const btn = $("build");
+  const sb = $("sbBuild");
+  if (!btn || !sb) return;
+  if (state === "building"){
+    building = true;
+    btn.disabled = true;
+    btn.textContent = "⏳";
+    sb.textContent = label || "Building…";
+    sb.className = "warn";
+  } else {
+    building = false;
+    btn.disabled = false;
+    btn.textContent = "🔨";
+    if (state === "pass"){ sb.textContent = label || "PASS"; sb.className = "pass"; }
+    else if (state === "fail"){ sb.textContent = label || "FAIL"; sb.className = "fail"; }
+    else { sb.textContent = label || "taiyar"; sb.className = ""; }
+  }
+}
+
+function doBuild(){
+  if (building) return false;
+  clearOut();
+  setBuildUI("building", "Building…");
+
+  // Stage 1 — Save
+  out("info", "① <b>Save</b> — project save ho raha hai…");
+  const saved = save();
+  if (!saved){
+    out("bad", "❌ Save fail — storage full ho sakta hai");
+    setBuildUI("fail", "FAIL save");
+    toast("Build fail — save nahi hua", "bad");
+    return false;
+  }
+  out("ok", "✅ Save OK");
+
+  // Stage 2 — Compile / Validate each file
+  out("info", "② <b>Compile</b> — files check…");
+  const names = Object.keys(P.files);
+  let fail = 0, warn = 0;
+  const errors = [];
+
+  if (!names.length){
+    out("bad", "❌ Koi file nahi — pehle file banao");
+    setBuildUI("fail", "FAIL");
+    toast("Build fail", "bad");
+    return false;
+  }
+
+  names.forEach(f => {
+    const code = P.files[f] || "";
+    if (code.length > MAX_FILE_SIZE){
+      fail++; errors.push(f + ": file bahut badi");
+      out("bad", "❌ <b>" + f + "</b> — bahut badi file (max " + formatSize(MAX_FILE_SIZE) + ")");
+      return;
+    }
+    let r = { ok: true };
+    if (/\.js$/i.test(f)) r = checkJS(code);
+    else if (/\.html$/i.test(f)) r = checkHTML(code);
+    else if (/\.css$/i.test(f)) r = checkCSS(code);
+
+    if (!r.ok){
+      fail++;
+      errors.push(f + ": " + r.why);
+      out("bad", "❌ <b>" + f + "</b> — " + r.why);
+    } else {
+      out("ok", "✅ <b>" + f + "</b> · " + code.split("\n").length + " lines · " + formatSize(code.length));
+    }
+  });
+
+  // Stage 3 — Link / dependency check
+  out("info", "③ <b>Link</b> — references check…");
+  names.filter(n => /\.html$/i.test(n)).forEach(hf => {
+    const html = P.files[hf] || "";
+    const refs = [...html.matchAll(/(?:href|src)=["']((?!https?:|\/\/|#|data:|mailto:)[^"']+)["']/gi)].map(m => m[1]);
+    refs.forEach(r => {
+      if (r.includes("${")) return;
+      const clean = r.split("?")[0].split("#")[0];
+      if (!(clean in P.files)){
+        warn++;
+        out("warn", "⚠️ <b>" + hf + "</b> → missing: " + clean);
+      }
+    });
+  });
+
+  const mainHtml = P.files["index.html"] || "";
+  if (mainHtml && !/<meta[^>]+viewport/i.test(mainHtml)){
+    warn++;
+    out("warn", "⚠️ viewport meta nahi — phone par layout toot sakta hai");
+  }
+  if (mainHtml && !/<meta[^>]+charset/i.test(mainHtml)){
+    warn++;
+    out("warn", "⚠️ charset meta nahi");
+  }
+
+  // Stage 4 — Produce artifact (bundle)
+  out("info", "④ <b>Package</b> — artifact bana raha hai…");
+  let artifactHtml = "";
+  try {
+    artifactHtml = bundle();
+    lastArtifact = {
+      html: artifactHtml,
+      size: artifactHtml.length,
+      time: Date.now(),
+      name: (P.name || "app").replace(/[^\w\-]/g, "") + ".html"
+    };
+    out("ok", "✅ Artifact ready · <b>" + lastArtifact.name + "</b> · " + formatSize(lastArtifact.size));
+  } catch (e) {
+    fail++;
+    out("bad", "❌ Package fail — " + (e.message || e));
+  }
+
+  // Result
+  lastBuildOk = fail === 0;
+  const summary = (fail ? "🔴 BUILD FAILED" : "🟢 BUILD SUCCEEDED")
+    + " — " + names.length + " files · " + fail + " error · " + warn + " warning";
+  out(fail ? "bad" : (warn ? "warn" : "ok"), summary);
+
+  if (errors.length){
+    out("bad", "Errors:<br>" + errors.map(e => "· " + e).join("<br>"));
+  }
+
+  setBuildUI(lastBuildOk ? "pass" : "fail",
+    lastBuildOk ? (warn ? "PASS · " + warn + "w" : "PASS") : ("FAIL " + fail));
+
+  showBuildBanner(lastBuildOk);
+  if (lastBuildOk){
+    toast("🟢 Build succeeded", "ok");
+    tryNotify("Seetal Studio", "Build succeeded — " + (lastArtifact ? lastArtifact.name : "app"));
+  } else {
+    toast("🔴 Build failed", "bad");
+  }
+  return lastBuildOk;
+}
+$("build").onclick = () => { if (!building) doBuild(); };
+
+/* ---------- BUNDLE ---------- */
+function bundle(){
+  let html = P.files["index.html"]
+    || Object.keys(P.files).filter(k => /\.html$/i.test(k)).map(k => P.files[k])[0]
+    || Object.values(P.files)[0]
+    || "";
+
+  html = html.replace(/<link[^>]+href=["']([^"']+\.css)["'][^>]*>/gi, (m, href) => {
+    const clean = href.split("?")[0].split("#")[0];
+    if (P.files[clean]) return "<style>\n/* inlined: " + clean + " */\n" + P.files[clean] + "\n</style>";
+    return m;
+  });
+  html = html.replace(/<script([^>]*)\ssrc=["']([^"']+\.js)["']([^>]*)>\s*<\/script>/gi, (m, pre, src, post) => {
+    const clean = src.split("?")[0].split("#")[0];
+    if (P.files[clean]) return "<script" + pre + post + ">\n/* inlined: " + clean + " */\n" + P.files[clean] + "\n<\/script>";
+    return m;
+  });
+
+  // classic fallbacks if not already linked
+  if (P.files["style.css"]){
+    const tip = P.files["style.css"].slice(0, Math.min(24, P.files["style.css"].length));
+    if (tip && !html.includes(tip)){
+      if (/<\/head>/i.test(html)) html = html.replace(/<\/head>/i, "<style>\n" + P.files["style.css"] + "\n</style>\n</head>");
+      else html = "<style>" + P.files["style.css"] + "</style>\n" + html;
+    }
+  }
+  if (P.files["app.js"]){
+    const tip = P.files["app.js"].slice(0, Math.min(24, P.files["app.js"].length));
+    if (tip && !html.includes(tip)){
+      if (/<\/body>/i.test(html)) html = html.replace(/<\/body>/i, "<script>\n" + P.files["app.js"] + "\n<\/script>\n</body>");
+      else html += "\n<script>\n" + P.files["app.js"] + "\n<\/script>";
+    }
+  }
+  return html;
+}
+
+/* ---------- RUN ---------- */
+function doRun(force){
+  if (building){ toast("Build chal raha hai…", "warn"); return; }
+  if (!force){
+    if (!doBuild()){ out("bad", "▶ Run rok diya — pehle build theek karo"); return; }
+  } else if (!lastBuildOk && !lastArtifact){
+    if (!doBuild()) return;
+  }
+  const html = (lastArtifact && lastBuildOk) ? lastArtifact.html : bundle();
+  const box = document.createElement("iframe");
+  box.setAttribute("sandbox", "allow-scripts allow-forms allow-modals allow-popups allow-same-origin");
+  box.style.cssText = "width:100%;height:100%;border:0;background:#fff";
+  $("outBody").innerHTML = "";
+  $("outBody").style.padding = "0";
+  $("outBody").appendChild(box);
+  box.srcdoc = html;
+  previewMode = true;
+  toast("▶ App chal rahi hai", "ok");
+}
+$("run").onclick = () => doRun();
+
+/* ---------- DOWNLOAD (artifact) ---------- */
+function doDownload(){
+  if (building){ toast("Build chal raha hai…", "warn"); return; }
+  if (!lastBuildOk || !lastArtifact){
+    const ok = doBuild();
+    if (!ok && !confirm("Build me errors hain. Phir bhi download?")) return;
+  }
+  const html = (lastArtifact && lastArtifact.html) ? lastArtifact.html : bundle();
+  const name = (lastArtifact && lastArtifact.name) || ((P.name || "app").replace(/[^\w\-]/g, "") + ".html");
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+  toast("⬇️ " + name + " (" + formatSize(html.length) + ")", "ok");
+  out("ok", "⬇️ <b>" + name + "</b> download — single offline file · " + formatSize(html.length));
+}
+$("dl").onclick = doDownload;
+$("bannerDl").onclick = doDownload;
+$("bannerRun").onclick = () => { showBuildBanner(false); doRun(true); };
+$("bannerClose").onclick = () => showBuildBanner(false);
+
+/* ---------- DEPLOY ---------- */
+$("deploy").onclick = async () => {
+  const token=prompt("GitHub token (Contents: write):");
+  if (!token) return;
+  const repo=prompt("repo — username/my-app");
+  if (!repo||!repo.includes("/")){toast("repo galat","bad");return;}
+  const [owner,name]=repo.split("/");
+  clearOut(); out("warn","🚀 Deploy…");
+  let ok=0,fail=0;
+  for (const f of Object.keys(P.files)){
+    const api="https://api.github.com/repos/"+owner+"/"+name+"/contents/"+encodeURIComponent(f);
+    const headers={Authorization:"Bearer "+token.trim(),Accept:"application/vnd.github+json","Content-Type":"application/json"};
+    try{
+      let sha=null;
+      const r0=await fetch(api+"?ref=main",{headers});
+      if (r0.ok) sha=(await r0.json()).sha;
+      const body={message:"Seetal Studio v10: "+f,content:btoa(unescape(encodeURIComponent(P.files[f]))),branch:"main"};
+      if (sha) body.sha=sha;
+      const r=await fetch(api,{method:"PUT",headers,body:JSON.stringify(body)});
+      if (!r.ok){const j=await r.json().catch(()=>({}));out("bad","❌ "+f+" — "+(j.message||r.status));fail++;}
+      else {out("ok","✅ "+f);ok++;}
+    }catch(e){out("bad","❌ "+f+" — "+e.message);fail++;}
+  }
+  if (ok) out("ok","Live: https://"+owner.toLowerCase()+".github.io/"+name+"/");
+  toast(fail?"Partial deploy":"Deploy done",fail?"warn":"ok");
+};
+
+/* ---------- BRAIN — multi-model, fallback, robust ---------- */
+const BRAINS = {
+  sarvam:   {url:"https://api.sarvam.ai/v1/chat/completions",model:"sarvam-m",auth:"api-subscription-key",prefix:"",openai:true},
+  gemini:   {gemini:true,model:"gemini-2.0-flash"},
+  anthropic:{url:"https://api.anthropic.com/v1/messages",model:"claude-3-5-haiku-20241022",anthropic:true},
+  openai:   {url:"https://api.openai.com/v1/chat/completions",model:"gpt-4o-mini",auth:"Authorization",prefix:"Bearer ",openai:true},
+  deepseek: {url:"https://api.deepseek.com/v1/chat/completions",model:"deepseek-chat",auth:"Authorization",prefix:"Bearer ",openai:true},
+  kimi:     {url:"https://api.moonshot.cn/v1/chat/completions",model:"moonshot-v1-8k",auth:"Authorization",prefix:"Bearer ",openai:true},
+  groq:     {url:"https://api.groq.com/openai/v1/chat/completions",model:"llama-3.1-8b-instant",auth:"Authorization",prefix:"Bearer ",openai:true},
+  none:     {free:true,model:"free"}
+};
+function bGet(){try{return JSON.parse(localStorage.getItem(BRAIN_KEY)||"null");}catch(e){return null;}}
+function bSet(v){try{localStorage.setItem(BRAIN_KEY,JSON.stringify(v));}catch(e){}}
+function apiKeys(){try{return JSON.parse(localStorage.getItem("seetal.apikeys.v1")||"{}");}catch(e){return {};}}
+function apiSaveAll(v){try{localStorage.setItem("seetal.apikeys.v1",JSON.stringify(v));}catch(e){}}
+function customApis(){try{return JSON.parse(localStorage.getItem("seetal.customapis.v1")||"[]");}catch(e){return [];}}
+function customSave(v){try{localStorage.setItem("seetal.customapis.v1",JSON.stringify(v.slice(0,12)));}catch(e){}}
+
+function getProviderOrder(){
+  const keys=apiKeys();
+  const customs=customApis();
+  const order=[];
+  // customs first
+  customs.forEach(c=>{ if(c.key&&c.url) order.push({type:"custom",cfg:c}); });
+  // then configured providers
+  const pref = (bGet()||{}).provider;
+  const ids = Object.keys(BRAINS).filter(k=>k!=="none");
+  if (pref && ids.includes(pref) && keys[pref]&&keys[pref].key) order.push({type:"brain",id:pref});
+  ids.forEach(id=>{
+    if (id===pref) return;
+    if (keys[id]&&keys[id].key) order.push({type:"brain",id});
+  });
+  return order;
+}
+
+async function callOne(entry, prompt, ms){
+  const ctl=new AbortController();
+  const to=setTimeout(()=>ctl.abort(), ms||28000);
+  try{
+    if (entry.type==="custom"){
+      const c=entry.cfg;
+      const headers={"Content-Type":"application/json"};
+      if (c.key) headers["Authorization"]="Bearer "+c.key;
+      const r=await fetch(c.url,{method:"POST",headers,body:JSON.stringify({
+        model:c.model||"default", temperature:0.35,
+        messages:[{role:"user",content:prompt}]
+      }),signal:ctl.signal});
+      const j=await r.json();
+      if (j.error) throw new Error(j.error.message||"api");
+      const t=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;
+      if (t) return t.trim();
+    } else {
+      const id=entry.id;
+      const B=BRAINS[id];
+      const cfg=apiKeys()[id]||{};
+      const key=cfg.key;
+      const model=cfg.model||B.model;
+      if (!key) return null;
+
+      if (B.gemini){
+        const url="https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent?key="+encodeURIComponent(key);
+        const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({contents:[{parts:[{text:prompt}]}]}),signal:ctl.signal});
+        const j=await r.json();
+        if (j.error) throw new Error(j.error.message||"gemini");
+        const t=j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts[0].text;
+        if (t) return t.trim();
+      } else if (B.anthropic){
+        const r=await fetch(B.url,{method:"POST",headers:{
+          "Content-Type":"application/json","x-api-key":key,
+          "anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"
+        },body:JSON.stringify({model,max_tokens:4000,messages:[{role:"user",content:prompt}]}),signal:ctl.signal});
+        const j=await r.json();
+        if (j.error) throw new Error(j.error.message||"anthropic");
+        const t=j.content&&j.content[0]&&j.content[0].text;
+        if (t) return t.trim();
+      } else {
+        const headers={"Content-Type":"application/json"};
+        headers[B.auth]=(B.prefix||"")+key;
+        const r=await fetch(B.url,{method:"POST",headers,body:JSON.stringify({
+          model,temperature:0.35,messages:[{role:"user",content:prompt}]
+        }),signal:ctl.signal});
+        const j=await r.json();
+        if (j.error) throw new Error(j.error.message||"api");
+        const t=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;
+        if (t) return t.trim();
+      }
+    }
+  }catch(e){ /* try next */ }
+  finally{ clearTimeout(to); }
+  return null;
+}
+
+async function bAsk(prompt, ms){
+  const order = getProviderOrder();
+  for (const entry of order){
+    const t = await callOne(entry, prompt, ms||30000);
+    if (t) return t;
+  }
+  // free bridge
+  try{
+    if (window.SeetalAPIs){
+      const a=await SeetalAPIs.ask(prompt,{timeout:ms||25000});
+      if (a&&a.ok) return a.text;
+    }
+  }catch(e){}
+  return null;
+}
+
+function updateModelStatus(){
+  const n = getProviderOrder().length;
+  $("apiBadge").textContent = "API:"+n;
+  $("apiBadge").style.color = n ? "var(--green)" : "var(--dim)";
+  if ($("sbModels")) $("sbModels").textContent = n ? n+" model" : "";
+}
+
+/* ---------- AI: file edit ---------- */
+$("ai").onclick = async () => {
+  const ask = prompt("Is file me kya change chahiye?\n(jaise: search box jodo, color change karo)");
+  if (!ask) return;
+  out("warn","🤖 AI soch raha hai…");
+  toast("AI kaam kar raha hai…","warn");
+  const prompt2 = "Tum expert web developer ho. Neeche file hai. User ne kaha: \""+ask+"\".\n"
+    +"Sirf poora naya file content do. Koi explanation nahi, koi markdown fence nahi.\n"
+    +"Mobile-first, Hinglish labels, bade touch buttons, chhote comments, simple code.\n\n"
+    +"File: "+cur+"\n\n"+(P.files[cur]||"");
+  const ansRaw = await bAsk(prompt2, 35000);
+  if (!ansRaw){ out("bad","❌ AI jawab nahi aaya. 🔌 me key jodo."); toast("AI fail — key check karo","bad"); return; }
+  let ans = ansRaw.replace(/^```[a-z]*\n?/i,"").replace(/\n?```$/i,"").trim();
+  if (!confirm("AI ne naya code diya ("+ans.length+" chars). Lagao?")) return;
+  pushHist();
+  P.files[cur]=ans; $("code").value=ans; paintLines(); markDirty(); save();
+  out("ok","✅ "+cur+" update. Ab Build dabao.");
+  toast("AI ne badal diya","ok");
+};
+
+/* ---------- AI: full system builder (core intelligence) ---------- */
+async function buildFullSystem(idea){
+  if (!idea||!idea.trim()) return;
+  out("warn","✨ System ban raha hai… thoda wait (10-30 sec)");
+  toast("Bada system ban raha hai…","warn");
+
+  const prompt2 =
+    "Tum expert full-stack web developer ho. User ka idea: \""+idea.trim()+"\".\n\n"
+    +"Ek COMPLETE, WORKING, mobile-first web app banao.\n"
+    +"Sirf valid JSON do (no markdown, no explanation):\n"
+    +"{\"name\":\"short-name\",\"files\":{\"index.html\":\"...\",\"style.css\":\"...\",\"app.js\":\"...\"}}\n\n"
+    +"Rules (strict):\n"
+    +"- index.html must have viewport meta, charset, link to style.css, script src app.js\n"
+    +"- Mobile-first, large touch buttons, Hinglish UI text where natural\n"
+    +"- Use localStorage if data needs to persist\n"
+    +"- try/catch on risky parts\n"
+    +"- Short useful comments in code\n"
+    +"- Keep total code reasonable (not huge)\n"
+    +"- App must actually run when opened\n"
+    +"- Only output the JSON object";
+
+  let ans = await bAsk(prompt2, 50000);
+  if (!ans){
+    out("bad","❌ AI se jawab nahi aaya. 🔌 API key jodo aur phir try karo.");
+    toast("AI fail","bad");
+    return;
+  }
+  ans = ans.replace(/^```[a-z]*\n?/i,"").replace(/\n?```$/i,"").trim();
+  const a=ans.indexOf("{"), b=ans.lastIndexOf("}");
+  let data=null;
+  try{ data=JSON.parse(ans.slice(a,b+1)); }catch(e){}
+  if (!data||!data.files||typeof data.files!=="object"){
+    out("bad","❌ AI ka jawab samajh nahi aaya. Dobara short idea likho.");
+    toast("Format error — dobara try","bad");
+    return;
+  }
+
+  // safety limits
+  const fnames=Object.keys(data.files);
+  if (fnames.length>MAX_FILES){
+    out("warn","⚠️ Bahut files thi, pehli "+MAX_FILES+" li");
+    const keep={};
+    fnames.slice(0,MAX_FILES).forEach(f=>keep[f]=data.files[f]);
+    data.files=keep;
+  }
+  Object.keys(data.files).forEach(f=>{
+    if (typeof data.files[f]!=="string") data.files[f]=String(data.files[f]||"");
+    if (data.files[f].length>MAX_FILE_SIZE) data.files[f]=data.files[f].slice(0,MAX_FILE_SIZE);
+  });
+
+  if (!confirm("AI ne "+Object.keys(data.files).length+" files banayi.\nPurani files badal jayengi. OK?")) return;
+
+  P = {
+    name: (data.name||"ai-app").replace(/[^\w\-]/g,"").slice(0,40),
+    files: data.files
+  };
+  cur = P.files["index.html"] ? "index.html" : Object.keys(P.files)[0];
+  save(); paintFiles(); openFile(cur);
+  const ok = doBuild();
+  if (ok){
+    toast("✨ System ban gaya + chal raha hai","ok");
+    // automatic start — user ko alag se Run dabane ki zaroorat nahi
+    setTimeout(()=>doRun(true), 350);
+  } else {
+    toast("Ban gaya lekin kuch errors hain — Build dekho","warn");
+  }
+}
+
+$("make").onclick = async () => {
+  const idea = prompt("Kaisa system / app chahiye? Ek line me batao:\n(jaise: school timetable jo save ho, ya dukaan ka hisaab)");
+  if (idea) await buildFullSystem(idea);
+};
+$("simpleGo").onclick = async () => {
+  const idea = $("simpleInput").value.trim();
+  if (!idea){ toast("Pehle likho kya chahiye","warn"); return; }
+  await buildFullSystem(idea);
+};
+$("simpleInput").addEventListener("keydown", e => {
+  if (e.key==="Enter"){ e.preventDefault(); $("simpleGo").click(); }
+});
+
+/* ---------- Templates ---------- */
+const CLOSE_S="</"+"script>";
+const TPL = {
+  hello:{name:"Hello — sabse aasan",files:{
+    "index.html":'<!DOCTYPE html>\n<html lang="hi">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>Hello</title>\n<link rel="stylesheet" href="style.css">\n</head>\n<body>\n<h1>Namaste!</h1>\n<p>Mera pehla page.</p>\n<button id="btn">Dabao</button>\n<p id="out"></p>\n<script src="app.js">'+CLOSE_S+'\n</body>\n</html>',
+    "style.css":'body{font-family:system-ui;background:#0b0f19;color:#fff;padding:20px}button{font-size:16px;padding:12px 18px;border-radius:10px;border:0;background:#7c6cf8;color:#fff}',
+    "app.js":'document.getElementById("btn").onclick=function(){document.getElementById("out").textContent="Shabash!";};'
+  }},
+  pahada:{name:"Pahada",files:{
+    "index.html":'<!DOCTYPE html>\n<html lang="hi">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>Pahada</title>\n<link rel="stylesheet" href="style.css">\n</head>\n<body>\n<h1>Pahada</h1>\n<input id="num" type="number" value="5">\n<button id="btn">Dikhao</button>\n<div id="out"></div>\n<script src="app.js">'+CLOSE_S+'\n</body>\n</html>',
+    "style.css":'body{font-family:system-ui;background:#0b0f19;color:#fff;padding:20px}input{font-size:16px;padding:10px;width:90px;border-radius:10px;border:1px solid #26324b;background:#131b28;color:#fff}button{font-size:16px;padding:10px 16px;border-radius:10px;border:0;background:#7c6cf8;color:#fff}#out{margin-top:14px;font-size:17px;line-height:1.8}',
+    "app.js":'document.getElementById("btn").onclick=function(){const n=Number(document.getElementById("num").value);let t="";for(let i=1;i<=10;i++)t+=n+" × "+i+" = "+(n*i)+"<br>";document.getElementById("out").innerHTML=t;};'
+  }},
+  khata:{name:"Khata / Hisaab",files:{
+    "index.html":'<!DOCTYPE html>\n<html lang="hi">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>Khata</title>\n<link rel="stylesheet" href="style.css">\n</head>\n<body>\n<h1>Mera khata</h1>\n<input id="naam" placeholder="Naam">\n<input id="rupaye" type="number" placeholder="Rupaye">\n<button id="add">Jodo</button>\n<div id="list"></div>\n<p id="total"></p>\n<script src="app.js">'+CLOSE_S+'\n</body>\n</html>',
+    "style.css":'body{font-family:system-ui;background:#0b0f19;color:#fff;padding:16px}input{font-size:16px;padding:12px;width:100%;margin-bottom:8px;border-radius:10px;border:1px solid #26324b;background:#131b28;color:#fff}button{font-size:16px;padding:12px;width:100%;border-radius:10px;border:0;background:#7c6cf8;color:#fff;font-weight:bold}.ek{background:#131b28;border-radius:10px;padding:12px;margin-top:8px}#total{font-size:19px;font-weight:bold;margin-top:14px}',
+    "app.js":'let k=JSON.parse(localStorage.getItem("khata")||"[]");function d(){let h="",t=0;k.forEach(x=>{h+=\'<div class="ek">\'+x.n+" — Rs "+x.r+"</div>";t+=Number(x.r)});document.getElementById("list").innerHTML=h;document.getElementById("total").textContent="Total: Rs "+t;localStorage.setItem("khata",JSON.stringify(k))}document.getElementById("add").onclick=function(){const n=document.getElementById("naam").value,r=document.getElementById("rupaye").value;if(!n||!r)return;k.push({n,r});document.getElementById("naam").value="";document.getElementById("rupaye").value="";d()};d();'
+  }},
+  notes:{name:"Notes auto-save",files:{
+    "index.html":'<!DOCTYPE html>\n<html lang="hi">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>Notes</title>\n<link rel="stylesheet" href="style.css">\n</head>\n<body>\n<h1>Mere notes</h1>\n<textarea id="t" placeholder="Likho..."></textarea>\n<p id="s"></p>\n<script src="app.js">'+CLOSE_S+'\n</body>\n</html>',
+    "style.css":'body{font-family:system-ui;background:#0b0f19;color:#fff;padding:16px}textarea{width:100%;height:60vh;font-size:16px;padding:14px;border-radius:12px;border:1px solid #26324b;background:#131b28;color:#fff}#s{color:#94a3c4;font-size:13px}',
+    "app.js":'const t=document.getElementById("t");t.value=localStorage.getItem("notes")||"";t.oninput=function(){localStorage.setItem("notes",t.value);document.getElementById("s").textContent="Saved — "+t.value.length+" chars"};'
+  }}
+};
+$("tpl").onclick = () => {
+  const list=$("tplList");
+  list.innerHTML=Object.keys(TPL).map(k=>
+    `<button data-t="${k}" style="width:100%;text-align:left;padding:11px;margin-bottom:5px;border-radius:9px">🧩 ${TPL[k].name}</button>`
+  ).join("");
+  list.querySelectorAll("[data-t]").forEach(btn=>{
+    btn.onclick=()=>{
+      if(!confirm("Purani files badal jayengi?"))return;
+      P=JSON.parse(JSON.stringify(TPL[btn.dataset.t]));
+      cur="index.html";save();paintFiles();openFile(cur);
+      $("tplSheet").classList.remove("open");
+      const ok=doBuild();
+      toast(ok?"Template + Build OK":"Template laga","ok");
+      if(ok) setTimeout(()=>doRun(true),300);
+    };
+  });
+  $("tplSheet").classList.add("open");
+};
+$("tplClose").onclick=()=>$("tplSheet").classList.remove("open");
+
+/* ---------- Import GitHub ---------- */
+$("imp").onclick = async () => {
+  const repo=prompt("GitHub repo (username/repo) ya .seetal.json file nahi — abhi repo:");
+  if(!repo)return;
+  if(repo.includes("/")&&!repo.endsWith(".json")){
+    const [owner,name]=repo.split("/");
+    clearOut();out("warn","⬇️ La raha hoon…");
+    try{
+      const r=await fetch("https://api.github.com/repos/"+owner+"/"+name+"/git/trees/main?recursive=1");
+      const j=await r.json();
+      if(j.message){out("bad","❌ "+j.message);return;}
+      const list=(j.tree||[]).filter(x=>x.type==="blob"&&/\.(html|css|js|json|md|txt)$/i.test(x.path)&&x.size<250000).slice(0,20);
+      if(!list.length){out("bad","Koi file nahi");return;}
+      if(!confirm(list.length+" files. Badal dun?"))return;
+      const files={};
+      for(const f of list){
+        const raw=await fetch("https://raw.githubusercontent.com/"+owner+"/"+name+"/main/"+f.path);
+        if(raw.ok) files[f.path]=await raw.text();
+      }
+      P={name,files};cur=files["index.html"]?"index.html":Object.keys(files)[0];
+      save();paintFiles();openFile(cur);out("ok","✅ "+Object.keys(files).length+" files");toast("Import ok","ok");
+    }catch(e){out("bad","❌ "+e.message);}
+  }
+};
+
+/* ---------- Find ---------- */
+$("find").onclick=()=>{$("findQ").value="";$("findReplace").value="";$("findOut").innerHTML="";$("findSheet").classList.add("open");setTimeout(()=>$("findQ").focus(),150);};
+$("findClose").onclick=()=>$("findSheet").classList.remove("open");
+$("findGo").onclick=()=>{
+  const q=$("findQ").value.trim();if(!q)return;
+  let n=0,hits=[];
+  Object.keys(P.files).forEach(f=>{
+    P.files[f].split("\n").forEach((line,i)=>{
+      if(line.toLowerCase().includes(q.toLowerCase())){n++;hits.push("<b>"+f+":"+(i+1)+"</b> — "+line.trim().slice(0,85));}
+    });
+  });
+  $("findOut").innerHTML=n?("<div class='ok'>"+n+" match</div>"+hits.map(h=>"<div>"+h+"</div>").join("")):"<div class='warn'>Kuch nahi</div>";
+};
+$("findRepAll").onclick=()=>{
+  const q=$("findQ").value,rep=$("findReplace").value;if(!q)return;
+  if(!confirm("Sab files me replace?"))return;
+  let c=0;
+  Object.keys(P.files).forEach(f=>{const p=P.files[f].split(q);if(p.length>1){c+=p.length-1;P.files[f]=p.join(rep);}});
+  if(cur in P.files)$("code").value=P.files[cur];
+  paintLines();markDirty();save();
+  $("findOut").innerHTML="<div class='ok'>"+c+" replace</div>";toast(c+" replace","ok");
+};
+
+/* ---------- Snapshots ---------- */
+function loadSnaps(){try{return JSON.parse(localStorage.getItem(LS_SNAP)||"[]");}catch(e){return [];}}
+function saveSnaps(v){try{localStorage.setItem(LS_SNAP,JSON.stringify(v.slice(0,12)));}catch(e){}}
+function paintSnaps(){
+  const list=loadSnaps();
+  $("snapList").innerHTML=list.length?list.map((s,i)=>
+    `<div style="border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">
+      <div><b>${s.name}</b><br><span style="font-size:11px;color:var(--dim)">${s.when} · ${Object.keys(s.files).length} files</span></div>
+      <div style="display:flex;gap:5px">
+        <button data-i="${i}" class="snap-load" style="padding:6px 10px">Load</button>
+        <button data-i="${i}" class="snap-del" style="padding:6px 8px">🗑</button>
+      </div>
+    </div>`
+  ).join(""):"<p style='color:var(--dim)'>Abhi koi snapshot nahi</p>";
+  $("snapList").querySelectorAll(".snap-load").forEach(b=>{
+    b.onclick=()=>{
+      const s=loadSnaps()[Number(b.dataset.i)];
+      if(!s||!confirm("Snapshot load? Abhi ka project badal jayega."))return;
+      P={name:s.name,files:s.files};
+      cur=P.files["index.html"]?"index.html":Object.keys(P.files)[0];
+      save();paintFiles();openFile(cur);
+      $("snapSheet").classList.remove("open");
+      toast("Snapshot loaded","ok");
+    };
+  });
+  $("snapList").querySelectorAll(".snap-del").forEach(b=>{
+    b.onclick=()=>{
+      const arr=loadSnaps();arr.splice(Number(b.dataset.i),1);saveSnaps(arr);paintSnaps();
+    };
+  });
+}
+$("snap").onclick=()=>{paintSnaps();$("snapSheet").classList.add("open");};
+$("snapClose").onclick=()=>$("snapSheet").classList.remove("open");
+$("snapSave").onclick=()=>{
+  const name=($("snapName").value.trim()||("snap-"+new Date().toLocaleString("hi-IN"))).slice(0,40);
+  const arr=loadSnaps();
+  arr.unshift({name,when:new Date().toLocaleString("hi-IN"),files:JSON.parse(JSON.stringify(P.files))});
+  saveSnaps(arr);
+  $("snapName").value="";
+  paintSnaps();
+  toast("📸 Snapshot saved","ok");
+};
+
+/* ---------- API sheet ---------- */
+const PROVIDERS=[
+  {id:"sarvam",name:"Sarvam AI (India)",model:"sarvam-m"},
+  {id:"gemini",name:"Google Gemini",model:"gemini-2.0-flash"},
+  {id:"anthropic",name:"Anthropic Claude",model:"claude-3-5-haiku-20241022"},
+  {id:"openai",name:"OpenAI GPT",model:"gpt-4o-mini"},
+  {id:"deepseek",name:"DeepSeek",model:"deepseek-chat"},
+  {id:"kimi",name:"Kimi",model:"moonshot-v1-8k"},
+  {id:"groq",name:"Groq",model:"llama-3.1-8b-instant"},
+];
+function paintApi(){
+  updateModelStatus();
+  const keys=apiKeys();
+  $("apiList").innerHTML=PROVIDERS.map(p=>{
+    const cur=keys[p.id]||{};
+    return '<div style="border:1px solid var(--line);border-radius:11px;padding:9px;margin-bottom:7px;background:var(--panel2)">'
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:5px"><b style="font-size:13px">'+p.name+'</b>'
+      +'<span style="font-size:10.5px;color:'+(cur.key?"var(--green)":"var(--dim)")+'">'+(cur.key?"✅":"—")+'</span></div>'
+      +'<input data-k="'+p.id+'" data-f="key" placeholder="API key" value="'+(cur.key||"").replace(/"/g,"&quot;")+'" style="width:100%;background:#0b1119;border:1px solid var(--line);color:#fff;padding:9px;border-radius:8px;margin-bottom:4px;font-size:12.5px">'
+      +'<input data-k="'+p.id+'" data-f="model" placeholder="model ('+p.model+')" value="'+(cur.model||"").replace(/"/g,"&quot;")+'" style="width:100%;background:#0b1119;border:1px solid var(--line);color:#fff;padding:9px;border-radius:8px;font-size:12.5px">'
+      +'</div>';
+  }).join("");
+  $("apiList").querySelectorAll("input").forEach(inp=>{
+    inp.onchange=()=>{
+      const k=inp.dataset.k,f=inp.dataset.f;
+      const all=apiKeys();all[k]=all[k]||{};all[k][f]=inp.value.trim();apiSaveAll(all);
+      const first=Object.keys(all).find(x=>all[x].key);
+      if(first) bSet({provider:first,key:all[first].key,model:all[first].model||""});
+      paintApi();
+    };
+  });
+}
+$("brain").onclick=()=>{paintApi();$("apiSheet").classList.add("open");};
+$("apiClose").onclick=()=>$("apiSheet").classList.remove("open");
+$("cuAdd").onclick=()=>{
+  const name=$("cuName").value.trim(),url=$("cuUrl").value.trim(),key=$("cuKey").value.trim(),model=$("cuModel").value.trim();
+  if(!url){$("apiOut").textContent="URL chahiye";return;}
+  const list=customApis().filter(x=>x.name!==name);
+  list.unshift({name:name||("api-"+(list.length+1)),url,key,model});
+  customSave(list);
+  $("cuName").value=$("cuUrl").value=$("cuKey").value=$("cuModel").value="";
+  $("apiOut").textContent="✅ Custom API jud gaya";
+  paintApi();
+};
+$("apiTestAll").onclick=async()=>{
+  const outEl=$("apiOut");outEl.textContent="Test…";
+  const order=getProviderOrder();
+  if(!order.length){outEl.textContent="Koi key nahi jodi";return;}
+  const lines=[];
+  for(const e of order){
+    const label=e.type==="custom"?e.cfg.name:e.id;
+    const t=await callOne(e,"Sirf ek shabd: theek",10000);
+    lines.push((t?"✅ ":"❌ ")+label+(t?" — OK":" — fail"));
+  }
+  outEl.innerHTML=lines.join("<br>");
+};
+
+/* ---------- PWA ---------- */
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstall=e;$("installBtn").style.display="";});
+$("installBtn").onclick=async()=>{
+  if(!deferredInstall)return;
+  deferredInstall.prompt();
+  const {outcome}=await deferredInstall.userChoice;
+  if(outcome==="accepted")toast("Install OK","ok");
+  deferredInstall=null;$("installBtn").style.display="none";
+};
+
+/* ---------- Help ---------- */
+$("helpClose").onclick=()=>{$("helpSheet").classList.remove("open");localStorage.setItem("seetal.help.seen","1");};
+
+/* ---------- boot ---------- */
+applyMode();
+paintFiles();
+openFile(Object.keys(P.files).includes("index.html")?"index.html":Object.keys(P.files)[0]);
+updateSaveDot();
+updateModelStatus();
+out("ok","Seetal Studio <b>v10</b> — Intelligent System taiyar. "
+  +(simpleMode?"Simple mode ON — upar likho kya banana hai.":"Pro mode. 🧒 se Simple mode on karo.")
+  +" Smart paste ON: HTML / JSON project / code blocks paste karo — auto handle + build.");
+
+if (!localStorage.getItem("seetal.help.seen")){
+  setTimeout(()=>$("helpSheet").classList.add("open"),600);
+}
+
+// light auto-save
+setInterval(()=>{ if(dirty) save(); },45000);
+</script>
+<script src="assets/apis.js"></script>
+</body>
+</html>
