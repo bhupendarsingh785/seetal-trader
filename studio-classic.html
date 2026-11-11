@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Seetal Studio — code likho, build karo, chalao</title>
+<title>Seetal Studio — code likho, build karo, chalao (v8)</title>
 <link rel="manifest" href="manifest-studio.webmanifest" />
 <meta name="theme-color" content="#0b0f19" />
 <link rel="icon" href="icon-192.png" />
@@ -48,7 +48,7 @@
 <body>
 
 <header>
-  <div class="logo">Seetal<span>.</span>Studio</div>
+  <div class="logo">Seetal<span>.</span>Studio <span style="font-size:10px;color:#94a3c4">v8</span></div>
   <span class="pill" id="projName">naya-project</span>
   <div class="spacer"></div>
   <button id="newFile">＋ File</button>
@@ -117,30 +117,6 @@ const DEFAULT = {
   <p>Ye Seetal Studio me bana hai.</p>
   <script src="app.js"><\/script>
 
-<div id="apiSheet" style="position:fixed;inset:0;background:rgba(4,8,14,.75);display:none;z-index:60;align-items:flex-end">
-  <div style="background:#121a26;border:1px solid #26324b;border-top-left-radius:18px;border-top-right-radius:18px;
-              width:100%;max-height:86vh;overflow:auto;padding:14px">
-    <h3 style="margin:0 0 4px;font-size:16px">🔌 API — koi bhi model jodo</h3>
-    <p style="color:#94a3c4;font-size:12.5px;margin:0 0 12px;line-height:1.6">
-      Jo jodoge wahi pehle try hoga; na chale to agla; sab fail ho to free AI.
-      Key sirf is phone me rehti hai.
-    </p>
-    <div id="apiList"></div>
-
-    <h3 style="margin:16px 0 6px;font-size:14px">➕ Apni koi bhi API (OpenAI jaisi)</h3>
-    <input id="cuName" placeholder="naam — jaise my-groq" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:11px;border-radius:10px;margin-bottom:6px">
-    <input id="cuUrl" placeholder="URL — https://api.../v1/chat/completions" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:11px;border-radius:10px;margin-bottom:6px">
-    <input id="cuKey" placeholder="key" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:11px;border-radius:10px;margin-bottom:6px">
-    <input id="cuModel" placeholder="model — jaise llama-3.1-8b-instant" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:11px;border-radius:10px;margin-bottom:8px">
-    <button id="cuAdd" style="width:100%;background:#7c6cf8;border:0;color:#fff;padding:12px;border-radius:10px;font-weight:700">➕ Jodo</button>
-
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button id="apiTestAll" style="flex:1;background:#182231;border:1px solid #26324b;color:#fff;padding:12px;border-radius:10px;font-weight:700">🧪 Sab test karo</button>
-      <button id="apiClose" style="flex:1;background:transparent;border:1px solid #26324b;color:#94a3c4;padding:12px;border-radius:10px">Band karo</button>
-    </div>
-    <div id="apiOut" style="color:#94a3c4;font-size:13px;margin-top:10px;line-height:1.7"></div>
-  </div>
-</div>
 </body>
 </html>`,
     "style.css": `body{margin:0;font-family:system-ui;background:#0b0f19;color:#eef2fb;padding:20px}
@@ -627,5 +603,29 @@ paintFiles(); openFile(cur);
 out("ok", "Seetal Studio taiyar — " + Object.keys(P.files).length + " file. Build → Run → Deploy.");
 </script>
 <script src="assets/apis.js"></script>
+<div id="apiSheet" style="position:fixed;inset:0;background:rgba(4,8,14,.75);display:none;z-index:60;align-items:flex-end">
+  <div style="background:#121a26;border:1px solid #26324b;border-top-left-radius:18px;border-top-right-radius:18px;
+              width:100%;max-height:86vh;overflow:auto;padding:14px">
+    <h3 style="margin:0 0 4px;font-size:16px">🔌 API — koi bhi model jodo</h3>
+    <p style="color:#94a3c4;font-size:12.5px;margin:0 0 12px;line-height:1.6">
+      Jo jodoge wahi pehle try hoga; na chale to agla; sab fail ho to free AI.
+      Key sirf is phone me rehti hai.
+    </p>
+    <div id="apiList"></div>
+
+    <h3 style="margin:16px 0 6px;font-size:14px">➕ Apni koi bhi API (OpenAI jaisi)</h3>
+    <input id="cuName" placeholder="naam — jaise my-groq" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:11px;border-radius:10px;margin-bottom:6px">
+    <input id="cuUrl" placeholder="URL — https://api.../v1/chat/completions" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:11px;border-radius:10px;margin-bottom:6px">
+    <input id="cuKey" placeholder="key" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:11px;border-radius:10px;margin-bottom:6px">
+    <input id="cuModel" placeholder="model — jaise llama-3.1-8b-instant" style="width:100%;background:#0b1119;border:1px solid #26324b;color:#fff;padding:11px;border-radius:10px;margin-bottom:8px">
+    <button id="cuAdd" style="width:100%;background:#7c6cf8;border:0;color:#fff;padding:12px;border-radius:10px;font-weight:700">➕ Jodo</button>
+
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button id="apiTestAll" style="flex:1;background:#182231;border:1px solid #26324b;color:#fff;padding:12px;border-radius:10px;font-weight:700">🧪 Sab test karo</button>
+      <button id="apiClose" style="flex:1;background:transparent;border:1px solid #26324b;color:#94a3c4;padding:12px;border-radius:10px">Band karo</button>
+    </div>
+    <div id="apiOut" style="color:#94a3c4;font-size:13px;margin-top:10px;line-height:1.7"></div>
+  </div>
+</div>
 </body>
 </html>
