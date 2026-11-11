@@ -2,10 +2,10 @@
 
 Naya kaam neeche jodo — ek line me. Khatam hone par OpenYug `[x]` kar dega.
 
-- [ ] Har baar: saare tests chalao aur report do
+- [x] Har baar: saare tests chalao aur report do
 - [ ] Har baar: data kitna purana hai batao
-- [ ] Har baar: teeno site (Pages/Netlify/Vercel) + Cloudflare API check karo
-- [ ] Har baar: mirror check karo — GitHub, GitLab, Codeberg, Bitbucket
+- [x] Har baar: teeno site (Pages/Netlify/Vercel) + Cloudflare API check karo
+- [x] Har baar: mirror check karo — GitHub, GitLab, Codeberg, Bitbucket
 
 ## OpenYug ko yaad rahe
 - Kaam **har 15 minute** me chalta hai (GitHub ka minimum 5 min hai — 1 second possible nahi).
