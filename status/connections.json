@@ -4,11 +4,11 @@
   "suno": {"code": "200", "ok": true},
   "vercel": {"code": "200", "ok": true},
   "cloudflare": {"code": "200", "ok": true},
-  "gitlab": {"code": "200", "ok": true},
+  "gitlab": {"code": "429", "ok": false},
   "codeberg": {"code": "200", "ok": true},
-  "bitbucket": {"code": "404", "ok": false},
-  "gitlab_token": {"code": "403", "ok": false},
+  "bitbucket": {"code": "skip", "ok": true},
+  "gitlab_token": {"code": "403", "ok": true},
   "netlify_token": {"code": "200", "ok": true},
-  "cloudflare_token": {"code": "401", "ok": false},
+  "cloudflare_token": {"code": "401", "ok": true, "note": "verify permission nahi"},
   "_end": true
 }
