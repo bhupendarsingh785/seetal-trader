@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0b0f19" />
 <title>Seetal Studio Pro — code likho, build karo, chalao</title>
+<link rel="manifest" href="manifest-studio.webmanifest" />
+<meta name="theme-color" content="#0b0f19" />
+<link rel="icon" href="icon-192.png" />
 <style>
   :root{--bg:#0b0f19;--panel:#121a26;--panel2:#182231;--line:#26324b;--txt:#eef2fb;--dim:#94a3c4;
         --green:#34d399;--red:#fb7185;--amber:#fbbf24;--violet:#7c6cf8;--cyan:#22d3ee;--fs:13px;--lh:21px;--gw:44px}
@@ -87,7 +90,8 @@
   <button id="bSave" title="Save">💾</button>
   <button class="pri" id="bBuild">🔨 Build</button>
   <button class="gbtn" id="bRun">▶ Run</button>
-  <button id="bMenu" title="Menu">☰</button>
+  <button id="installBtn" onclick="doInstall()" style="display:none">📲 Install</button>
+<button id="bMenu" title="Menu">☰</button>
 </header>
 
 <main>

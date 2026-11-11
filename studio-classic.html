@@ -4,6 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Seetal Studio — code likho, build karo, chalao</title>
+<link rel="manifest" href="manifest-studio.webmanifest" />
+<meta name="theme-color" content="#0b0f19" />
+<link rel="icon" href="icon-192.png" />
 <style>
   :root{--bg:#0b0f19;--panel:#121a26;--panel2:#182231;--line:#26324b;--txt:#eef2fb;--dim:#94a3c4;
         --green:#34d399;--red:#fb7185;--amber:#fbbf24;--violet:#7c6cf8;--cyan:#22d3ee}
@@ -57,6 +60,7 @@
   <button id="imp">⬇️ Import</button>
   <button id="find">🔎</button>
   <button id="dl">⬇️ Download</button>
+  <button id="installBtn" onclick="doInstall()" style="display:none">📲 Install</button>
   <button class="pri" id="build">🔨 Build</button>
   <button class="ok" id="run">▶ Run</button>
   <button id="deploy">🚀 Deploy</button>
