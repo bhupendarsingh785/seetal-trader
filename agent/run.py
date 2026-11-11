@@ -104,12 +104,62 @@ def job_cleanup():
             os.remove(p); n += 1
     return True, f"{n} purani report saaf ki"
 
+def job_mirrors():
+    """GitHub / GitLab / Codeberg / Bitbucket — code charo jagah pahuncha hai ya nahi."""
+    urls = [
+        ("GitHub", "https://raw.githubusercontent.com/bhupendarsingh785/seetal-trader/main/index.html"),
+        ("GitLab", "https://gitlab.com/Bhuprndar785/bhupendarsingh785/-/raw/main/index.html"),
+        ("Codeberg", "https://codeberg.org/bhupendarsingh785/seetal-trader/raw/branch/main/index.html"),
+        ("Bitbucket", "https://bitbucket.org/bhupendarsingh785/seetal-trader/raw/main/index.html"),
+    ]
+    lines, okc = [], 0
+    for n, u in urls:
+        ok, ms = http_ok(u)
+        okc += 1 if ok else 0
+        lines.append(("✅ " if ok else "❌ ") + n + (" " + str(ms) + "ms" if ok else " (nahi mila)"))
+    return okc >= 2, "\n".join(lines)
+
 HANDLERS = [
     (r"test|check-all|jaanch", job_tests),
     (r"data|purana|umar", job_data_age),
     (r"site|health|platform|check karo", job_sites),
     (r"saaf|cleanup|purani report", job_cleanup),
+    (r"mirror|gitlab|codeberg|bitbucket|storage|backup", job_mirrors),
 ]
+
+def run_jobs():
+    """agent/jobs/*.json ko ek-ek step poora karta hai."""
+    jd = os.path.join(ROOT, "agent", "jobs")
+    if not os.path.isdir(jd):
+        return []
+    lines = []
+    for f in sorted(os.listdir(jd)):
+        if not f.endswith(".json"):
+            continue
+        path = os.path.join(jd, f)
+        try:
+            job = json.load(open(path, encoding="utf-8"))
+        except Exception:
+            continue
+        if all(st.get("done") for st in job.get("steps", [])):
+            continue
+        lines.append(f"### Job {job.get('id')} — {job.get('goal')}")
+        for st in job.get("steps", []):
+            if st.get("done"):
+                continue
+            cmd = st.get("cmd") or ""
+            if not cmd:
+                lines.append(f"- ⏸️ {st.get('name')} (koi command nahi)")
+                continue
+            code, out = sh(cmd, timeout=300)
+            st["done"] = code == 0
+            tail = " | ".join(out.strip().splitlines()[-3:])
+            lines.append(f"- {'✅' if code == 0 else '❌'} {st.get('name')}: {tail[:300]}")
+            if code != 0:
+                break
+        json.dump(job, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+        lines.append("")
+    return lines
 
 def main():
     os.makedirs(REPORTS, exist_ok=True)
@@ -150,7 +200,11 @@ def main():
         if not done:
             lines += [f"## {o}", "⏸️ Ye kaam mere paas taiyar handler nahi hai — Swag ke aadesh ka intezaar.", ""]
 
-    lines += ["---", "_Seetal Agent — bina key, sirf local kaam._"]
+    job_lines = run_jobs()
+    if job_lines:
+        lines += ["", "## Jobs (sub-agents)"] + job_lines
+
+    lines += ["---", "_OpenYug — bina key, sirf local kaam._"]
     name = os.path.join(REPORTS, f"{NOW.replace(':','').replace('-','')}.md")
     open(name, "w", encoding="utf-8").write("\n".join(lines))
     print("\n".join(lines))
