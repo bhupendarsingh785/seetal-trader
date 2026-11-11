@@ -60,9 +60,10 @@
   nav button.on{color:var(--green)}
 
   /* sheet */
-  #sheet{position:fixed;inset:0;background:rgba(4,8,14,.7);display:none;align-items:flex-end;z-index:50}
+  #sheet,#sheet2{position:fixed;inset:0;background:rgba(4,8,14,.7);display:none;align-items:flex-end;z-index:50}
+  #sheet2.on{display:flex}
   #sheet.on{display:flex}
-  #sheetInner{background:var(--panel);border:1px solid var(--line);border-top-left-radius:18px;border-top-right-radius:18px;
+  #sheetInner,#sheet2Inner{background:var(--panel);border:1px solid var(--line);border-top-left-radius:18px;border-top-right-radius:18px;
               width:100%;max-height:78vh;overflow:auto;padding:14px}
   #sheetInner h3{margin:0 0 10px;font-size:15px}
   .srow{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);color:var(--txt);
@@ -111,6 +112,14 @@
   <button data-v="prev"><span class="ic">▶️</span>Run</button>
 </nav>
 
+<div id="sheet2">
+  <div id="sheet2Inner">
+    <h3>Kaunsa app banao?</h3>
+    <div id="tplList"></div>
+    <button class="close" id="tBack">Wapas</button>
+  </div>
+</div>
+
 <div id="sheet">
   <div id="sheetInner">
     <h3>Kya karna hai?</h3>
@@ -133,26 +142,51 @@ const CLOSE_SCRIPT = "<" + "/script>";
 
 /* ---------------- templates ---------------- */
 const T = {
-  khatabook: { name:"khatabook", files:{
-    "index.html": '<!DOCTYPE html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Khatabook</title><link rel="stylesheet" href="style.css"></head><body><h1>Khatabook</h1><div class="box"><input id="kis" placeholder="Kis ka"><input id="kitna" type="number" placeholder="Kitna Rs"><button id="add">+ Jodo</button></div><div id="list"></div><p class="tot">Total: Rs <span id="tot">0</span></p><script src="app.js">' + CLOSE_SCRIPT + '</body></html>',
-    "style.css": "body{margin:0;font-family:system-ui;background:#0b0f19;color:#eef2fb;padding:16px}\n.box{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}\ninput{flex:1;min-width:100px;background:#131b28;border:1px solid #26324b;color:#eef2fb;padding:12px;border-radius:10px;font-size:15px}\nbutton{background:#7c6cf8;border:0;color:#fff;padding:12px 16px;border-radius:10px;font-weight:700;font-size:15px}\n.row{display:flex;justify-content:space-between;background:#131b28;border:1px solid #26324b;border-radius:10px;padding:12px;margin-bottom:6px}\n.tot{font-size:18px;font-weight:800}",
-    "app.js": "let rows=JSON.parse(localStorage.getItem('khata')||'[]');\nconst $=id=>document.getElementById(id);\nfunction paint(){\n  $('list').innerHTML=rows.map((r,i)=>'<div class=\"row\"><span>'+r.kis+' - Rs '+r.kitna+'</span><button onclick=\"del('+i+')\">x</button></div>').join('');\n  $('tot').textContent=rows.reduce((a,b)=>a+Number(b.kitna||0),0);\n  localStorage.setItem('khata',JSON.stringify(rows));\n}\nfunction del(i){rows.splice(i,1);paint();}\n$('add').onclick=()=>{const k=$('kis').value.trim(),v=$('kitna').value;if(!k||!v)return;rows.push({kis:k,kitna:v});$('kis').value='';$('kitna').value='';paint();};\npaint();"
+  hello: { name:"Hello page", files:{
+    "index.html": '<!-- Sabse aasan page: ek heading aur ek button -->\n<!DOCTYPE html>\n<html lang="hi">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Mera pehla page</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Namaste!</h1>\n  <p>Ye mera pehla page hai.</p>\n  <button id="btn">Mujhe dabao</button>\n  <p id="out"></p>\n\n  <script src="app.js">' + CLOSE_SCRIPT + '\n</body>\n</html>',
+    "style.css": '/* Thoda sa sundar look */\nbody {\n  font-family: system-ui;\n  background: #0b0f19;\n  color: white;\n  padding: 20px;\n}\nh1 { font-size: 24px; }\nbutton {\n  font-size: 16px;\n  padding: 12px 18px;\n  border-radius: 10px;\n  border: 0;\n  background: #7c6cf8;\n  color: white;\n}',
+    "app.js": '// Button dabane par ye chalega\nconst btn = document.getElementById("btn");\nconst out = document.getElementById("out");\n\nbtn.onclick = function () {\n  out.textContent = "Shabash! Tumne button daba diya.";\n};'
   }},
-  quiz: { name:"quiz", files:{
-    "index.html": '<!DOCTYPE html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Quiz</title><link rel="stylesheet" href="style.css"></head><body><h1>Quiz</h1><div id="q"></div><div id="opts"></div><p id="res"></p><script src="app.js">' + CLOSE_SCRIPT + '</body></html>',
-    "style.css": "body{margin:0;font-family:system-ui;background:#0b0f19;color:#eef2fb;padding:16px}\nh1{font-size:20px}\nbutton{display:block;width:100%;margin:8px 0;background:#131b28;border:1px solid #26324b;color:#eef2fb;padding:15px;border-radius:12px;text-align:left;font-size:15px}\nbutton.right{background:#0f3d2a;border-color:#34d399}\nbutton.wrong{background:#3d1520;border-color:#fb7185}",
-    "app.js": "const Q=[{q:'Bharat ki rajdhani?',o:['Mumbai','Delhi','Patna'],a:1},{q:'2 + 2 = ?',o:['3','4','5'],a:1},{q:'Sabse bada grah?',o:['Prithvi','Shukra','Brihaspati'],a:2}];\nlet i=0,score=0;\nconst $=id=>document.getElementById(id);\nfunction show(){\n if(i>=Q.length){$('q').textContent='Khatam!';$('opts').innerHTML='';$('res').textContent='Score: '+score+'/'+Q.length;return;}\n const q=Q[i];$('q').textContent=(i+1)+'. '+q.q;$('opts').innerHTML='';\n q.o.forEach((o,idx)=>{const b=document.createElement('button');b.textContent=o;b.onclick=()=>{if(idx===q.a){b.className='right';score++;}else b.className='wrong';setTimeout(()=>{i++;show();},500);};$('opts').appendChild(b);});\n}\nshow();"
+
+  rang: { name:"Rang badlo", files:{
+    "index.html": '<!DOCTYPE html>\n<html lang="hi">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Rang badlo</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Rang badlo</h1>\n  <div id="box"></div>\n  <button id="btn">Naya rang</button>\n\n  <script src="app.js">' + CLOSE_SCRIPT + '\n</body>\n</html>',
+    "style.css": 'body { font-family: system-ui; background: #0b0f19; color: white; padding: 20px; }\n#box {\n  height: 140px;\n  border-radius: 14px;\n  background: #7c6cf8;\n  margin: 14px 0;\n}\nbutton {\n  font-size: 16px;\n  padding: 12px 18px;\n  border-radius: 10px;\n  border: 0;\n  background: #34d399;\n  color: #04170c;\n}',
+    "app.js": '// Har baar naya rang chuno\nconst box = document.getElementById("box");\n\nfunction nayaRang() {\n  const r = Math.floor(Math.random() * 255);\n  const g = Math.floor(Math.random() * 255);\n  const b = Math.floor(Math.random() * 255);\n  box.style.background = "rgb(" + r + "," + g + "," + b + ")";\n}\n\ndocument.getElementById("btn").onclick = nayaRang;'
   }},
-  notes: { name:"notes", files:{
-    "index.html": '<!DOCTYPE html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Notes</title><link rel="stylesheet" href="style.css"></head><body><h1>Mere notes</h1><textarea id="t" placeholder="Aaj kya padha..."></textarea><p id="s"></p><script src="app.js">' + CLOSE_SCRIPT + '</body></html>',
-    "style.css": "body{margin:0;font-family:system-ui;background:#0b0f19;color:#eef2fb;padding:16px}\ntextarea{width:100%;min-height:60vh;background:#131b28;border:1px solid #26324b;color:#eef2fb;border-radius:12px;padding:14px;font-size:15px}\n#s{color:#94a3c4;font-size:12px}",
-    "app.js": "const $=id=>document.getElementById(id);\n$('t').value=localStorage.getItem('notes')||'';\n$('t').oninput=()=>{localStorage.setItem('notes',$('t').value);$('s').textContent='save ho gaya - '+$('t').value.length+' akshar';};"
+
+  pahada: { name:"Pahada (table)", files:{
+    "index.html": '<!DOCTYPE html>\n<html lang="hi">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Pahada</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Pahada</h1>\n  <p>Kaunsa number? (jaise 5)</p>\n  <input id="num" type="number" value="5">\n  <button id="btn">Dikhao</button>\n  <div id="out"></div>\n\n  <script src="app.js">' + CLOSE_SCRIPT + '\n</body>\n</html>',
+    "style.css": 'body { font-family: system-ui; background: #0b0f19; color: white; padding: 20px; }\ninput {\n  font-size: 16px;\n  padding: 10px;\n  width: 90px;\n  border-radius: 10px;\n  border: 1px solid #26324b;\n  background: #131b28;\n  color: white;\n}\nbutton {\n  font-size: 16px;\n  padding: 10px 16px;\n  border-radius: 10px;\n  border: 0;\n  background: #7c6cf8;\n  color: white;\n}\n#out { margin-top: 14px; font-size: 17px; line-height: 1.8; }',
+    "app.js": '// 1 se 10 tak ka pahada\nconst num = document.getElementById("num");\nconst out = document.getElementById("out");\n\ndocument.getElementById("btn").onclick = function () {\n  const n = Number(num.value);\n  let text = "";\n  for (let i = 1; i <= 10; i++) {\n    text = text + n + " x " + i + " = " + (n * i) + "<br>";\n  }\n  out.innerHTML = text;\n};'
   }},
-  todo: { name:"todo", files:{
-    "index.html": '<!DOCTYPE html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Kaam</title><link rel="stylesheet" href="style.css"></head><body><h1>Aaj ke kaam</h1><div class="box"><input id="t" placeholder="Kya karna hai"><button id="add">+</button></div><div id="list"></div><script src="app.js">' + CLOSE_SCRIPT + '</body></html>',
-    "style.css": "body{margin:0;font-family:system-ui;background:#0b0f19;color:#eef2fb;padding:16px}\n.box{display:flex;gap:6px;margin-bottom:12px}\ninput{flex:1;background:#131b28;border:1px solid #26324b;color:#eef2fb;padding:12px;border-radius:10px;font-size:15px}\nbutton{background:#34d399;border:0;color:#04170c;padding:12px 16px;border-radius:10px;font-weight:800;font-size:16px}\n.item{display:flex;gap:10px;align-items:center;background:#131b28;border:1px solid #26324b;border-radius:10px;padding:12px;margin-bottom:6px}\n.done{text-decoration:line-through;opacity:.55}",
-    "app.js": "let items=JSON.parse(localStorage.getItem('todo')||'[]');\nconst $=id=>document.getElementById(id);\nfunction paint(){\n $('list').innerHTML=items.map((x,i)=>'<div class=\"item\" onclick=\"tog('+i+')\"><span class=\"'+(x.d?'done':'')+'\">'+x.t+'</span></div>').join('');\n localStorage.setItem('todo',JSON.stringify(items));\n}\nfunction tog(i){items[i].d=!items[i].d;paint();}\n$('add').onclick=()=>{const v=$('t').value.trim();if(!v)return;items.push({t:v,d:false});$('t').value='';paint();};\npaint();"
+
+  khata: { name:"Khata (hisaab)", files:{
+    "index.html": '<!DOCTYPE html>\n<html lang="hi">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Khata</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Mera khata</h1>\n\n  <input id="naam" placeholder="Kis ka naam">\n  <input id="rupaye" type="number" placeholder="Kitne rupaye">\n  <button id="add">Jodo</button>\n\n  <div id="list"></div>\n  <p id="total"></p>\n\n  <script src="app.js">' + CLOSE_SCRIPT + '\n</body>\n</html>',
+    "style.css": 'body { font-family: system-ui; background: #0b0f19; color: white; padding: 16px; }\ninput {\n  font-size: 16px; padding: 12px; width: 100%; margin-bottom: 8px;\n  border-radius: 10px; border: 1px solid #26324b; background: #131b28; color: white;\n}\nbutton {\n  font-size: 16px; padding: 12px; width: 100%; border-radius: 10px; border: 0;\n  background: #7c6cf8; color: white; font-weight: bold;\n}\n.ek { background: #131b28; border-radius: 10px; padding: 12px; margin-top: 8px; }\n#total { font-size: 19px; font-weight: bold; margin-top: 14px; }',
+    "app.js": '// Sab kuch phone ki memory me save hota hai\nlet khata = JSON.parse(localStorage.getItem("khata") || "[]");\n\nfunction dikhao() {\n  let html = "";\n  let total = 0;\n\n  for (let i = 0; i < khata.length; i++) {\n    html = html + \'<div class="ek">\' + khata[i].naam + " — Rs " + khata[i].rupaye + "</div>";\n    total = total + Number(khata[i].rupaye);\n  }\n\n  document.getElementById("list").innerHTML = html;\n  document.getElementById("total").textContent = "Total: Rs " + total;\n  localStorage.setItem("khata", JSON.stringify(khata));\n}\n\ndocument.getElementById("add").onclick = function () {\n  const naam = document.getElementById("naam").value;\n  const rupaye = document.getElementById("rupaye").value;\n\n  if (naam === "" || rupaye === "") return;\n\n  khata.push({ naam: naam, rupaye: rupaye });\n  document.getElementById("naam").value = "";\n  document.getElementById("rupaye").value = "";\n  dikhao();\n};\n\ndikhao();'
+  }},
+
+  quiz: { name:"Quiz (sawal-jawab)", files:{
+    "index.html": '<!DOCTYPE html>\n<html lang="hi">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Quiz</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1 id="sawal">Sawal</h1>\n  <div id="jawab"></div>\n  <p id="result"></p>\n\n  <script src="app.js">' + CLOSE_SCRIPT + '\n</body>\n</html>',
+    "style.css": 'body { font-family: system-ui; background: #0b0f19; color: white; padding: 16px; }\nh1 { font-size: 20px; }\nbutton {\n  display: block; width: 100%; font-size: 16px; padding: 15px; margin: 8px 0;\n  border-radius: 12px; border: 1px solid #26324b; background: #131b28; color: white;\n  text-align: left;\n}\n.sahi { background: #0f3d2a; border-color: #34d399; }\n.galat { background: #3d1520; border-color: #fb7185; }',
+    "app.js": '// Apne sawal yahan badlo\nconst sawal = [\n  { puchho: "Bharat ki rajdhani kaun hai?", jawab: ["Mumbai", "Delhi", "Patna"], sahi: 1 },\n  { puchho: "2 + 2 kitna hota hai?", jawab: ["3", "4", "5"], sahi: 1 },\n  { puchho: "Sabse bada grah kaunsa hai?", jawab: ["Prithvi", "Shukra", "Brihaspati"], sahi: 2 }\n];\n\nlet kaunsa = 0;\nlet score = 0;\n\nfunction dikhao() {\n  if (kaunsa >= sawal.length) {\n    document.getElementById("sawal").textContent = "Khatam!";\n    document.getElementById("jawab").innerHTML = "";\n    document.getElementById("result").textContent = "Tumhare " + score + " / " + sawal.length + " sahi";\n    return;\n  }\n\n  const s = sawal[kaunsa];\n  document.getElementById("sawal").textContent = (kaunsa + 1) + ". " + s.puchho;\n  document.getElementById("jawab").innerHTML = "";\n\n  for (let i = 0; i < s.jawab.length; i++) {\n    const b = document.createElement("button");\n    b.textContent = s.jawab[i];\n    b.onclick = function () {\n      if (i === s.sahi) { b.className = "sahi"; score++; }\n      else { b.className = "galat"; }\n      setTimeout(function () { kaunsa++; dikhao(); }, 500);\n    };\n    document.getElementById("jawab").appendChild(b);\n  }\n}\n\ndikhao();'
+  }},
+
+  notes: { name:"Notes (yaad rakhne ke liye)", files:{
+    "index.html": '<!DOCTYPE html>\n<html lang="hi">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Notes</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Mere notes</h1>\n  <textarea id="likho" placeholder="Aaj kya padha..."></textarea>\n  <p id="bataya"></p>\n\n  <script src="app.js">' + CLOSE_SCRIPT + '\n</body>\n</html>',
+    "style.css": 'body { font-family: system-ui; background: #0b0f19; color: white; padding: 16px; }\ntextarea {\n  width: 100%; height: 60vh; font-size: 16px; padding: 14px;\n  border-radius: 12px; border: 1px solid #26324b; background: #131b28; color: white;\n}\n#bataya { color: #94a3c4; font-size: 13px; }',
+    "app.js": '// Likhne par apne aap save ho jata hai\nconst likho = document.getElementById("likho");\n\nlikho.value = localStorage.getItem("notes") || "";\n\nlikho.oninput = function () {\n  localStorage.setItem("notes", likho.value);\n  document.getElementById("bataya").textContent = "Save ho gaya — " + likho.value.length + " akshar";\n};'
   }}
+};
+
+/* template ki list — simple naam aur ek line ka matlab */
+const TPL_INFO = {
+  hello: "Sabse aasan — ek heading aur ek button.",
+  rang: "Button dabao, rang badal jayega.",
+  pahada: "Number daalo, uska pahada dikhega.",
+  khata: "Naam aur rupaye likho, total dikhega.",
+  quiz: "Teen sawal, sahi jawab par score.",
+  notes: "Jo likho wahi save ho jaye."
 };
 
 /* ---------------- state ---------------- */
@@ -301,14 +335,22 @@ const closeSheet = () => $("sheet").classList.remove("on");
 
 $("mTemplate").onclick = () => {
   closeSheet();
-  const keys = Object.keys(T);
-  const pick = prompt("Kaunsa template?\n" + keys.map((k,i) => (i+1) + ". " + k).join("\n") + "\n\nNumber likho:");
-  const k = keys[Number(pick)-1];
-  if (!k) return;
-  if (!confirm("Purani files badal jayengi. Theek hai?")) return;
-  P = JSON.parse(JSON.stringify(T[k])); cur = "index.html";
-  save(); paintFiles(); openFile(cur); go("files");
+  const list = $("tplList");
+  list.innerHTML = Object.keys(T).map(k =>
+    '<button class="srow" data-t="' + k + '">' + T[k].name + '<small>' + (TPL_INFO[k] || "") + '</small></button>'
+  ).join("");
+  list.querySelectorAll("[data-t]").forEach(b => b.onclick = () => {
+    const k = b.dataset.t;
+    if (!confirm("Purani files badal jayengi. Theek hai?")) return;
+    P = JSON.parse(JSON.stringify(T[k]));
+    cur = "index.html";
+    save(); paintFiles(); openFile(cur);
+    $("sheet2").classList.remove("on");
+    go("files");
+  });
+  $("sheet2").classList.add("on");
 };
+$("tBack").onclick = () => $("sheet2").classList.remove("on");
 
 $("mAI").onclick = async () => {
   closeSheet();
