@@ -145,6 +145,27 @@
   </div>
 </section>
 
+<!-- ================= LENS (camera + face filters) ================= -->
+<section class="screen" id="lensScreen" style="background:#000;padding-bottom:0">
+  <div style="position:relative;flex:1;overflow:hidden">
+    <video id="lensVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
+    <canvas id="lensCanvas" style="display:none"></canvas>
+    <div id="lensStickers" style="position:absolute;inset:0;pointer-events:none"></div>
+
+    <div style="position:absolute;top:12px;left:12px;right:12px;display:flex;gap:8px;z-index:6">
+      <button id="lensClose" style="background:rgba(10,15,24,.65);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:20px;padding:8px 14px;font-size:13px">✕</button>
+      <div class="spacer"></div>
+      <button id="lensFlip" style="background:rgba(10,15,24,.65);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:20px;padding:8px 14px;font-size:13px">🔄</button>
+    </div>
+
+    <div id="lensFilters" style="position:absolute;left:0;right:0;bottom:96px;display:flex;gap:8px;overflow-x:auto;padding:0 12px;z-index:6"></div>
+    <div id="lensStickerBar" style="position:absolute;left:0;right:0;bottom:52px;display:flex;gap:8px;overflow-x:auto;padding:0 12px;z-index:6"></div>
+
+    <button id="lensShot" style="position:absolute;left:50%;transform:translateX(-50%);bottom:8px;width:66px;height:66px;border-radius:50%;
+            background:#fff;border:5px solid rgba(255,255,255,.4);z-index:7"></button>
+  </div>
+</section>
+
 <!-- ================= STORY VIEWER ================= -->
 <section class="screen" id="storyScreen" style="background:#000;padding-bottom:0">
   <div style="position:absolute;top:0;left:0;right:0;display:flex;gap:5px;padding:10px;z-index:5" id="storyBars"></div>
@@ -279,14 +300,15 @@ function paintFeed(){
     <article class="post">
       <div class="phead"><div class="av">${p.a}</div><div><b>${esc(p.u)}</b><br><span>${esc(p.t)}</span></div></div>
       <div class="ptext">${esc(p.text)}</div>
-      ${p.media ? `<div class="pmedia">${p.media}</div>` : ""}
+      ${p.img ? `<img src="${p.img}" style="width:100%;display:block" alt="" />` : (p.media ? `<div class="pmedia">${p.media}</div>` : "")}
       <div class="pacts">
         <button data-like="${i}" class="${p.liked ? "liked" : ""}">${p.liked ? "❤️" : "🤍"} ${p.likes || 0}</button>
         <button>💬 0</button>
-        <button>↗️ Share</button>
+        <button data-share="${i}">↗️ Share</button>
       </div>
     </article>`).join("") || `<p class="note" style="padding:16px">Koi post nahi — Create tab se pehla post banao.</p>`;
 
+  $("feed").querySelectorAll("[data-share]").forEach(b => b.onclick = () => sharePost(Number(b.dataset.share)));
   $("feed").querySelectorAll("[data-like]").forEach(b => b.onclick = () => {
     const i = Number(b.dataset.like);
     posts[i].liked = !posts[i].liked;
@@ -297,6 +319,8 @@ function paintFeed(){
 }
 
 let currentFilter = "none";
+document.addEventListener("click", (e) => { if (e.target.id === "openLens") openLens(); });
+
 function paintReels(){
   $("reels").innerHTML = SEED_REELS.map((r, i) => `
     <div class="reel">
@@ -307,6 +331,9 @@ function paintReels(){
         <div><button>↗️</button><small>share</small></div>
       </div>
       <div class="meta"><b>${r.u}</b><p>${esc(r.cap)}</p></div>
+      <div style="position:absolute;top:14px;left:14px;z-index:3">
+        <button id="openLens" style="background:rgba(10,15,24,.6);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:20px;padding:8px 12px;font-size:12px">✨ Lens</button>
+      </div>
       <div style="position:absolute;top:14px;right:14px;z-index:3">
         <button class="pickImg" style="background:rgba(10,15,24,.6);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:20px;padding:8px 12px;font-size:12px">📷 Photo lagao</button>
       </div>
@@ -558,6 +585,113 @@ function applyFilter(name){
   if (f.h) parts.push(`hue-rotate(${f.h}deg)`);
   if (f.sepia) parts.push(`sepia(${f.sepia})`);
   document.querySelectorAll(".reel .big").forEach(el => { el.style.filter = parts.join(" "); });
+}
+
+
+/* ================= LENS: camera + beauty/face filters + stickers ================= */
+const LENS_FILTERS = [
+  { id:"original", name:"Original", css:"" },
+  { id:"glow",     name:"Glow",     css:"brightness(1.12) saturate(1.15) contrast(1.05)" },
+  { id:"soft",     name:"Soft",     css:"brightness(1.08) saturate(1.05) blur(0.4px)" },
+  { id:"warm",     name:"Warm",     css:"sepia(.22) saturate(1.25) brightness(1.05)" },
+  { id:"cool",     name:"Cool",     css:"hue-rotate(-12deg) saturate(1.15) brightness(1.02)" },
+  { id:"vintage",  name:"Vintage",  css:"sepia(.42) contrast(.95) brightness(1.05)" },
+  { id:"noir",     name:"Noir",     css:"grayscale(1) contrast(1.25)" },
+  { id:"cyber",    name:"Cyber",    css:"hue-rotate(190deg) saturate(1.7) contrast(1.15)" },
+  { id:"anime",    name:"Anime",    css:"saturate(1.9) contrast(1.2) brightness(1.05)" },
+  { id:"vhs",      name:"VHS",      css:"contrast(1.2) saturate(1.3) hue-rotate(-8deg) blur(0.3px)" },
+  { id:"duotone",  name:"Duotone",  css:"grayscale(1) sepia(.6) hue-rotate(180deg) saturate(1.8)" },
+  { id:"dream",    name:"Dream",    css:"brightness(1.15) saturate(1.1) blur(0.6px) contrast(.95)" },
+];
+const STICKERS = ["😎","😍","🎉","🔥","💖","🌟","🦋","👑","🎧","🌈","🌸","😂"];
+
+let lensStream = null, lensFilter = LENS_FILTERS[0], lensFacing = "user", activeStickers = [];
+
+function openLens(){
+  go("lens");
+  paintLensBars();
+  startLens();
+}
+
+function paintLensBars(){
+  $("lensFilters").innerHTML = LENS_FILTERS.map(f =>
+    `<button data-lf="${f.id}" style="flex:0 0 auto;background:${f.id === lensFilter.id ? "var(--violet)" : "rgba(10,15,24,.6)"};
+      border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:20px;padding:8px 13px;font-size:12.5px;font-family:inherit">${f.name}</button>`).join("");
+  $("lensFilters").querySelectorAll("[data-lf]").forEach(b => b.onclick = () => {
+    lensFilter = LENS_FILTERS.find(f => f.id === b.dataset.lf) || LENS_FILTERS[0];
+    applyLensFilter(); paintLensBars();
+  });
+
+  $("lensStickerBar").innerHTML = STICKERS.map(s2 =>
+    `<button data-st="${s2}" style="flex:0 0 auto;background:rgba(10,15,24,.6);border:1px solid rgba(255,255,255,.2);color:#fff;
+      border-radius:50%;width:44px;height:44px;font-size:20px">${s2}</button>`).join("");
+  $("lensStickerBar").querySelectorAll("[data-st]").forEach(b => b.onclick = () => {
+    activeStickers.push({ ch:b.dataset.st, x:30 + Math.random()*40, y:25 + Math.random()*40, size:46 });
+    paintStickers();
+  });
+}
+
+function applyLensFilter(){ $("lensVideo").style.filter = lensFilter.css || "none"; }
+
+function paintStickers(){
+  $("lensStickers").innerHTML = activeStickers.map((s2, i) =>
+    `<span data-rm="${i}" style="position:absolute;left:${s2.x}%;top:${s2.y}%;font-size:${s2.size}px;pointer-events:auto">${s2.ch}</span>`).join("");
+  $("lensStickers").querySelectorAll("[data-rm]").forEach(el => el.onclick = () => {
+    activeStickers.splice(Number(el.dataset.rm), 1); paintStickers();
+  });
+}
+
+async function startLens(){
+  try{
+    lensStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: lensFacing }, audio: false });
+    $("lensVideo").srcObject = lensStream;
+    applyLensFilter();
+  }catch(e){
+    toast("Camera nahi khula — permission do ya browser check karo");
+  }
+}
+
+function stopLens(){
+  if (lensStream){ lensStream.getTracks().forEach(t => t.stop()); lensStream = null; }
+  activeStickers = []; paintStickers();
+}
+
+$("lensClose").onclick = () => { stopLens(); go("reels"); };
+$("lensFlip").onclick = async () => {
+  lensFacing = lensFacing === "user" ? "environment" : "user";
+  stopLens(); await startLens();
+};
+
+$("lensShot").onclick = () => {
+  const v = $("lensVideo"), c = $("lensCanvas");
+  if (!v.videoWidth) return toast("Camera taiyar nahi");
+  c.width = v.videoWidth; c.height = v.videoHeight;
+  const ctx = c.getContext("2d");
+  ctx.filter = lensFilter.css || "none";
+  ctx.drawImage(v, 0, 0, c.width, c.height);
+  activeStickers.forEach(s2 => {
+    ctx.filter = "none";
+    ctx.font = `${Math.round(c.width * (s2.size / 300))}px serif`;
+    ctx.fillText(s2.ch, c.width * s2.x / 100, c.height * s2.y / 100);
+  });
+  const data = c.toDataURL("image/jpeg", 0.85);
+  const cap = prompt("Caption likho (khali chhod sakte ho):") || "";
+  posts.unshift({ u:"Swag", a:"🧑", t:"abhi", text: cap || "(lens photo)", media:"", img: data, likes:0 });
+  LS.set("posts", posts);
+  stopLens();
+  paintFeed(); go("home");
+  toast("Photo post ho gayi (sirf is phone me)");
+};
+
+/* ---------- advanced share ---------- */
+async function sharePost(i){
+  const p = posts[i];
+  const text = `${p.u}: ${p.text}`;
+  try{
+    if (navigator.share){ await navigator.share({ title:"YouMe", text, url: location.href }); return; }
+  }catch(e){}
+  try{ await navigator.clipboard.writeText(text + "\n" + location.href); toast("Copy ho gaya — kahin bhi paste karo"); }
+  catch(e){ toast("Share nahi hua"); }
 }
 
 /* ---------- start ---------- */
