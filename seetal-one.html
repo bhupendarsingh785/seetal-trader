@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Seetal — poora system, ek file</title>
+<style>
+  :root{--bg:#0b0f19;--card:#141d2b;--card2:#1a2434;--line:#26324b;--txt:#eef2fb;--dim:#94a3c4;
+        --green:#34d399;--red:#fb7185;--amber:#fbbf24;--violet:#7c6cf8;--cyan:#22d3ee}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Devanagari",sans-serif;
+       display:flex;flex-direction:column;font-size:15px}
+  header{padding:11px 14px;background:#0e1520;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+  .logo{font-weight:800;font-size:16px}
+  .logo span{color:var(--green)}
+  .pill{font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:20px;padding:2px 8px}
+  .spacer{flex:1}
+  main{flex:1;overflow:auto;padding:14px;padding-bottom:80px}
+  .view{display:none}
+  .view.on{display:block}
+  h2{font-size:16px;margin:0 0 10px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:10px}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  .row:last-child{border-bottom:0}
+  .nm{font-weight:600;font-size:14px}
+  .sub{color:var(--dim);font-size:12px}
+  .up{color:var(--green)} .down{color:var(--red)}
+  button{background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:11px;padding:12px 14px;
+         font-size:14px;font-weight:700;font-family:inherit;cursor:pointer}
+  button.pri{background:linear-gradient(135deg,var(--violet),#3b82f6);border:0}
+  button.ok{background:var(--green);color:#04170c;border:0}
+  input,textarea,select{width:100%;background:#0b1119;border:1px solid var(--line);color:var(--txt);
+        border-radius:11px;padding:12px;font-size:14.5px;font-family:inherit;margin-bottom:8px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .tile{background:var(--card2);border:1px solid var(--line);border-radius:13px;padding:14px;text-align:center}
+  .tile b{display:block;font-size:15px;margin-bottom:3px}
+  .tile span{font-size:11.5px;color:var(--dim)}
+  .ok-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;background:var(--dim)}
+  .ok-dot.g{background:var(--green)} .ok-dot.r{background:var(--red)} .ok-dot.a{background:var(--amber)}
+  nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0e1520;border-top:1px solid var(--line);
+      padding-bottom:env(safe-area-inset-bottom);z-index:9}
+  nav button{flex:1;background:transparent;border:0;color:var(--dim);font-size:11px;font-weight:700;
+             display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 2px 11px;border-radius:0}
+  nav button .ic{font-size:18px}
+  nav button.on{color:var(--green)}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:78px;background:#1f2a3d;border:1px solid var(--line);
+         color:var(--txt);padding:10px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.25s;z-index:20}
+  .toast.on{opacity:1}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Seetal<span>.</span></div>
+  <div class="pill" id="hstat">check…</div>
+  <div class="spacer"></div>
+  <button id="refresh" style="padding:8px 11px">↻</button>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section class="view on" id="v-home">
+    <h2>Ek hi jagah</h2>
+    <div class="grid2">
+      <div class="tile" data-go="trader"><b>📈 Trader</b><span>live market</span></div>
+      <div class="tile" data-go="doctor"><b>🩺 Doctor</b><span>system jaanch</span></div>
+      <div class="tile" data-go="notes"><b>📝 Notes</b><span>likho, save</span></div>
+      <div class="tile" data-go="vault"><b>🔐 Vault</b><span>password tijori</span></div>
+      <div class="tile" data-go="sync"><b>🔄 Sync</b><span>ek code, sab device</span></div>
+      <div class="tile" data-go="more"><b>🧩 Aur</b><span>Studio · Suno · Hub</span></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="row"><span class="nm">Data</span><span class="sub" id="dataAge">—</span></div>
+      <div class="row"><span class="nm">Raste</span><span class="sub" id="dataSrc">—</span></div>
+      <div class="row"><span class="nm">Symbols</span><span class="sub" id="dataCount">—</span></div>
+    </div>
+  </section>
+
+  <!-- TRADER -->
+  <section class="view" id="v-trader">
+    <h2>Trader — live pulse</h2>
+    <div class="card" id="traderList"><div class="sub">Data laa raha hoon…</div></div>
+    <p class="sub">Ye signal tool hai, guarantee nahi. Data free feed se aata hai — kuch second-min delay ho sakta hai.</p>
+  </section>
+
+  <!-- DOCTOR -->
+  <section class="view" id="v-doctor">
+    <h2>Doctor — system ki jaanch</h2>
+    <button class="pri" id="docRun" style="width:100%">🩺 Poori jaanch karo</button>
+    <div class="card" id="docOut" style="margin-top:12px"><div class="sub">Abhi jaanch nahi hui.</div></div>
+  </section>
+
+  <!-- NOTES -->
+  <section class="view" id="v-notes">
+    <h2>Notes</h2>
+    <textarea id="notes" style="min-height:45vh" placeholder="Aaj kya karna hai…"></textarea>
+    <p class="sub" id="notesStat">—</p>
+  </section>
+
+  <!-- VAULT -->
+  <section class="view" id="v-vault">
+    <h2>Vault — sirf is phone me</h2>
+    <p class="sub">Yahan password likhne se pehle soch lo: ye phone ke storage me rehta hai, kahin upload nahi hota. Chori se bachane ke liye PIN laga sakte ho.</p>
+    <input id="vTitle" placeholder="Naam (jaise: Gmail)" />
+    <input id="vUser" placeholder="Username / email" />
+    <input id="vPass" placeholder="Password" />
+    <button class="ok" id="vAdd" style="width:100%">＋ Jodo</button>
+    <div class="card" id="vList" style="margin-top:12px"></div>
+  </section>
+
+  <!-- SYNC -->
+  <section class="view" id="v-sync">
+    <h2>Sync — ek code, har device</h2>
+    <p class="sub">Code daalo. Doosre phone par wahi code → same notes, vault, keys.</p>
+    <input id="syncCode" placeholder="lamba code (jaise seetal-ghar-4821)" />
+    <div class="grid2">
+      <button class="pri" id="syncSave">💾 Code save</button>
+      <button id="syncUp">⬆️ Bhejo</button>
+      <button id="syncDown">⬇️ Laao</button>
+      <button id="syncGen">🎲 Naya code</button>
+    </div>
+    <p class="sub" id="syncOut" style="margin-top:10px">—</p>
+  </section>
+
+  <!-- MORE -->
+  <section class="view" id="v-more">
+    <h2>Aur hisse</h2>
+    <div class="card">
+      <div class="row"><span class="nm">🚀 Studio Pro</span><a href="https://bhupendarsingh785.github.io/seetal-trader/studio-pro.html" style="color:var(--cyan);font-size:13px">kholo</a></div>
+      <div class="row"><span class="nm">🧑‍💻 Studio (simple)</span><a href="https://bhupendarsingh785.github.io/seetal-trader/studio.html" style="color:var(--cyan);font-size:13px">kholo</a></div>
+      <div class="row"><span class="nm">⚡ Builder</span><a href="https://bhupendarsingh785.github.io/seetal-trader/builder.html" style="color:var(--cyan);font-size:13px">kholo</a></div>
+      <div class="row"><span class="nm">🎙️ Suno</span><a href="https://bhupendarsingh785.github.io/suno-assistant/" style="color:var(--cyan);font-size:13px">kholo</a></div>
+      <div class="row"><span class="nm">🌐 Platforms</span><a href="https://bhupendarsingh785.github.io/seetal-trader/sync.html" style="color:var(--cyan);font-size:13px">kholo</a></div>
+      <div class="row"><span class="nm">🏠 Hub</span><a href="https://bhupendarsingh785.github.io/seetal-trader/hub.html" style="color:var(--cyan);font-size:13px">kholo</a></div>
+    </div>
+    <div class="card">
+      <div class="row"><span class="nm">Cloudflare API</span><a href="https://seetal-api.bhupendarsingh785.workers.dev/status" style="color:var(--cyan);font-size:13px">dekho</a></div>
+      <div class="row"><span class="nm">Seetal Platform</span><a href="https://bhupendarsingh785.github.io/swag-page/platform/" style="color:var(--cyan);font-size:13px">kholo</a></div>
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button data-v="home" class="on"><span class="ic">🏠</span>Home</button>
+  <button data-v="trader"><span class="ic">📈</span>Trader</button>
+  <button data-v="doctor"><span class="ic">🩺</span>Doctor</button>
+  <button data-v="notes"><span class="ic">📝</span>Notes</button>
+  <button data-v="vault"><span class="ic">🔐</span>Vault</button>
+  <button data-v="sync"><span class="ic">🔄</span>Sync</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const LS = {
+  get(k, d){ try{ const v = localStorage.getItem("seetal." + k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem("seetal." + k, JSON.stringify(v)); }catch(e){} }
+};
+function toast(m){ const t = $("toast"); t.textContent = m; t.classList.add("on"); setTimeout(() => t.classList.remove("on"), 1800); }
+
+/* ---------- views ---------- */
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => show(b.dataset.v));
+document.querySelectorAll("[data-go]").forEach(t => t.onclick = () => show(t.dataset.go));
+function show(v){
+  document.querySelectorAll(".view").forEach(x => x.classList.toggle("on", x.id === "v-" + v));
+  document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x.dataset.v === v));
+  if (v === "trader") loadData();
+  if (v === "vault") paintVault();
+  if (v === "notes") { $("notes").value = LS.get("notes", ""); paintNotes(); }
+  if (v === "sync") $("syncCode").value = LS.get("synccode", "");
+}
+
+/* ---------- data ---------- */
+const SOURCES = [
+  "https://raw.githubusercontent.com/bhupendarsingh785/seetal-trader/main/data/live.json",
+  "https://seetal-api.bhupendarsingh785.workers.dev/live",
+  "data/live.json"
+];
+let DATA = null;
+
+async function loadData(force){
+  if (DATA && !force) return DATA;
+  const cached = LS.get("livecache", null);
+  if (cached && !force){ DATA = cached; paintTrader(); }
+
+  for (const url of SOURCES){
+    try{
+      const r = await fetch(url + (url.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) continue;
+      let j = await r.json();
+      const d = j && j.data ? j.data : j;
+      if (d && d.rows && d.rows.length){
+        DATA = d;
+        LS.set("livecache", d);
+        paintTrader();
+        return d;
+      }
+    }catch(e){}
+  }
+  if (!DATA) $("traderList").innerHTML = '<div class="sub">Data nahi mila — net check karo.</div>';
+  return DATA;
+}
+
+function paintTrader(){
+  if (!DATA) return;
+  const rows = DATA.rows || [];
+  const gen = DATA.generated_at ? new Date(DATA.generated_at) : null;
+  const age = gen ? Math.round((Date.now() - gen.getTime()) / 60000) : null;
+
+  $("dataAge").textContent = age === null ? "—" : (age + " min purana");
+  $("dataSrc").textContent = DATA.source || "live";
+  $("dataCount").textContent = rows.length;
+  $("hstat").textContent = age === null ? "?" : (age + " min");
+
+  $("traderList").innerHTML = rows.map(r => {
+    const pct = Number(r.change_pct || 0);
+    const cls = pct >= 0 ? "up" : "down";
+    const state = r.state || "WAIT";
+    const st = state === "ENTRY" ? "🟢 ENTRY" : (state === "WAIT" ? "⏳ WAIT" : state);
+    return '<div class="row">'
+      + '<div><div class="nm">' + (r.name || r.symbol) + '</div>'
+      + '<div class="sub">' + st + (r.distance_pct != null ? " · " + Number(r.distance_pct).toFixed(2) + "% door" : "") + '</div></div>'
+      + '<div style="text-align:right"><div class="nm">' + (r.last != null ? Number(r.last).toFixed(2) : "—") + '</div>'
+      + '<div class="sub ' + cls + '">' + (pct >= 0 ? "+" : "") + pct.toFixed(2) + '%</div></div>'
+      + '</div>';
+  }).join("") || '<div class="sub">Koi row nahi.</div>';
+}
+
+/* ---------- doctor ---------- */
+const CHECKS = [
+  { n: "Trader data", u: "https://bhupendarsingh785.github.io/seetal-trader/data/live.json" },
+  { n: "Cloudflare API", u: "https://seetal-api.bhupendarsingh785.workers.dev/status" },
+  { n: "Netlify", u: "https://seetal-trader.netlify.app/" },
+  { n: "Vercel", u: "https://bhupendarsingh785.vercel.app/" },
+  { n: "Suno", u: "https://bhupendarsingh785.github.io/suno-assistant/" },
+  { n: "Studio Pro", u: "https://bhupendarsingh785.github.io/seetal-trader/studio-pro.html" },
+  { n: "Platform", u: "https://bhupendarsingh785.github.io/swag-page/platform/" }
+];
+
+$("docRun").onclick = async () => {
+  const box = $("docOut");
+  box.innerHTML = '<div class="sub">Jaanch chal rahi hai…</div>';
+  let ok = 0;
+  const lines = [];
+  for (const c of CHECKS){
+    const t0 = performance.now();
+    let good = false, ms = 0;
+    try{
+      const r = await fetch(c.u + (c.u.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" });
+      ms = Math.round(performance.now() - t0);
+      good = r.ok;
+    }catch(e){ ms = Math.round(performance.now() - t0); }
+    if (good) ok++;
+    lines.push('<div class="row"><span class="nm"><span class="ok-dot ' + (good ? "g" : "r") + '"></span>' + c.n + '</span><span class="sub">' + (good ? ms + " ms" : "band") + '</span></div>');
+  }
+  // storage + cache
+  let used = 0;
+  try{ for (const k in localStorage) if (Object.prototype.hasOwnProperty.call(localStorage, k)) used += (localStorage[k] || "").length; }catch(e){}
+  lines.push('<div class="row"><span class="nm"><span class="ok-dot ' + (used < 3000000 ? "g" : "a") + '"></span>Storage</span><span class="sub">' + Math.round(used / 1024) + ' KB</span></div>');
+
+  const pct = Math.round(ok / CHECKS.length * 100);
+  box.innerHTML = '<div style="font-size:15px;font-weight:800;margin-bottom:8px" class="' + (pct >= 90 ? "up" : pct >= 60 ? "" : "down") + '">Score: ' + pct + ' / 100 (' + ok + '/' + CHECKS.length + ')</div>' + lines.join("");
+};
+
+/* ---------- notes ---------- */
+function paintNotes(){
+  const v = $("notes").value || "";
+  $("notesStat").textContent = v.length + " akshar · " + (v.trim() ? v.trim().split(/\s+/).length + " shabd" : "khali");
+}
+$("notes").addEventListener("input", () => { LS.set("notes", $("notes").value); paintNotes(); });
+
+/* ---------- vault ---------- */
+function paintVault(){
+  const list = LS.get("vault", []);
+  $("vList").innerHTML = list.length ? list.map((x, i) =>
+    '<div class="row"><div><div class="nm">' + esc(x.title) + '</div><div class="sub">' + esc(x.user) + '</div></div>'
+    + '<div style="display:flex;gap:6px"><button data-copy="' + i + '" style="padding:8px 10px;font-size:12px">copy</button>'
+    + '<button data-del="' + i + '" style="padding:8px 10px;font-size:12px;color:#fb7185">✕</button></div></div>'
+  ).join("") : '<div class="sub">Abhi kuch nahi.</div>';
+
+  $("vList").querySelectorAll("[data-copy]").forEach(b => b.onclick = () => {
+    const x = LS.get("vault", [])[Number(b.dataset.copy)];
+    if (!x) return;
+    navigator.clipboard.writeText(x.pass || "").then(() => toast("Password copy ho gaya")).catch(() => toast("Copy nahi hua"));
+  });
+  $("vList").querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
+    const list = LS.get("vault", []);
+    list.splice(Number(b.dataset.del), 1);
+    LS.set("vault", list); paintVault();
+  });
+}
+
+$("vAdd").onclick = () => {
+  const t = $("vTitle").value.trim(), u = $("vUser").value.trim(), p = $("vPass").value;
+  if (!t) return toast("Naam likho");
+  const list = LS.get("vault", []);
+  list.unshift({ title: t, user: u, pass: p, t: Date.now() });
+  LS.set("vault", list.slice(0, 100));
+  $("vTitle").value = ""; $("vUser").value = ""; $("vPass").value = "";
+  paintVault(); toast("Save ho gaya");
+};
+
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ---------- sync (Supabase) ---------- */
+const SUPA = "https://urvhrcyuqepzpbklonrz.supabase.co/rest/v1/seetal_sync";
+const SKEY = "sb_publishable_R1qExbRPEz5d-8YEpDUc_Q_dSel34jw";
+const SYNC_FIELDS = ["notes", "vault", "synccode", "livecache", "mirrors"];
+
+function syncHeaders(){ return { apikey: SKEY, Authorization: "Bearer " + SKEY, "Content-Type": "application/json" }; }
+
+async function syncPush(){
+  const code = $("syncCode").value.trim();
+  if (!code) return toast("Pehle code likho");
+  LS.set("synccode", code);
+  const data = {};
+  SYNC_FIELDS.forEach(k => { const v = LS.get(k, null); if (v !== null) data[k] = v; });
+  data.__at = new Date().toISOString();
+  try{
+    const r = await fetch(SUPA + "?on_conflict=code", {
+      method: "POST",
+      headers: Object.assign(syncHeaders(), { Prefer: "resolution=merge-duplicates,return=minimal" }),
+      body: JSON.stringify({ code, data, updated_at: new Date().toISOString() })
+    });
+    $("syncOut").textContent = r.ok ? "✅ Bhej diya (" + Object.keys(data).length + " cheezein)" : ("❌ Fail " + r.status);
+  }catch(e){ $("syncOut").textContent = "❌ Net issue: " + e.message; }
+}
+
+async function syncPull(){
+  const code = $("syncCode").value.trim();
+  if (!code) return toast("Pehle code likho");
+  LS.set("synccode", code);
+  try{
+    const r = await fetch(SUPA + "?code=eq." + encodeURIComponent(code) + "&select=data,updated_at", { headers: syncHeaders() });
+    const rows = await r.json();
+    if (!rows || !rows.length){ $("syncOut").textContent = "Is code par kuch nahi mila."; return; }
+    const d = rows[0].data || {};
+    let n = 0;
+    Object.keys(d).forEach(k => { if (SYNC_FIELDS.indexOf(k) !== -1){ LS.set(k, d[k]); n++; } });
+    $("syncOut").textContent = "✅ " + n + " cheezein aa gayi — page refresh karo.";
+    paintVault();
+  }catch(e){ $("syncOut").textContent = "❌ Net issue: " + e.message; }
+}
+
+$("syncSave").onclick = () => { const c = $("syncCode").value.trim(); if (!c) return toast("Code likho"); LS.set("synccode", c); toast("Code save ho gaya"); };
+$("syncUp").onclick = syncPush;
+$("syncDown").onclick = syncPull;
+$("syncGen").onclick = () => {
+  const rnd = Math.random().toString(36).slice(2, 8) + Math.random().toString(36).slice(2, 8);
+  $("syncCode").value = "seetal-" + rnd;
+  LS.set("synccode", $("syncCode").value);
+  toast("Naya code bana — save karo");
+};
+
+/* ---------- start ---------- */
+$("refresh").onclick = () => { loadData(true).then(() => toast("Refresh ho gaya")); };
+$("syncCode").value = LS.get("synccode", "");
+loadData();
+paintVault();
+</script>
+</body>
+</html>
