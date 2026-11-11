@@ -52,6 +52,27 @@
   <div class="sum" id="sum">Abhi jaanch nahi hui.</div>
 
 
+
+  <div class="card" style="border-color:rgba(61,220,132,.45)">
+    <h2 style="font-size:14px;margin:0 0 6px">🔌 AI Doctor ka dimaag (Sarvam / Gemini / Claude / free)</h2>
+    <p class="sub" style="margin:0 0 10px">Key daal do to AI Doctor usi dimaag se ilaaj batayega. Na ho to free AI, phir local.</p>
+    <select id="dpProv" style="width:100%;background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:9px 11px;border-radius:9px;font-size:13px;margin-bottom:6px">
+      <option value="none">Free AI (koi key nahi)</option>
+      <option value="sarvam">Sarvam AI (India)</option>
+      <option value="gemini">Google Gemini</option>
+      <option value="anthropic">Anthropic (Claude)</option>
+      <option value="openai">OpenAI</option>
+      <option value="groq">Groq</option>
+    </select>
+    <input id="dpKey" placeholder="API key" autocomplete="off" style="width:100%;background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:9px 11px;border-radius:9px;font-size:13px;margin-bottom:6px" />
+    <input id="dpModel" placeholder="model (optional — jaise sarvam-m)" style="width:100%;background:#0b1119;border:1px solid var(--line);color:var(--txt);padding:9px 11px;border-radius:9px;font-size:13px;margin-bottom:8px" />
+    <div class="row">
+      <button class="btn primary" id="dpSave">💾 Key yaad rakho</button>
+      <button class="btn" id="dpTest">🧪 Test karo</button>
+    </div>
+    <div id="dpOut" style="margin-top:10px;font-size:13px;line-height:1.6"></div>
+  </div>
+
   <div class="card" style="border-color:rgba(34,211,238,.45)">
     <h2 style="font-size:14px;margin:0 0 6px">🧠 Deep check — poora system ek nazar me</h2>
     <p class="sub" style="margin:0 0 10px">Trader, Suno, Cloudflare API, Supabase, data ki umar, storage, cache — sab naapa jata hai. Score 100 me se.</p>
@@ -458,6 +479,84 @@ async function rvRestore(sha){
 };
 
 
+
+/* ================= AI Doctor ka dimaag (providers) ================= */
+const DP_KEY = "seetal.doctor.ai.v1";
+const DP_PROV = {
+  sarvam:   { url: "https://api.sarvam.ai/v1/chat/completions", model: "sarvam-m", auth: "api-subscription-key", prefix: "" },
+  gemini:   { gemini: true, model: "gemini-2.0-flash" },
+  anthropic:{ url: "https://api.anthropic.com/v1/messages", model: "claude-3-5-haiku-20241022", auth: "x-api-key", prefix: "", anthropic: true },
+  openai:   { url: "https://api.openai.com/v1/chat/completions", model: "gpt-4o-mini", auth: "Authorization", prefix: "Bearer " },
+  groq:     { url: "https://api.groq.com/openai/v1/chat/completions", model: "llama-3.1-8b-instant", auth: "Authorization", prefix: "Bearer " },
+};
+
+function dpGet(){ try{ return JSON.parse(localStorage.getItem(DP_KEY) || "null"); }catch(e){ return null; } }
+function dpSet(v){ try{ localStorage.setItem(DP_KEY, JSON.stringify(v)); }catch(e){} }
+
+(function dpInit(){
+  const c = dpGet();
+  if (c){
+    if (c.provider) $("dpProv").value = c.provider;
+    if (c.key) $("dpKey").value = c.key;
+    if (c.model) $("dpModel").value = c.model;
+  }
+})();
+
+$("dpSave").onclick = () => {
+  dpSet({ provider: $("dpProv").value, key: ($("dpKey").value||"").trim(), model: ($("dpModel").value||"").trim() });
+  $("dpOut").textContent = $("dpProv").value === "none" ? "Free AI par set — koi key nahi." : "Key yaad rakh li (sirf is phone me).";
+};
+
+async function dpAsk(prompt, ms){
+  const c = dpGet();
+  if (!c || !c.key || c.provider === "none") return null;
+  const P = DP_PROV[c.provider];
+  if (!P) return null;
+  const model = c.model || P.model;
+  const ctl = new AbortController();
+  const to = setTimeout(() => ctl.abort(), ms || 18000);
+  try{
+    if (P.gemini){
+      const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(c.key);
+      const r = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] }), signal: ctl.signal });
+      const j = await r.json();
+      if (j.error) throw new Error(j.error.message || "gemini error");
+      return (j.candidates && j.candidates[0].content.parts[0].text || "").trim() || null;
+    }
+    if (P.anthropic){
+      const r = await fetch(P.url, { method:"POST",
+        headers:{ "Content-Type":"application/json", "x-api-key": c.key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
+        body: JSON.stringify({ model, max_tokens: 900, messages:[{ role:"user", content: prompt }] }), signal: ctl.signal });
+      const j = await r.json();
+      if (j.error) throw new Error(j.error.message || "anthropic error");
+      return (j.content && j.content[0] && j.content[0].text || "").trim() || null;
+    }
+    const headers = { "Content-Type": "application/json" };
+    headers[P.auth] = (P.prefix || "") + c.key;
+    const r = await fetch(P.url, { method:"POST", headers,
+      body: JSON.stringify({ model, temperature: 0.3, messages:[{ role:"user", content: prompt }] }), signal: ctl.signal });
+    const j = await r.json();
+    if (j.error) throw new Error((j.error && (j.error.message || j.error)) || "api error");
+    return (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content || "").trim() || null;
+  }catch(e){
+    return null;
+  }finally{ clearTimeout(to); }
+}
+
+$("dpTest").onclick = async () => {
+  dpSet({ provider: $("dpProv").value, key: ($("dpKey").value||"").trim(), model: ($("dpModel").value||"").trim() });
+  const out = $("dpOut");
+  out.textContent = "Test kar raha hoon…";
+  const t = await dpAsk("Sirf ek shabd likho: theek", 12000);
+  if (t){ out.innerHTML = "✅ Chal gaya — <b>" + $("dpProv").value + "</b>: " + t.slice(0,40); return; }
+  // free fallback test
+  let free = null;
+  try{ if (window.SeetalAPIs){ const a = await SeetalAPIs.ask("Sirf ek shabd: theek", { timeout: 12000 }); if (a.ok) free = a.model; } }catch(e){}
+  out.innerHTML = free ? ("⚠️ Teri key se jawab nahi aaya — free AI chal rahi hai (" + free + "). Model/key check karo.")
+                       : "❌ Koi AI nahi chali — key aur net check karo.";
+};
+
 /* ================= DEEP CHECK (v3) ================= */
 const DEEP_TARGETS = [
   { name: "Trader (Pages)",  url: "https://bhupendarsingh785.github.io/seetal-trader/data/live.json", kind: "json" },
@@ -586,8 +685,9 @@ $("deepAI").onclick = async () => {
   out.insertAdjacentHTML("afterbegin", '<p class="sub">AI se poochh raha hoon…</p>');
   const report = DEEP_ROWS.map(r => (r.ok ? "OK " : "FAIL ") + r.name + " — " + r.detail).join("\n");
   let ans = null;
+  try{ ans = await dpAsk("Tum system doctor ho. Neeche jaanch ka report hai. Sirf 3 sabse zaroori kaam batao, numbered, Hinglish me, chhoti line me.\n\n" + report, 18000); }catch(e){}
   try{
-    if (window.SeetalAPIs && SeetalAPIs.ask){
+    if (!ans && window.SeetalAPIs && SeetalAPIs.ask){
       const a = await SeetalAPIs.ask("Tum system doctor ho. Neeche jaanch ka report hai. Sirf 3 sabse zaroori kaam batao, numbered, Hinglish me, chhoti line me.\n\n" + report, { timeout: 15000 });
       if (a && a.ok) ans = a.text;
     }
