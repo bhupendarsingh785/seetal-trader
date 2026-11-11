@@ -1,0 +1,118 @@
+name: Connections — sab jude hain?
+
+# Har 15 minute: saari services ek-ek check karta hai.
+# Sirf tab shor karta hai jab kuch TOOTA ho (issue banata hai).
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: connections-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sab connections jaancho
+        id: run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          BITBUCKET_USER: ${{ secrets.BITBUCKET_USER }}
+          BITBUCKET_APP_PASSWORD: ${{ secrets.BITBUCKET_APP_PASSWORD }}
+          PHONEPE_APPSTORE_API_TOKEN: ${{ secrets.PHONEPE_APPSTORE_API_TOKEN }}
+        run: |
+          set -uo pipefail
+          mkdir -p status
+          OUT=status/connections.json
+          echo '{' > "$OUT"
+          FAILED=""
+
+          chk () {  # name url [header]
+            local name="$1" url="$2" hdr="${3:-}"
+            local code
+            if [ -n "$hdr" ]; then
+              code=$(curl -s -o /dev/null -m 20 -w '%{http_code}' -H "$hdr" "$url" || echo 000)
+            else
+              code=$(curl -s -o /dev/null -m 20 -w '%{http_code}' "$url" || echo 000)
+            fi
+            local ok=false
+            case "$code" in 2*|3*) ok=true ;; esac
+            printf '  "%s": {"code": "%s", "ok": %s},\n' "$name" "$code" "$ok" >> "$OUT"
+            echo "$([ "$ok" = true ] && echo ✅ || echo ❌) $name ($code)"
+            [ "$ok" = false ] && FAILED="$FAILED $name"
+            return 0
+          }
+
+          echo "--- sites ---"
+          chk "pages"     "https://bhupendarsingh785.github.io/seetal-trader/"
+          chk "youme"     "https://bhupendarsingh785.github.io/seetal-trader/youme.html"
+          chk "suno"      "https://bhupendarsingh785.github.io/suno-assistant/"
+          chk "vercel"    "https://bhupendarsingh785.vercel.app/"
+          chk "cloudflare" "https://seetal-api.bhupendarsingh785.workers.dev/status"
+
+          echo "--- mirrors ---"
+          chk "gitlab"    "https://gitlab.com/Bhuprndar785/bhupendarsingh785/-/raw/main/index.html"
+          chk "codeberg"  "https://codeberg.org/bhupendarsingh785/seetal-trader/raw/branch/main/index.html"
+          chk "bitbucket" "https://bitbucket.org/bhupendarsingh785/seetal-trader/raw/main/index.html"
+
+          echo "--- tokens (API se) ---"
+          if [ -n "${GITLAB_TOKEN:-}" ]; then
+            chk "gitlab_token" "https://gitlab.com/api/v4/user" "PRIVATE-TOKEN: $(printf '%s' "$GITLAB_TOKEN" | tr -d '[:space:]')"
+          else echo "  gitlab_token skip"; fi
+          if [ -n "${NETLIFY_AUTH_TOKEN:-}" ]; then
+            chk "netlify_token" "https://api.netlify.com/api/v1/user" "Authorization: Bearer $(printf '%s' "$NETLIFY_AUTH_TOKEN" | tr -d '[:space:]')"
+          else echo "  netlify_token skip"; fi
+          if [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            chk "cloudflare_token" "https://api.cloudflare.com/client/v4/user/tokens/verify" "Authorization: Bearer $(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')"
+          else echo "  cloudflare_token skip"; fi
+          if [ -n "${PHONEPE_APPSTORE_API_TOKEN:-}" ]; then
+            echo "  phonepe_token present (API par sirf upload hota hai)"
+          else echo "  phonepe_token skip"; fi
+
+          echo '  "_end": true' >> "$OUT"
+          echo '}' >> "$OUT"
+          echo "FAILED=${FAILED# }" >> "$GITHUB_ENV"
+          python3 -c "import json;d=json.load(open('status/connections.json'));bad=[k for k,v in d.items() if isinstance(v,dict) and not v.get('ok',True)];print('toota:', bad or 'kuch nahi')"
+
+      - name: Status commit karo
+        run: |
+          git config user.name "OpenYug"
+          git config user.email "openyug@seetal.local"
+          git add status/connections.json || true
+          git commit -m "connections: $(date -u +%FT%TZ)" || echo "koi badlav nahi"
+          git push || echo "push skip"
+
+      - name: Kuch toota to issue banao
+        if: env.FAILED != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Connection toota: $FAILED"
+          EXISTS=$(gh issue list --search "$TITLE in:title" --state open --json number --jq 'length' 2>/dev/null || echo 0)
+          if [ "$EXISTS" = "0" ]; then
+            {
+              echo "Ye connections abhi jawab nahi de rahe: **$FAILED**"
+              echo
+              echo "Waqt: $(date -u +%FT%TZ)"
+              echo
+              echo "Poori list: \`status/connections.json\`"
+            } > /tmp/issue.md
+            gh issue create --title "$TITLE" --body-file /tmp/issue.md || true
+          else
+            echo "Issue pehle se hai — naya nahi banaya"
+          fi
