@@ -70,6 +70,33 @@
         border-radius:12px;padding:14px;margin-bottom:8px;font-size:14.5px;font-weight:600;font-family:inherit}
   .srow small{display:block;color:var(--dim);font-weight:400;font-size:12px;margin-top:3px}
   .close{width:100%;background:transparent;border:1px solid var(--line);color:var(--dim);border-radius:12px;padding:12px;font-size:14px;margin-top:4px}
+
+  /* ---------- computer / bade screen par ek saath sab ---------- */
+  @media (min-width: 900px){
+    nav{display:none}
+    main{display:grid;grid-template-columns:220px 1fr 380px;gap:0}
+    .view{position:relative;inset:auto;display:block !important;overflow:auto;border-right:1px solid var(--line)}
+    #filesView{border-right:1px solid var(--line)}
+    #codeView{display:flex !important;flex-direction:column;min-height:0}
+    #buildView{border-right:0;border-left:1px solid var(--line)}
+    #prevView{display:none !important}
+    #editorBox{min-height:0}
+    #code{font-size:14px}
+    header{padding:8px 14px}
+    .bigbtn{margin:12px;width:calc(100% - 24px)}
+    /* preview ko build ke neeche dikhao */
+    #buildView::after{content:"";display:block}
+  }
+  /* tablet */
+  @media (min-width: 700px) and (max-width: 899px){
+    main{display:grid;grid-template-columns:180px 1fr}
+    nav{display:flex}
+    #filesView{display:block !important}
+    .view{position:relative;inset:auto}
+    #codeView{display:flex !important;flex-direction:column}
+    #buildView,#prevView{display:none}
+    #buildView.on,#prevView.on{display:block;grid-column:1 / -1;height:45vh;border-top:1px solid var(--line)}
+  }
 </style>
 </head>
 <body>
@@ -468,6 +495,20 @@ $("mRename").onclick = () => {
   P.name = n.trim().replace(/[^\w\-]/g, "") || "project";
   save(); paintFiles();
 };
+
+
+/* ---------------- computer keyboard ---------------- */
+document.addEventListener("keydown", (e) => {
+  const ctrl = e.ctrlKey || e.metaKey;
+  if (ctrl && e.key.toLowerCase() === "s"){ e.preventDefault(); save(); build(); }
+  if (ctrl && e.key === "Enter"){ e.preventDefault(); build(); go("prev"); $("prev").srcdoc = bundle(); }
+  if (ctrl && e.key.toLowerCase() === "n"){ e.preventDefault(); $("addFile").click(); }
+});
+
+/* Run tab dabane par preview banao */
+document.querySelectorAll('nav button').forEach(b => {
+  if (b.dataset.v === "prev") b.addEventListener("click", () => { $("prev").srcdoc = bundle(); });
+});
 
 /* ---------------- start ---------------- */
 paintFiles(); openFile(cur);
