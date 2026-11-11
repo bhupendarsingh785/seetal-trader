@@ -1,0 +1,32 @@
+name: Deploy to Indus Appstore
+
+# Pehli baar app MANUALLY upload karna padega (Indus ka niyam).
+# Uske baad ye workflow har release par apne aap naya version bhej dega.
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: APK download karo (artifact se)
+        if: ${{ hashFiles('apk/*.apk') == '' }}
+        continue-on-error: true
+        run: echo "APK file repo me nahi — pehle Build APK workflow chalao"
+
+      - name: Indus par upload
+        uses: indusappstore/appstore-release@v1
+        with:
+          file_path: './apk/seetal.apk'
+          file_type: 'apk'
+          package_name: 'io.github.bhupendarsingh785.seetal'
+          api_token: ${{ secrets.INDUS_APP_STORE_API_TOKEN }}
+          release_notes: 'Seetal — naya version (auto deploy)'
