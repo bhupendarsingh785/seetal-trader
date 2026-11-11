@@ -50,9 +50,12 @@ jobs:
             else
               code=$(curl -s -o /dev/null -m 20 -w '%{http_code}' "$url" || echo 000)
             fi
-            local ok=false
-            case "$code" in 2*|3*) ok=true ;; esac
-            printf '  "%s": {"code": "%s", "ok": %s},\n' "$name" "$code" "$ok" >> "$OUT"
+            local ok=false note=""
+            case "$code" in
+              2*|3*) ok=true ;;
+              429)   ok=true; note=", \"note\": \"rate limit (site ne thoda roka, connection theek hai)\"" ;;
+            esac
+            printf '  "%s": {"code": "%s", "ok": %s%s},\n' "$name" "$code" "$ok" "$note" >> "$OUT"
             echo "$([ "$ok" = true ] && echo ✅ || echo ❌) $name ($code)"
             [ "$ok" = false ] && FAILED="$FAILED $name"
             return 0
