@@ -1,4 +1,4 @@
-# Seetal Agent — mera apna kaam karne wala hissa
+# OpenYug — mera apna kaam karne wala agent
 
 ## Kaise aadesh dete hain
 `agent/orders.md` kholo aur neeche naya kaam likh do (ek line, `- [ ]` se shuru).
@@ -21,5 +21,5 @@ aur `agent/reports/` me nateeja likh deta hai.
 Ye "red line" uski apni suraksha ke liye hai, kamzori nahi.
 
 ## Chalane ka tareeka
-GitHub → Actions → **Seetal Agent** → Run workflow
+GitHub → Actions → **OpenYug** → Run workflow
 Ya apne aap: har 2 ghante.

@@ -1,6 +1,6 @@
-name: Seetal Agent
+name: OpenYug
 
-# Mera apna kaam karne wala hissa — orders.md padhta hai, kaam karta hai, report likhta hai.
+# OpenYug — mera apna agent — orders.md padhta hai, kaam karta hai, report likhta hai.
 
 on:
   schedule:
@@ -32,8 +32,8 @@ jobs:
 
       - name: Report commit karo
         run: |
-          git config user.name "Seetal Agent"
-          git config user.email "agent@seetal.local"
+          git config user.name "OpenYug"
+          git config user.email "openyug@seetal.local"
           git add agent/ || true
           git commit -m "agent: report $(date -u +%FT%TZ)" || echo "kuch naya nahi"
           git push || echo "push skip"

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Seetal Agent — orders padhta hai, kar sakne wale kaam karta hai, report likhta hai.
+OpenYug — orders padhta hai, kar sakne wale kaam karta hai, report likhta hai.
 Bina API key bhi chalta hai (jo kaam local hain woh karta hai).
 """
 import json, os, re, subprocess, sys, time, datetime, urllib.request
@@ -8,7 +8,7 @@ import json, os, re, subprocess, sys, time, datetime, urllib.request
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORDERS = os.path.join(ROOT, "agent", "orders.md")
 REPORTS = os.path.join(ROOT, "agent", "reports")
-NOW = datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+NOW = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 def sh(cmd, timeout=240):
     try:
@@ -19,7 +19,7 @@ def sh(cmd, timeout=240):
 
 def http_ok(url, timeout=15):
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "seetal-agent"})
+        req = urllib.request.Request(url, headers={"User-Agent": "openyug-agent"})
         t0 = time.time()
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.status < 400, int((time.time() - t0) * 1000)
@@ -102,7 +102,7 @@ HANDLERS = [
 def main():
     os.makedirs(REPORTS, exist_ok=True)
     orders = read_orders()
-    lines = [f"# Seetal Agent report — {NOW}", "", f"Orders mile: {len(orders)}", ""]
+    lines = [f"# OpenYug report — {NOW}", "", f"Orders mile: {len(orders)}", ""]
     if not orders:
         lines.append("Koi naya aadesh nahi. Bas routine check:")
         ok, out = job_sites()
