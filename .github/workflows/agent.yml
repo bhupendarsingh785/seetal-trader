@@ -1,10 +1,10 @@
 name: OpenYug
 
-# OpenYug — mera apna agent — orders.md padhta hai, kaam karta hai, report likhta hai.
+# OpenYug — mera apna agent (har 15 minute) — orders.md padhta hai, kaam karta hai, report likhta hai.
 
 on:
   schedule:
-    - cron: "0 */2 * * *"
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 permissions:
