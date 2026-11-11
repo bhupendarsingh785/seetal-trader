@@ -1,0 +1,66 @@
+name: PhonePe Appstore — APK update
+
+# Pehli baar app manually upload ho chuki hai (11 Nov 2026).
+# Uske baad ye workflow naya APK seedha store par bhej dega.
+
+on:
+  workflow_dispatch:
+    inputs:
+      apk_path:
+        description: "APK file ka path repo me (jaise apk/seetal.apk)"
+        required: false
+        default: "apk/seetal.apk"
+  push:
+    branches: [main]
+    paths:
+      - "apk/**.apk"
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Token check
+        env:
+          TOKEN: ${{ secrets.PHONEPE_APPSTORE_API_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::warning::PHONEPE_APPSTORE_API_TOKEN nahi hai — skip"
+            echo "skip=1" >> $GITHUB_ENV
+          else
+            echo "skip=0" >> $GITHUB_ENV
+          fi
+
+      - name: APK file check
+        if: env.skip == '0'
+        run: |
+          APK="${{ github.event.inputs.apk_path || 'apk/seetal.apk' }}"
+          if [ ! -f "$APK" ]; then
+            echo "::error::$APK nahi mili — pehle APK repo me daalo (apk/seetal.apk)"
+            exit 1
+          fi
+          ls -lh "$APK"
+
+      - name: PhonePe Appstore par bhejo
+        if: env.skip == '0'
+        env:
+          TOKEN: ${{ secrets.PHONEPE_APPSTORE_API_TOKEN }}
+          PACKAGE: io.github.bhupendarsingh785.twa
+        run: |
+          APK="${{ github.event.inputs.apk_path || 'apk/seetal.apk' }}"
+          BASE="https://developer-api.phonepeappstore.com"
+          echo "Upload: $APK → $PACKAGE"
+          RESP=$(curl -sS -w "\n%{http_code}" -X POST \
+            "$BASE/devtools/apk/upgrade/$PACKAGE" \
+            -H "Authorization: O-Bearer $TOKEN" \
+            -F "file=@$APK")
+          CODE=$(echo "$RESP" | tail -1)
+          BODY=$(echo "$RESP" | sed '$d')
+          echo "HTTP $CODE"
+          echo "$BODY"
+          if [ "$CODE" -ge 300 ]; then echo "::error::Upload fail (HTTP $CODE)"; exit 1; fi
+          echo "✅ APK store par chala gaya"
