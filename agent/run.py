@@ -161,6 +161,17 @@ def run_jobs():
         lines.append("")
     return lines
 
+def clock_line():
+    try:
+        import importlib.util, os as _os
+        p = _os.path.join(ROOT, "agent", "clock.py")
+        spec = importlib.util.spec_from_file_location("clock", p)
+        m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+        gap = m.tick("run")
+        return m.line() + (f" · pichhli baar se {gap}" if gap else "")
+    except Exception as e:
+        return "⏱️ (ghadi nahi chali)"
+
 def main():
     os.makedirs(REPORTS, exist_ok=True)
     st = load_state()
@@ -181,7 +192,7 @@ def main():
         return
 
     orders = read_orders()
-    lines = [f"# OpenYug report — {NOW}", "", f"Orders mile: {len(orders)}", ""]
+    lines = [f"# OpenYug report — {NOW}", "", clock_line(), "", f"Orders mile: {len(orders)}", ""]
     if not orders:
         lines.append("Koi naya aadesh nahi. Bas routine check:")
         ok, out = job_sites()
