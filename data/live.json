@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-11-11T21:55:51+00:00",
- "generated_epoch": 1794434151,
+ "generated_at": "2026-11-12T02:44:53+00:00",
+ "generated_epoch": 1794451493,
  "source": "multi-provider: Yahoo q1/q2, Moneycontrol, Stooq (+ purana cache)",
  "providers": {
   "yahoo-q1": {
@@ -13,17 +13,17 @@
   "tencent": {
    "ok": true,
    "symbol": "600519.SS",
-   "price": 1402.3
+   "price": 1401.7
   },
   "sina": {
    "ok": true,
    "symbol": "600519.SS",
-   "price": 1402.3
+   "price": 1401.7
   },
   "eastmoney": {
    "ok": true,
    "symbol": "600519.SS",
-   "price": 1402.3
+   "price": 1401.7
   },
   "moneycontrol": {
    "ok": false,
@@ -92,7 +92,7 @@
     25299.0,
     25312.3496,
     25278.9004,
-    25276.8496,
+    25277.0996,
     25295.9492,
     25280.1504,
     25271.6992,
@@ -108,10 +108,10 @@
     25201.1992,
     25211.0996,
     25215.4004,
-    25227.0,
-    25226.25,
+    25227.1992,
+    25226.1992,
     25214.1504,
-    25194.8496,
+    25195.0996,
     25176.3496,
     25147.0996,
     25125.75,
@@ -123,7 +123,7 @@
     25255.0508
    ],
    "bars": 76,
-   "last_bar_age_sec": 42947,
+   "last_bar_age_sec": 60288,
    "market_time": 1794391288,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -143,10 +143,10 @@
    "or_low": 60388.25,
    "or_mid": 60518.15,
    "state": "ENTRY",
-   "entry": 60716.15,
+   "entry": 60715.5,
    "entry_time": 1794369900,
    "stop": 60518.15,
-   "target": 61112.15,
+   "target": 61110.2,
    "rr": 2.0,
    "distance_points": -144.35,
    "distance_pct": -0.24,
@@ -163,7 +163,7 @@
     60981.3984,
     60993.8984,
     60857.1484,
-    60867.25,
+    60869.3984,
     60942.9492,
     60898.1484,
     60873.1992,
@@ -194,7 +194,7 @@
     60792.3984
    ],
    "bars": 76,
-   "last_bar_age_sec": 42947,
+   "last_bar_age_sec": 60288,
    "market_time": 1794391288,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -265,7 +265,7 @@
     81879.3984
    ],
    "bars": 76,
-   "last_bar_age_sec": 42947,
+   "last_bar_age_sec": 60289,
    "market_time": 1794391352,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -336,7 +336,7 @@
     7619.3799
    ],
    "bars": 79,
-   "last_bar_age_sec": 3347,
+   "last_bar_age_sec": 20689,
    "market_time": 1794433323,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -407,8 +407,8 @@
     25466.1895
    ],
    "bars": 79,
-   "last_bar_age_sec": 3348,
-   "market_time": 1794434147,
+   "last_bar_age_sec": 20689,
+   "market_time": 1794435359,
    "src": "yahoo-q1",
    "has_bars": true,
    "stale": false
@@ -478,7 +478,7 @@
     1335.4
    ],
    "bars": 74,
-   "last_bar_age_sec": 43248,
+   "last_bar_age_sec": 60590,
    "market_time": 1794391194,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -549,7 +549,7 @@
     806.6
    ],
    "bars": 74,
-   "last_bar_age_sec": 43248,
+   "last_bar_age_sec": 60590,
    "market_time": 1794391195,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -620,7 +620,7 @@
     2472.1001
    ],
    "bars": 74,
-   "last_bar_age_sec": 43248,
+   "last_bar_age_sec": 60590,
    "market_time": 1794391194,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -691,7 +691,7 @@
     1061.2
    ],
    "bars": 74,
-   "last_bar_age_sec": 43249,
+   "last_bar_age_sec": 60591,
    "market_time": 1794391194,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -762,7 +762,7 @@
     1155.0
    ],
    "bars": 74,
-   "last_bar_age_sec": 43249,
+   "last_bar_age_sec": 60591,
    "market_time": 1794391194,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -833,7 +833,7 @@
     1571.6
    ],
    "bars": 74,
-   "last_bar_age_sec": 43249,
+   "last_bar_age_sec": 60591,
    "market_time": 1794391194,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -904,7 +904,7 @@
     1078.8
    ],
    "bars": 73,
-   "last_bar_age_sec": 43250,
+   "last_bar_age_sec": 60592,
    "market_time": 1794391194,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -975,7 +975,7 @@
     2714.5
    ],
    "bars": 74,
-   "last_bar_age_sec": 43250,
+   "last_bar_age_sec": 60592,
    "market_time": 1794391194,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1046,7 +1046,7 @@
     285.0
    ],
    "bars": 74,
-   "last_bar_age_sec": 43250,
+   "last_bar_age_sec": 60592,
    "market_time": 1794391199,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1117,7 +1117,7 @@
     355.63
    ],
    "bars": 79,
-   "last_bar_age_sec": 3350,
+   "last_bar_age_sec": 20692,
    "market_time": 1794430801,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1188,7 +1188,7 @@
     390.84
    ],
    "bars": 79,
-   "last_bar_age_sec": 3350,
+   "last_bar_age_sec": 20693,
    "market_time": 1794430801,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1252,14 +1252,14 @@
     174.8078,
     174.535,
     174.69,
-    174.7213,
+    174.725,
     174.935,
     174.02,
     173.85,
     173.73
    ],
    "bars": 79,
-   "last_bar_age_sec": 3351,
+   "last_bar_age_sec": 20693,
    "market_time": 1794430800,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1330,7 +1330,7 @@
     759.81
    ],
    "bars": 79,
-   "last_bar_age_sec": 3351,
+   "last_bar_age_sec": 20693,
    "market_time": 1794430801,
    "src": "yahoo-q1",
    "has_bars": true,
