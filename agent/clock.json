@@ -1,0 +1,15 @@
+{
+  "first_seen": "2026-11-12T10:00:04Z",
+  "last_run": "2026-11-12T10:00:04Z",
+  "last_seen_swag": null,
+  "runs": 1,
+  "total_runtime_sec": 0,
+  "gaps": [],
+  "tasks": [
+    {
+      "at": "2026-11-12T10:00:04Z",
+      "task": "run",
+      "note": null
+    }
+  ]
+}
