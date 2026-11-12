@@ -1,11 +1,16 @@
 {
   "paused": false,
-  "learn_count": 1,
-  "last_learn": "2026-11-11T21:40:21Z",
-  "score": 2,
+  "learn_count": 2,
+  "last_learn": "2026-11-12T05:03:35Z",
+  "score": 4,
   "history": [
     {
       "at": "2026-11-11T21:40:21Z",
+      "headlines": 14,
+      "sabak": true
+    },
+    {
+      "at": "2026-11-12T05:03:35Z",
       "headlines": 14,
       "sabak": true
     }
