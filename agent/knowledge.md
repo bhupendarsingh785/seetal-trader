@@ -51,3 +51,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - A more informative GitHub dashboard
 
 **Sabak:** **1️⃣** GitHub ne 2026 tak ke archives wrap kiye, issue types/fields ab personal accounts ke liye unlocked hue, aur Enterprise Copilot seat management ka GitHub App support saath mil gaya—saaf aur compliance‑ready team settings.   **2️⃣** Gemini 4 Carbon Copilot mein! C++ language server ab MSBuild ko auto‑configure karta hai, Dependabot alerts inactive repos pe ruk jaate hain, aur dashboard visual updates se aapko ek‑paisa ka snapshot milta hai.   **3️⃣** Likhna start karo: yeh updates developer workflow ko streamline karenge—kise kaise tech savviness augment karte hue time bachaye, errors ka
+
+## 2026-11-12 — seekha (14 cheezein)
+
+- Show HN: Buildout, Harmonies-based game to build AI Lab
+- SCache and MOS – 32.9k O(1) KV cache (22.7 MiB) and 72B INT4/ASVD engine
+- My laptop's spec sheet says 12GB max RAM. It runs 20GB
+- Can AI chair a multilateral negotiation?
+- Sources say Huang had affair with second Nvidia employee
+- Show HN: RealtimeVAD – trading false positives for 110ms earlier end-of-speech
+- Comparing Jev, Gemini, and OpenAI decision models
+- Fusee. Embeddable durable execution at the speed of the disk
+- Archive: 2026 - GitHub Changelog
+- Actions for ARM32 Linux &#038; Windows retirement
+- Secret scanning detects Cloudflare service tokens
+- Public monitoring alerts now have direct links
+- Issue types and fields are available for personal accounts
+- GitHub App support for Enterprise Copilot seat management
+
+**Sabak:** (free AI se sabak nahi bana — sirf headlines)
