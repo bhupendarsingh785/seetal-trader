@@ -541,14 +541,18 @@ $("chatSend").onclick = () => {
   LS.set("msgs", msgs);
   paintChat();
 
-  // auto jawab (demo) — asli AI baad me
-  smartReply(v).then((reply) => {
-    msgs[openChat].push({ me:false, t:reply, ts:Date.now() });
+  // Seetal (asli AI) se jawab
+  const who = openChat;
+  msgs[who].push({ me:false, t:"…", ts:Date.now() });
+  paintChat();
+  smartReply(v, who).then((reply) => {
+    msgs[who].pop();
+    msgs[who].push({ me:false, t:reply, ts:Date.now() });
     LS.set("msgs", msgs);
-    if (openChat) paintChat();
-    const c = chats.find(x => x.id === openChat);
+    if (openChat === who) paintChat();
+    const c = chats.find(x => x.id === who);
     if (c){ c.last = reply; c.t = "abhi"; LS.set("chats", chats); }
-  });
+  }).catch(() => { msgs[who].pop(); paintChat(); });
 };
 
 function autoReply(t){
