@@ -145,6 +145,31 @@
   </div>
 </section>
 
+<!-- ================= SEETAL SYSTEM (hamara apna, andar hi) ================= -->
+<section class="screen" id="systemScreen">
+  <div class="topbar"><h1>Seetal system</h1></div>
+  <div class="scroll">
+    <div style="padding:12px" id="sysGrid"></div>
+    <div id="sysFrameBox" style="display:none;height:calc(100vh - 190px);padding:0 8px 8px">
+      <iframe id="sysFrame" style="width:100%;height:100%;border:0;border-radius:12px;background:#0b0f19"></iframe>
+      <button id="sysClose" style="width:100%;margin-top:8px;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:12px;font-family:inherit">Band karo</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= THREAD (X jaisa) ================= -->
+<section class="screen" id="threadScreen">
+  <div class="topbar">
+    <button id="threadBack" style="background:transparent;border:0;color:var(--txt);font-size:19px">←</button>
+    <h1>Thread</h1>
+  </div>
+  <div class="scroll" id="threadBody" style="padding:12px"></div>
+  <div style="display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:#0b111a">
+    <input id="threadIn" placeholder="Jawab likho…" style="flex:1;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:20px;padding:12px 14px;font-family:inherit;font-size:14.5px" />
+    <button id="threadSend" style="background:linear-gradient(135deg,var(--violet),var(--pink));border:0;color:#fff;border-radius:50%;width:46px;height:46px;font-size:18px">➤</button>
+  </div>
+</section>
+
 <!-- ================= LENS (camera + face filters) ================= -->
 <section class="screen" id="lensScreen" style="background:#000;padding-bottom:0">
   <div style="position:relative;flex:1;overflow:hidden">
@@ -249,6 +274,7 @@
   <button data-s="reels"><span class="ic">🎬</span>Reels</button>
   <button data-s="create" class="create"><span class="ic">＋</span>Create</button>
   <button data-s="alerts"><span class="ic">🔔</span>Alerts</button>
+  <button data-s="system"><span class="ic">🧩</span>Seetal</button>
   <button data-s="profile"><span class="ic">🧑</span>Profile</button>
 </nav>
 
@@ -271,6 +297,7 @@ try{
 }catch(e){ window.YM_FACE.error = String(e && e.message || e); }
 </script>
 
+<script src="assets/apis.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const LS = {
@@ -286,6 +313,7 @@ function go(s){
   document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x.dataset.s === s));
   if (s === "profile") paintProfile();
   if (s === "alerts") paintAlerts();
+  if (s === "system") paintSystem();
 }
 
 /* ---------- seed data ---------- */
@@ -322,18 +350,22 @@ function paintFeed(){
       ${p.img ? `<img src="${p.img}" style="width:100%;display:block" alt="" />` : (p.media ? `<div class="pmedia">${p.media}</div>` : "")}
       <div class="pacts">
         <button data-like="${i}" class="${p.liked ? "liked" : ""}">${p.liked ? "❤️" : "🤍"} ${p.likes || 0}</button>
-        <button>💬 0</button>
+        <button data-thread="${i}">💬 ${(p.replies || []).length}</button>
         <button data-share="${i}">↗️ Share</button>
       </div>
     </article>`).join("") || `<p class="note" style="padding:16px">Koi post nahi — Create tab se pehla post banao.</p>`;
 
+  $("feed").querySelectorAll("[data-thread]").forEach(b => b.onclick = () => openThread(Number(b.dataset.thread)));
   $("feed").querySelectorAll("[data-share]").forEach(b => b.onclick = () => sharePost(Number(b.dataset.share)));
   $("feed").querySelectorAll("[data-like]").forEach(b => b.onclick = () => {
     const i = Number(b.dataset.like);
     posts[i].liked = !posts[i].liked;
-    posts[i].likes = (posts[i].likes || 0) + (posts[i].liked ? 1 : -1);
+    posts[i].likes = Math.max(0, (posts[i].likes || 0) + (posts[i].liked ? 1 : -1));
+    // sirf yahi button badlo — poora feed dobara nahi banta (tez + smooth)
+    b.classList.toggle("liked", posts[i].liked);
+    b.innerHTML = (posts[i].liked ? "❤️" : "🤍") + " " + posts[i].likes;
+    if (posts[i].liked) { b.animate?.([{transform:"scale(1)"},{transform:"scale(1.25)"},{transform:"scale(1)"}], {duration:220}); }
     LS.set("posts", posts);
-    paintFeed();
   });
 }
 
@@ -372,6 +404,27 @@ function paintReels(){
 
   $("reels").querySelectorAll(".side [data-like]").forEach(b => b.onclick = () => {
     b.textContent = b.textContent === "🤍" ? "❤️" : "🤍";
+  });
+
+  // TikTok jaisa: double tap = like (dil udta hai)
+  $("reels").querySelectorAll(".reel").forEach(el => {
+    let lastTap = 0;
+    el.addEventListener("click", (ev) => {
+      if (ev.target.closest(".side") || ev.target.closest(".filterbar") || ev.target.closest("button")) return;
+      const now = Date.now();
+      if (now - lastTap < 300){
+        const heart = document.createElement("div");
+        heart.textContent = "❤️";
+        heart.style.cssText = "position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.4);font-size:74px;pointer-events:none;transition:all .45s ease-out;opacity:.95";
+        el.appendChild(heart);
+        requestAnimationFrame(() => { heart.style.transform = "translate(-50%,-90%) scale(1.3)"; heart.style.opacity = "0"; });
+        setTimeout(() => heart.remove(), 500);
+        const likeBtn = el.querySelector(".side [data-like]");
+        if (likeBtn && likeBtn.textContent === "🤍") likeBtn.textContent = "❤️";
+        if (navigator.vibrate) navigator.vibrate(12);
+      }
+      lastTap = now;
+    });
   });
 }
 
@@ -486,14 +539,13 @@ $("chatSend").onclick = () => {
   paintChat();
 
   // auto jawab (demo) — asli AI baad me
-  const reply = autoReply(v);
-  setTimeout(() => {
+  smartReply(v).then((reply) => {
     msgs[openChat].push({ me:false, t:reply, ts:Date.now() });
     LS.set("msgs", msgs);
     if (openChat) paintChat();
     const c = chats.find(x => x.id === openChat);
     if (c){ c.last = reply; c.t = "abhi"; LS.set("chats", chats); }
-  }, 700);
+  });
 };
 
 function autoReply(t){
@@ -779,6 +831,92 @@ function startAr(){
   arLoop();
 }
 function stopAr(){ if (arRAF) cancelAnimationFrame(arRAF); arRAF = null; clearAr(); }
+
+
+/* ================= Thread (X jaisa) ================= */
+let threadIdx = null;
+function openThread(i){
+  threadIdx = i;
+  paintThread();
+  go("thread");
+}
+function paintThread(){
+  const p = posts[threadIdx];
+  if (!p) return;
+  const replies = p.replies || [];
+  $("threadBody").innerHTML = `
+    <div class="post" style="border:1px solid var(--line);border-radius:14px;margin-bottom:14px">
+      <div class="phead"><div class="av">${p.a}</div><div><b>${esc(p.u)}</b><br><span>${esc(p.t)}</span></div></div>
+      <div class="ptext">${esc(p.text)}</div>
+      ${p.img ? `<img src="${p.img}" style="width:100%;display:block" alt="" />` : ""}
+    </div>
+    <div class="note" style="margin-bottom:8px">${replies.length} jawab</div>
+    ${replies.map(r => `
+      <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+        <div class="av">${r.a || "🧑"}</div>
+        <div style="flex:1"><b style="font-size:13px">${esc(r.u || "Swag")}</b>
+          <div style="font-size:14px;margin-top:2px">${esc(r.text)}</div></div>
+      </div>`).join("") || `<p class="note">Pehla jawab likho.</p>`}`;
+}
+$("threadBack").onclick = () => { paintFeed(); go("home"); };
+$("threadSend").onclick = () => {
+  const v = $("threadIn").value.trim();
+  if (!v || threadIdx === null) return;
+  const p = posts[threadIdx];
+  p.replies = p.replies || [];
+  p.replies.push({ u:"Swag", a:"🧑", text:v });
+  $("threadIn").value = "";
+  LS.set("posts", posts);
+  paintThread();
+  toast("Jawab juda");
+};
+
+
+/* ================= Seetal system andar (hamara hi system) ================= */
+const SYS_APPS = [
+  { n:"Trader",   i:"📈", d:"live market",        u:"index.html" },
+  { n:"Studio",   i:"🧑‍💻", d:"code · build",       u:"studio-v10.html" },
+  { n:"Builder",  i:"⚡", d:"bol ke banao",       u:"builder.html" },
+  { n:"Doctor",   i:"🩺", d:"jaanch · score",     u:"doctor.html" },
+  { n:"Hub",      i:"🧭", d:"ek darwaza",        u:"hub.html" },
+  { n:"Sync",     i:"🔄", d:"ek code",           u:"sync.html" },
+  { n:"Suno",     i:"🎙️", d:"awaaz",             u:"https://bhupendarsingh785.github.io/suno-assistant/" },
+  { n:"Seetal App", i:"🧩", d:"poora system",    u:"seetal-app.html" },
+];
+
+function paintSystem(){
+  const g = $("sysGrid");
+  if (!g) return;
+  g.innerHTML = SYS_APPS.map((a, i) => `
+    <div class="pcard" data-sys="${i}" style="display:flex;gap:11px;align-items:center;margin:0 0 10px">
+      <div class="av">${a.i}</div>
+      <div style="flex:1"><b style="font-size:14px">${a.n}</b><div class="note">${a.d}</div></div>
+      <span class="note">›</span>
+    </div>`).join("");
+  g.querySelectorAll("[data-sys]").forEach(el => el.onclick = () => {
+    const a = SYS_APPS[Number(el.dataset.sys)];
+    $("sysFrameBox").style.display = "block";
+    $("sysFrame").src = a.u;
+    $("sysGrid").style.display = "none";
+  });
+}
+
+if ($("sysClose")) $("sysClose").onclick = () => {
+  $("sysFrameBox").style.display = "none";
+  $("sysFrame").src = "about:blank";
+  $("sysGrid").style.display = "block";
+};
+
+/* DM jawab — apna free AI (apis.js) use karo, na mile to local */
+async function smartReply(text){
+  try{
+    if (window.SeetalAPIs && typeof window.SeetalAPIs.ask === "function"){
+      const a = await window.SeetalAPIs.ask("YouMe app ke andar dost ki tarah chhota Hinglish jawab do (2 line): " + text);
+      if (a) return a;
+    }
+  }catch(e){}
+  return autoReply(text);
+}
 
 /* ---------- start ---------- */
 paintStories(); paintFeed(); paintReels(); paintProfile();
