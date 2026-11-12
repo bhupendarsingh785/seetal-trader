@@ -209,8 +209,12 @@
 <!-- ================= DM ================= -->
 <section class="screen" id="dmScreen">
   <div class="topbar">
-    <button id="dmBack" style="background:transparent;border:0;color:var(--txt);font-size:19px">←</button>
-    <h1 id="dmTitle">Messages</h1>
+    <h1 style="display:flex;align-items:center;gap:6px">Swag <span style="font-size:11px;color:var(--dim)">▾</span></h1>
+    <div class="spacer"></div>
+    <button id="dmNew" style="background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:7px 11px;font-size:15px">✎</button>
+  </div>
+  <div style="padding:10px 12px 4px">
+    <input id="dmSearch" placeholder="🔍 Search" style="width:100%;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:11px 14px;font-family:inherit;font-size:14px" />
   </div>
   <div class="scroll" id="dmList"></div>
 </section>
@@ -219,12 +223,18 @@
 <section class="screen" id="chatScreen">
   <div class="topbar">
     <button id="chatBack" style="background:transparent;border:0;color:var(--txt);font-size:19px">←</button>
-    <h1 id="chatTitle">Chat</h1>
+    <div class="av" id="chatAv" style="width:30px;height:30px;font-size:15px">🟢</div>
+    <h1 id="chatTitle" style="font-size:15px">Chat</h1>
+    <div class="spacer"></div>
+    <span style="font-size:15px;color:var(--dim)">📞</span>
+    <span style="font-size:15px;color:var(--dim);margin-left:12px">🎥</span>
   </div>
   <div class="scroll" id="chatBody" style="padding:12px"></div>
-  <div style="display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:#0b111a">
-    <input id="chatIn" placeholder="Message likho…" style="flex:1;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:20px;padding:12px 14px;font-family:inherit;font-size:14.5px" />
-    <button id="chatSend" style="background:linear-gradient(135deg,var(--violet),var(--pink));border:0;color:#fff;border-radius:50%;width:46px;height:46px;font-size:18px">➤</button>
+  <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:#0b111a">
+    <button style="background:transparent;border:0;color:var(--dim);font-size:19px">📷</button>
+    <input id="chatIn" placeholder="Message…" style="flex:1;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:20px;padding:12px 14px;font-family:inherit;font-size:14.5px" />
+    <button style="background:transparent;border:0;color:var(--dim);font-size:18px">😊</button>
+    <button id="chatSend" style="background:linear-gradient(135deg,var(--violet),var(--pink));border:0;color:#fff;border-radius:50%;width:42px;height:42px;font-size:16px">➤</button>
   </div>
 </section>
 
@@ -273,6 +283,7 @@
   <button data-s="home" class="on"><span class="ic">🏠</span>Home</button>
   <button data-s="reels"><span class="ic">🎬</span>Reels</button>
   <button data-s="create" class="create"><span class="ic">＋</span>Create</button>
+  <button data-s="dm"><span class="ic">💬</span>Inbox</button>
   <button data-s="alerts"><span class="ic">🔔</span>Alerts</button>
   <button data-s="system"><span class="ic">🧩</span>Seetal</button>
   <button data-s="profile"><span class="ic">🧑</span>Profile</button>
@@ -313,6 +324,7 @@ function go(s){
   document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x.dataset.s === s));
   if (s === "profile") paintProfile();
   if (s === "alerts") paintAlerts();
+  if (s === "dm") paintDm();
   if (s === "system") paintSystem();
 }
 
@@ -495,20 +507,31 @@ let msgs = LS.get("msgs", {
 });
 let openChat = null;
 
-$("openDm").onclick = () => { paintDm(); go("dm"); };
-$("dmBack").onclick = () => go("home");
-$("chatBack").onclick = () => { paintDm(); go("dm"); };
+if ($("openDm")) $("openDm").onclick = () => { paintDm(); go("dm"); };
+if ($("dmSearch")) $("dmSearch").oninput = () => paintDm();
+if ($("dmNew")) $("dmNew").onclick = () => toast("Naya chat — jald aayega");
+if ($("dmBack")) $("dmBack").onclick = () => go("home");
+if ($("chatBack")) $("chatBack").onclick = () => { paintDm(); go("dm"); };
 
 function paintDm(){
-  $("dmList").innerHTML = chats.map(c => `
-    <div class="pcard" data-c="${c.id}" style="display:flex;gap:11px;align-items:center;margin:10px 12px">
-      <div class="av">${c.av}</div>
-      <div style="flex:1;min-width:0">
-        <b style="font-size:13.5px">${esc(c.name)}</b>
-        <div class="note" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(c.last)}</div>
+  const q = ($("dmSearch") && $("dmSearch").value || "").toLowerCase().trim();
+  const list = chats.filter(c => !q || c.name.toLowerCase().includes(q) || (c.last || "").toLowerCase().includes(q));
+  $("dmList").innerHTML = list.map(c => `
+    <div data-c="${c.id}" style="display:flex;gap:12px;align-items:center;padding:11px 14px;cursor:pointer">
+      <div style="position:relative">
+        <div class="av" style="width:48px;height:48px;font-size:21px">${c.av}</div>
+        <span style="position:absolute;right:0;bottom:0;width:12px;height:12px;border-radius:50%;
+          background:${c.unread ? "var(--red)" : "var(--green)"};border:2px solid #0b111a"></span>
       </div>
-      <span class="note">${esc(c.t)}</span>
-    </div>`).join("") || `<p class="note" style="padding:16px">Koi chat nahi.</p>`;
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14.5px;font-weight:${c.unread ? "800" : "600"}">${esc(c.name)}</div>
+        <div class="note" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">${esc(c.last || "Naya chat")}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="note" style="font-size:11px">${esc(c.t || "")}</div>
+        ${c.unread ? `<div style="margin-top:6px;background:var(--violet);color:#fff;border-radius:10px;font-size:11px;padding:2px 7px;display:inline-block">${c.unread}</div>` : ""}
+      </div>
+    </div>`).join("") || `<p class="note" style="padding:20px 16px">Koi chat nahi mili.</p>`;
 
   $("dmList").querySelectorAll("[data-c]").forEach(el => el.onclick = () => openChatWith(el.dataset.c));
 }
@@ -516,6 +539,8 @@ function paintDm(){
 function openChatWith(id){
   openChat = id;
   const c = chats.find(x => x.id === id);
+  if (c){ c.unread = 0; LS.set("chats", chats); }
+  if ($("chatAv") && c) $("chatAv").textContent = c.av;
   $("chatTitle").textContent = c ? c.name : "Chat";
   paintChat();
   go("chat");
