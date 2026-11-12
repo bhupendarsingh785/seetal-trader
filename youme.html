@@ -4,7 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0b0f19" />
-<title>YouMe — prototype</title>
+<title>YouMe</title>
+<link rel="manifest" href="youme.webmanifest" />
+<meta name="theme-color" content="#070a10" />
+<link rel="icon" href="youme-icon-192.png" />
 <style>
   :root{
     --bg:#070a10; --card:#121a26; --card2:#182231; --line:#26324b;
@@ -145,18 +148,6 @@
   </div>
 </section>
 
-<!-- ================= SEETAL SYSTEM (hamara apna, andar hi) ================= -->
-<section class="screen" id="systemScreen">
-  <div class="topbar"><h1>Seetal system</h1></div>
-  <div class="scroll">
-    <div style="padding:12px" id="sysGrid"></div>
-    <div id="sysFrameBox" style="display:none;height:calc(100vh - 190px);padding:0 8px 8px">
-      <iframe id="sysFrame" style="width:100%;height:100%;border:0;border-radius:12px;background:#0b0f19"></iframe>
-      <button id="sysClose" style="width:100%;margin-top:8px;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:12px;font-family:inherit">Band karo</button>
-    </div>
-  </div>
-</section>
-
 <!-- ================= THREAD (X jaisa) ================= -->
 <section class="screen" id="threadScreen">
   <div class="topbar">
@@ -285,7 +276,6 @@
   <button data-s="create" class="create"><span class="ic">＋</span>Create</button>
   <button data-s="dm"><span class="ic">💬</span>Inbox</button>
   <button data-s="alerts"><span class="ic">🔔</span>Alerts</button>
-  <button data-s="system"><span class="ic">🧩</span>Seetal</button>
   <button data-s="profile"><span class="ic">🧑</span>Profile</button>
 </nav>
 
@@ -308,7 +298,6 @@ try{
 }catch(e){ window.YM_FACE.error = String(e && e.message || e); }
 </script>
 
-<script src="assets/apis.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const LS = {
@@ -325,7 +314,6 @@ function go(s){
   if (s === "profile") paintProfile();
   if (s === "alerts") paintAlerts();
   if (s === "dm") paintDm();
-  if (s === "system") paintSystem();
 }
 
 /* ---------- seed data ---------- */
@@ -905,40 +893,6 @@ $("threadSend").onclick = () => {
 
 
 /* ================= Seetal system andar (hamara hi system) ================= */
-const SYS_APPS = [
-  { n:"Trader",   i:"📈", d:"live market",        u:"index.html" },
-  { n:"Studio",   i:"🧑‍💻", d:"code · build",       u:"studio-v10.html" },
-  { n:"Builder",  i:"⚡", d:"bol ke banao",       u:"builder.html" },
-  { n:"Doctor",   i:"🩺", d:"jaanch · score",     u:"doctor.html" },
-  { n:"Hub",      i:"🧭", d:"ek darwaza",        u:"hub.html" },
-  { n:"Sync",     i:"🔄", d:"ek code",           u:"sync.html" },
-  { n:"Suno",     i:"🎙️", d:"awaaz",             u:"https://bhupendarsingh785.github.io/suno-assistant/" },
-  { n:"Seetal App", i:"🧩", d:"poora system",    u:"seetal-app.html" },
-];
-
-function paintSystem(){
-  const g = $("sysGrid");
-  if (!g) return;
-  g.innerHTML = SYS_APPS.map((a, i) => `
-    <div class="pcard" data-sys="${i}" style="display:flex;gap:11px;align-items:center;margin:0 0 10px">
-      <div class="av">${a.i}</div>
-      <div style="flex:1"><b style="font-size:14px">${a.n}</b><div class="note">${a.d}</div></div>
-      <span class="note">›</span>
-    </div>`).join("");
-  g.querySelectorAll("[data-sys]").forEach(el => el.onclick = () => {
-    const a = SYS_APPS[Number(el.dataset.sys)];
-    $("sysFrameBox").style.display = "block";
-    $("sysFrame").src = a.u;
-    $("sysGrid").style.display = "none";
-  });
-}
-
-if ($("sysClose")) $("sysClose").onclick = () => {
-  $("sysFrameBox").style.display = "none";
-  $("sysFrame").src = "about:blank";
-  $("sysGrid").style.display = "block";
-};
-
 /* DM jawab — apna free AI (apis.js) use karo, na mile to local */
 async function smartReply(text){
   try{
