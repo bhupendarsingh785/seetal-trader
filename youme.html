@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0b0f19" />
-<title>YouMe</title>
+<title>YouMe v12</title>
 <link rel="manifest" href="youme.webmanifest" />
 <meta name="theme-color" content="#070a10" />
 <link rel="icon" href="youme-icon-192.png" />
@@ -189,7 +189,7 @@
   <div style="position:absolute;top:0;left:0;right:0;display:flex;gap:5px;padding:10px;z-index:5" id="storyBars"></div>
   <div style="position:absolute;top:34px;left:14px;right:14px;display:flex;align-items:center;gap:9px;z-index:5">
     <div class="av" id="storyAv">🟢</div>
-    <b id="storyName" style="font-size:14px">Seetal</b>
+    <b id="storyName" style="font-size:14px">YouMe</b>
     <div class="spacer"></div>
     <button id="storyClose" style="background:transparent;border:0;color:#fff;font-size:20px">✕</button>
   </div>
@@ -318,13 +318,13 @@ function go(s){
 
 /* ---------- seed data ---------- */
 const SEED_POSTS = [
-  { u:"Seetal", a:"🟢", t:"2m", text:"Aaj ka system check: 76 tests pass, data 2 minute purana. Sab theek 👌", media:"", likes:12 },
+  { u:"YouMe", a:"🟡", t:"2m", text:"Naya reel upload hua — dekh lo 👀", media:"", likes:12 },
   { u:"Swag", a:"🧑", t:"18m", text:"Naya reel banaya — AI filter se. Dekho kaise lagta hai.", media:"🎬", likes:34 },
-  { u:"Seetal", a:"🟢", t:"1h", text:"PhonePe Appstore par app submit ho gayi. Ab review ka intezaar.", media:"", likes:58 },
+  { u:"Riya", a:"🌸", t:"1h", text:"Aaj ka best clip — share kar rahi hoon", media:"🎬", likes:58 },
 ];
 const SEED_STORIES = [
   { n:"Tum", a:"🧑", add:true },
-  { n:"Seetal", a:"🟢" }, { n:"Swag", a:"🧑" }, { n:"Trader", a:"📈" }, { n:"Suno", a:"🎙️" }
+  { n:"YouMe", a:"🟡" }, { n:"Swag", a:"🧑" }, { n:"Riya", a:"🌸" }, { n:"Aman", a:"🎧" }
 ];
 const SEED_REELS = [
   { a:"🎬", u:"@swag", cap:"AI filter — cyberpunk look", likes:120 },
@@ -433,7 +433,7 @@ function paintReels(){
 
 function paintAlerts(){
   const items = [
-    ["🔔","Seetal","System check: sab theek hai","2m"],
+    ["❤️","Riya","Tumhara reel pasand kiya","2m"],
     ["❤️","Swag","Tumhara post pasand kiya","18m"],
     ["👤","Naya follower","@trader ne follow kiya","1h"],
   ];
@@ -483,7 +483,7 @@ function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&"
 
 /* ================= DM sub-system ================= */
 const CHATS_SEED = [
-  { id:"seetal", name:"Seetal", av:"🟢", last:"System check ho gaya — sab theek", t:"2m" },
+  { id:"seetal", name:"YouMe AI", av:"🤖", last:"Poochho kuch bhi", t:"2m" },
   { id:"trader", name:"Trader Bot", av:"📈", last:"Nifty 24936.60 · WAIT", t:"18m" },
   { id:"suno", name:"Suno", av:"🎙️", last:"Bolo, sun rahi hoon", t:"1h" },
 ];
@@ -554,7 +554,7 @@ $("chatSend").onclick = () => {
   LS.set("msgs", msgs);
   paintChat();
 
-  // Seetal (asli AI) se jawab
+  // YouMe AI se jawab
   const who = openChat;
   msgs[who].push({ me:false, t:"…", ts:Date.now() });
   paintChat();
@@ -568,6 +568,31 @@ $("chatSend").onclick = () => {
   }).catch(() => { msgs[who].pop(); paintChat(); });
 };
 
+
+/* ---------- YouMe AI (apna, kisi doosre system se nahi) ---------- */
+async function youmeAsk(prompt){
+  const url = "https://text.pollinations.ai/" + encodeURIComponent(prompt) + "?model=openai";
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 25000);
+  try{
+    const r = await fetch(url, { signal: ctrl.signal });
+    if (!r.ok) throw new Error("http " + r.status);
+    const txt = await r.text();
+    return txt && txt.trim().length > 1 ? txt.trim() : "";
+  }catch(e){ return ""; }
+  finally{ clearTimeout(t); }
+}
+
+const YOUME_PROMPT = "Tum YouMe ho — ek dosti wali app. Hinglish (Roman Hindi) me 2-3 line ka pyaar bhara jawab do, aakhir me ek chhota sawal. Sach bolo.";
+
+async function smartReply(text){
+  try{
+    const a = await youmeAsk(YOUME_PROMPT + "\n\nSwag: " + text);
+    if (a && a.length > 1) return String(a).trim().slice(0, 400);
+  }catch(e){}
+  return autoReply(text);
+}
+
 function autoReply(t){
   const x = t.toLowerCase();
   if (/kaise|haal/.test(x)) return "Main theek hoon. Tum batao?";
@@ -579,7 +604,7 @@ function autoReply(t){
 
 /* ================= STORIES viewer ================= */
 const STORY_DATA = [
-  { n:"Seetal", a:"🟢", items:[ {c:"🟢", cap:"System check: sab theek"},{c:"📈", cap:"Nifty WAIT par"},{c:"✅", cap:"76 tests pass"} ] },
+  { n:"Riya", a:"🌸", items:[ {c:"🌸", cap:"Subah ki pehli clip"},{c:"🎬", cap:"Naya reel"},{c:"✨", cap:"Filtter try karo"} ] },
   { n:"Swag", a:"🧑", items:[ {c:"🎬", cap:"Naya reel banaya"},{c:"🌄", cap:"Subah ki thandi hawa"} ] },
   { n:"Suno", a:"🎙️", items:[ {c:"🎙️", cap:"Bolo, sun rahi hoon"} ] },
 ];
@@ -891,18 +916,6 @@ $("threadSend").onclick = () => {
   toast("Jawab juda");
 };
 
-
-/* ================= Seetal system andar (hamara hi system) ================= */
-/* DM jawab — apna free AI (apis.js) use karo, na mile to local */
-async function smartReply(text){
-  try{
-    if (window.SeetalAPIs && typeof window.SeetalAPIs.ask === "function"){
-      const a = await window.SeetalAPIs.ask("YouMe app ke andar dost ki tarah chhota Hinglish jawab do (2 line): " + text);
-      if (a) return a;
-    }
-  }catch(e){}
-  return autoReply(text);
-}
 
 /* ---------- start ---------- */
 paintStories(); paintFeed(); paintReels(); paintProfile();
