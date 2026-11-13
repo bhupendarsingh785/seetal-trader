@@ -89,3 +89,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - GitHub App support for Enterprise Copilot seat management
 
 **Sabak:** **Ponytail vs. a good AGENTS.md: What we found on our real codebase**   Suffix aur spec management codebase ka debugging, jo thi “pony tail” jaise simple hooks, usme globall authority likhne se slow down hua.Agents.md karza wala soch se narrow focused dependency graph ban jaata hai. Dekho, clean modularity se CI/CD pipeline ka runtime 25% tak ghat sakta h.  **Introducing OWE-Bench for Long-Horizon Engineering Projects**   Long‑horizon tasks (months‑deep pipelines) ke liye reliable benchmark set kara gaya. OWE‑Bench pe test karne se robust, repeatable results milti hain, jo time‑tracking aur te
+
+## 2026-11-13 — seekha (14 cheezein)
+
+- What an Iceberg Looks Like from Underneath
+- Kuai Kuai Culture
+- How to Build Reliable Agentic AI Systems for Vertical AI Companies
+- Superhuman Correction Has One Possible Structure. Alignment Targets Miss It
+- I Benchmarked CloudMounter Against Rclone on 6.5 GB of S3 Data
+- GitHub Availability October 2026
+- India's funding market runs on $3M cheques
+- Never Twice dont let the AI agent do mistake again
+- Archive: 2026 - GitHub Changelog
+- Manage AI Scan for repositories using the REST API
+- Actions for ARM32 Linux &#038; Windows retirement
+- Secret scanning detects Cloudflare service tokens
+- Public monitoring alerts now have direct links
+- Issue types and fields are available for personal accounts
+
+**Sabak:** **1. What an Iceberg Looks Like from Underneath**   - Scientists unveil fresh 3‑D scans that show iceberg bases spreading wider than we thought.   - Developers of climate models and ship‑navigation tools can tap this data to improve iceberg‑collision simulations.   - Anticipate that the invisible bulk below the surface will shift risk maps and forecasting curves.  **2. Kuai Kuai Culture**   - The new research spotlights how rapid‑growth (kuai‑kuai) startups blend speed and community‑centric values in China.   - For devs building product‑feedback loops, integrating quick iteration cycles with u
