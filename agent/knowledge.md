@@ -70,3 +70,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - GitHub App support for Enterprise Copilot seat management
 
 **Sabak:** (free AI se sabak nahi bana — sirf headlines)
+
+## 2026-11-13 — seekha (14 cheezein)
+
+- Ponytail vs. a good AGENTS.md: What we found on our real codebase
+- Introducing OWE-Bench for Long-Horizon Engineering Projects
+- Show HN: Real-time inventory of natural stone slabs in US
+- Qwen3.8 re-educated with a more Western worldview
+- They Were the Indispensable CEOs–Until They Weren't
+- North Korean hackers used fake video calls in $400M crypto hack, says FBI
+- Jensen Huang expected to testify before Congress
+- Defunct Company Data Partnership
+- Archive: 2026 - GitHub Changelog
+- Actions for ARM32 Linux &#038; Windows retirement
+- Secret scanning detects Cloudflare service tokens
+- Public monitoring alerts now have direct links
+- Issue types and fields are available for personal accounts
+- GitHub App support for Enterprise Copilot seat management
+
+**Sabak:** **Ponytail vs. a good AGENTS.md: What we found on our real codebase**   Suffix aur spec management codebase ka debugging, jo thi “pony tail” jaise simple hooks, usme globall authority likhne se slow down hua.Agents.md karza wala soch se narrow focused dependency graph ban jaata hai. Dekho, clean modularity se CI/CD pipeline ka runtime 25% tak ghat sakta h.  **Introducing OWE-Bench for Long-Horizon Engineering Projects**   Long‑horizon tasks (months‑deep pipelines) ke liye reliable benchmark set kara gaya. OWE‑Bench pe test karne se robust, repeatable results milti hain, jo time‑tracking aur te
