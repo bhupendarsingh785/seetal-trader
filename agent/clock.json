@@ -1,8 +1,8 @@
 {
   "first_seen": "2026-11-12T10:00:04Z",
-  "last_run": "2026-11-13T11:32:32Z",
+  "last_run": "2026-11-13T18:45:08Z",
   "last_seen_swag": null,
-  "runs": 5,
+  "runs": 6,
   "total_runtime_sec": 0,
   "gaps": [
     {
@@ -20,6 +20,10 @@
     {
       "from": "2026-11-13T03:35:25Z",
       "sec": 28627
+    },
+    {
+      "from": "2026-11-13T11:32:32Z",
+      "sec": 25956
     }
   ],
   "tasks": [
@@ -45,6 +49,11 @@
     },
     {
       "at": "2026-11-13T11:32:32Z",
+      "task": "run",
+      "note": null
+    },
+    {
+      "at": "2026-11-13T18:45:08Z",
       "task": "run",
       "note": null
     }
