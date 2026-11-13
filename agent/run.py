@@ -161,6 +161,21 @@ def run_jobs():
         lines.append("")
     return lines
 
+def brain_lines():
+    try:
+        import importlib.util, os as _os
+        p2 = _os.path.join(ROOT, "agent", "brain.py")
+        spec = importlib.util.spec_from_file_location("brain", p2)
+        m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+        tasks, why = m.decide()
+        m.record(tasks, why, [])
+        out = ["## Aaj ka faisla (OpenYug ne khud chuna)"]
+        out += [f"- {t}" for t in tasks]
+        out += ["", "_Wajah: " + "; ".join(why) + "_"]
+        return out
+    except Exception as e:
+        return ["(dimaag nahi chala: " + str(e)[:60] + ")"]
+
 def clock_line():
     try:
         import importlib.util, os as _os
@@ -192,7 +207,7 @@ def main():
         return
 
     orders = read_orders()
-    lines = [f"# OpenYug report — {NOW}", "", clock_line(), "", f"Orders mile: {len(orders)}", ""]
+    lines = [f"# OpenYug report — {NOW}", "", clock_line(), ""] + brain_lines() + ["", f"Orders mile: {len(orders)}", ""]
     if not orders:
         lines.append("Koi naya aadesh nahi. Bas routine check:")
         ok, out = job_sites()
