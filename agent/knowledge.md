@@ -108,3 +108,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Issue types and fields are available for personal accounts
 
 **Sabak:** **1. What an Iceberg Looks Like from Underneath**   - Scientists unveil fresh 3‑D scans that show iceberg bases spreading wider than we thought.   - Developers of climate models and ship‑navigation tools can tap this data to improve iceberg‑collision simulations.   - Anticipate that the invisible bulk below the surface will shift risk maps and forecasting curves.  **2. Kuai Kuai Culture**   - The new research spotlights how rapid‑growth (kuai‑kuai) startups blend speed and community‑centric values in China.   - For devs building product‑feedback loops, integrating quick iteration cycles with u
+
+## 2026-11-13 — seekha (14 cheezein)
+
+- Show HN: Harness Relay – the coding agents you have, working together
+- Show HN: Copper-KiCad – MCP to design PCBs in KiCad better and cheaper
+- I Can't Believe It Can Sort
+- Opinion: The Digital Fairness Act is a decade-long bill coming due
+- Corsair Made a See-Through Power Supply, and I Want One
+- Rainshare: Mutual aid for AI coding plans and usage limits
+- Nvidia Facing Securities Lawsuit over Stock Drop Linked to Jensen Huang Affair
+- Show HN: I have trained a model to predict my blood sugar
+- Archive: 2026 - GitHub Changelog
+- GitHub Enterprise Server support in the GitHub Copilot app
+- Gemini 4 Hydrogen in GitHub Copilot
+- Manage AI Scan for repositories using the REST API
+- Actions for ARM32 Linux &#038; Windows retirement
+- Secret scanning detects Cloudflare service tokens
+
+**Sabak:** (free AI se sabak nahi bana — sirf headlines)
