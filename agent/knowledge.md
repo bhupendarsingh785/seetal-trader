@@ -146,3 +146,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Actions for ARM32 Linux &#038; Windows retirement
 
 **Sabak:** (free AI se sabak nahi bana — sirf headlines)
+
+## 2026-11-14 — seekha (14 cheezein)
+
+- How to find meaning in large tech companies
+- An organ transplant controversy tests 'the dead donor rule'
+- Agile Manifesto for Agents
+- Breitling Navitimer
+- Air-Traffic Resilience Portfolio
+- Transitive Policies for Agents: Agent Permissions Don't Automatically Compose
+- Why platform teams fail (and AI makes it worse)
+- The Data Driven Illusion
+- Archive: 2026 - GitHub Changelog
+- Upcoming deprecation of selected GitHub Copilot models in December
+- GitHub Enterprise Server support in the GitHub Copilot app
+- Gemini 4 Hydrogen in GitHub Copilot
+- Manage AI Scan for repositories using the REST API
+- Actions for ARM32 Linux &#038; Windows retirement
+
+**Sabak:** 1. **How to find meaning in large tech companies**      *Naya idea*: Big firms ka culture + purpose ko align karne ke liye ek roadmap.      *Dev ke liye*: Leadership aur product teams ko ek shared vision set karna easy hota hai.      *Takeaway*: Jab "purpose" clear ho, bugs fix karne ka process bhi meaningful feel hota hai.    2. **An organ transplant controversy tests 'the dead donor rule'**      *Naya point*: Transplant ethics mein sangharsh + legal boundaries reconsider ho rahi hain.      *Dev ke liye*: Medical software mein consent, data privacy, aur regulatory compliance ko tighten karna 
