@@ -187,6 +187,45 @@ def clock_line():
     except Exception as e:
         return "⏱️ (ghadi nahi chali)"
 
+
+def _load(name):
+    import importlib.util
+    p = os.path.join(ROOT, "agent", name + ".py")
+    spec = importlib.util.spec_from_file_location(name, p)
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    return m
+
+
+def skill_note(task):
+    """Is kaam ke liye koi skill hai? Ho to uske steps report me dikhao."""
+    try:
+        sk = _load("skills")
+        name = sk.match(task)
+        if not name:
+            return ""
+        steps = sk.steps_of(name)
+        out = [f"  🧠 skill mili: **{name}**"]
+        out += [f"    {i}. {s}" for i, s in enumerate(steps, 1)]
+        return "\n".join(out)
+    except Exception:
+        return ""
+
+
+def self_improve_lines():
+    """Khud ke sujhav suggestions.md me likho (code nahi badalte — sirf sujhav)."""
+    try:
+        si = _load("self_improve")
+        ideas = si.scan()
+        if not ideas:
+            return []
+        si.write_suggestions(ideas)
+        out = ["", "## Khud ka sujhav (suggestions.md me — Swag PR merge kare)"]
+        out += [f"- {i}" for i in ideas[:5]]
+        out += ["", "_Code apne aap nahi badlega. Ye sujhav PR me jaate hain, merge Swag karega._"]
+        return out
+    except Exception as e:
+        return ["", f"(self-improve nahi chala: {str(e)[:60]})"]
+
 def main():
     os.makedirs(REPORTS, exist_ok=True)
     st = load_state()
@@ -225,12 +264,17 @@ def main():
                 break
         if not done:
             lines += [f"## {o}", "⏸️ Ye kaam mere paas taiyar handler nahi hai — Swag ke aadesh ka intezaar.", ""]
+        sn = skill_note(o)
+        if sn:
+            lines += [sn, ""]
 
     job_lines = run_jobs()
     if job_lines:
         lines += ["", "## Jobs (sub-agents)"] + job_lines
 
-    lines += ["---", "_OpenYug — bina key, sirf local kaam._"]
+    lines += self_improve_lines()
+
+    lines += ["---", "_OpenYug — bina key, sirf local kaam. Control Swag ke paas._"]
     name = os.path.join(REPORTS, f"{NOW.replace(':','').replace('-','')}.md")
     open(name, "w", encoding="utf-8").write("\n".join(lines))
     print("\n".join(lines))
