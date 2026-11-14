@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """
-OpenYug — seekhne wala hissa.
-1) web se naya kuch laata hai  2) free AI se short sabak banata hai
-3) knowledge me jodta hai  4) capability naapta hai
+OpenYug — seekhne wala hissa (v2).
+1) web se naya kuch laata hai  2) sirf NAYA rakhta hai (purana dobara nahi)
+3) free AI se short sabak banata hai  4) knowledge me jodta hai  5) capability naapta hai
 Bina API key chalta hai (free AI par, limit ke sath).
+
+Naya v2 me: dedup — jo headline pehle aa chuki wo dubara nahi likhta, aur
+kuch naya na mile to khali block nahi banata.
 """
-import json, os, re, urllib.request, urllib.parse, datetime, sys
+import json, os, re, urllib.request, urllib.parse, datetime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KNOW = os.path.join(ROOT, "agent", "knowledge.md")
@@ -17,13 +20,15 @@ SOURCES = [
     "https://github.blog/changelog/feed/",
 ]
 
+
 def fetch(url, timeout=20):
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "openyug-agent"})
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.read().decode("utf-8", "ignore")
-    except Exception as e:
+    except Exception:
         return ""
+
 
 def titles(xml, n=12):
     out = []
@@ -32,6 +37,7 @@ def titles(xml, n=12):
         if t and len(t) > 12 and "Hacker News" not in t and "GitHub" != t:
             out.append(t)
     return out[:n]
+
 
 def free_ai(prompt, timeout=30):
     url = "https://text.pollinations.ai/" + urllib.parse.quote(prompt) + "?model=openai"
@@ -42,14 +48,17 @@ def free_ai(prompt, timeout=30):
     except Exception:
         return ""
 
+
 def load_state():
     try:
         return json.load(open(STATE, encoding="utf-8"))
     except Exception:
         return {"paused": False, "learn_count": 0, "last_learn": None, "score": 0, "history": []}
 
+
 def save_state(st):
     json.dump(st, open(STATE, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+
 
 def main():
     st = load_state()
@@ -60,35 +69,54 @@ def main():
     got = []
     for s in SOURCES:
         got += titles(fetch(s), 8)
-    got = list(dict.fromkeys(got))[:14]
+    got = list(dict.fromkeys(got))
 
     if not got:
         print("Aaj kuch naya nahi mila (net issue).")
         return
 
+    # --- DEDUP: jo headline pehle aa chuki (state ya knowledge me) wo hata do ---
+    seen = set(st.get("seen", []))
+    if not seen:  # pehli baar: purani knowledge file se bhi seen bana lo
+        for line in open(KNOW, encoding="utf-8").read().splitlines() if os.path.exists(KNOW) else []:
+            s = line.strip()
+            if s.startswith("- "):
+                seen.add(s[2:].strip())
+    fresh = [g for g in got if g not in seen][:14]
+
+    if not fresh:
+        print("Sab headlines purani thi — kuch naya nahi jodna. (score same)")
+        st["last_learn"] = NOW
+        save_state(st)
+        return
+
     # free AI se chhota sabak (limit ho to chhod do)
     prompt = ("In headlines ko padho aur Hinglish me 3 line ka sabak do — "
-              "kya naya hai aur developer ke liye kya kaam ka hai:\n- " + "\n- ".join(got[:8]))
+              "kya naya hai aur developer ke liye kya kaam ka hai:\n- " + "\n- ".join(fresh[:8]))
     sabak = free_ai(prompt)
     if not sabak:
         sabak = "(free AI se sabak nahi bana — sirf headlines)"
 
-    block = [f"\n## {NOW[:10]} — seekha ({len(got)} cheezein)", ""]
-    block += [f"- {g}" for g in got]
+    block = [f"\n## {NOW[:10]} — seekha ({len(fresh)} NAYI cheezein)", ""]
+    block += [f"- {g}" for g in fresh]
     block += ["", "**Sabak:** " + sabak.replace("\n", " ")[:600], ""]
 
     with open(KNOW, "a", encoding="utf-8") as f:
         f.write("\n".join(block))
 
+    # seen update (aakhri 400 yaad rakho)
+    seen.update(fresh)
+    st["seen"] = list(seen)[-400:]
     st["learn_count"] = st.get("learn_count", 0) + 1
     st["last_learn"] = NOW
     st["score"] = min(100, st.get("score", 0) + 2)
-    st.setdefault("history", []).append({"at": NOW, "headlines": len(got), "sabak": bool(sabak)})
+    st.setdefault("history", []).append({"at": NOW, "headlines": len(fresh), "sabak": bool(sabak)})
     st["history"] = st["history"][-50:]
     save_state(st)
 
-    print(f"✅ {len(got)} headlines, sabak: {'haan' if sabak else 'nahi'}")
+    print(f"✅ {len(fresh)} NAYI headlines, sabak: {'haan' if sabak else 'nahi'}")
     print(f"Score: {st['score']}/100 · seekhne ki baar: {st['learn_count']}")
+
 
 if __name__ == "__main__":
     main()
