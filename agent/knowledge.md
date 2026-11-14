@@ -127,3 +127,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Secret scanning detects Cloudflare service tokens
 
 **Sabak:** (free AI se sabak nahi bana — sirf headlines)
+
+## 2026-11-14 — seekha (14 cheezein)
+
+- A rusty smudge: What will happen as the Titanic wreck disintegrates (2024)
+- Home Sales in October Plummet to 16-Year Low
+- Keeping video layers in place across aspect ratios
+- Elon should hire Jensen to run Terafab
+- What Are Metal Organic Frameworks (MOFs)?
+- Searching for exotic scalars at fusion reactors (2025)
+- Run Cloudflare Workers Anywhere
+- Dusk OS Sales Pitch
+- Archive: 2026 - GitHub Changelog
+- Upcoming deprecation of selected GitHub Copilot models in December
+- GitHub Enterprise Server support in the GitHub Copilot app
+- Gemini 4 Hydrogen in GitHub Copilot
+- Manage AI Scan for repositories using the REST API
+- Actions for ARM32 Linux &#038; Windows retirement
+
+**Sabak:** (free AI se sabak nahi bana — sirf headlines)
