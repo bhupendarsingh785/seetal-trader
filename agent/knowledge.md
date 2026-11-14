@@ -165,3 +165,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Actions for ARM32 Linux &#038; Windows retirement
 
 **Sabak:** 1. **How to find meaning in large tech companies**      *Naya idea*: Big firms ka culture + purpose ko align karne ke liye ek roadmap.      *Dev ke liye*: Leadership aur product teams ko ek shared vision set karna easy hota hai.      *Takeaway*: Jab "purpose" clear ho, bugs fix karne ka process bhi meaningful feel hota hai.    2. **An organ transplant controversy tests 'the dead donor rule'**      *Naya point*: Transplant ethics mein sangharsh + legal boundaries reconsider ho rahi hain.      *Dev ke liye*: Medical software mein consent, data privacy, aur regulatory compliance ko tighten karna 
+
+## 2026-11-14 — seekha (14 cheezein)
+
+- October Outage: Technical Overview
+- MergeAtlas: Turn PRs into a Map of Cards
+- My agent org speedran a company
+- Tuberculosis rapid test allows in-the-field results
+- Dartmouth (Guarini) will not admit math PhD cohort this year
+- Customer success job postings: adoption in 78%, churn in 14%
+- Proof of Corn (2026)
+- Lego ZX Spectrum
+- Archive: 2026 - GitHub Changelog
+- Upcoming deprecation of selected GitHub Copilot models in December
+- GitHub Enterprise Server support in the GitHub Copilot app
+- Gemini 4 Hydrogen in GitHub Copilot
+- Manage AI Scan for repositories using the REST API
+- Actions for ARM32 Linux &#038; Windows retirement
+
+**Sabak:** **1️⃣ October Outage** – Kya naya? Glitch se load balancer ke fail hone se *unplanned failover* sabse zyada dikhā dõ.   **Yeh developer ke liye kaam ka** – Ab fail‑fast + retry logic, circuit‑breaker patterns aur robust observability ka zikr aana chahiye.    **2️⃣ MergeAtlas + Rapid TB test** – Kya naya? Pull‑request history ko visual cards mein map karna aur field‑ready TB test se raw data ko instant reports me convert karna.   **Yeh developer ke liye kaam ka** – Apni UI teams ko guide karo ki kaise graph APIs, async streams aur offline‑first designs use karke data ko quickly visualise aur pu
