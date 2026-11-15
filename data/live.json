@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-11-14T22:41:27+00:00",
- "generated_epoch": 1794696087,
+ "generated_at": "2026-11-15T02:09:58+00:00",
+ "generated_epoch": 1794708598,
  "source": "multi-provider: Yahoo q1/q2, Moneycontrol, Stooq (+ purana cache)",
  "providers": {
   "yahoo-q1": {
@@ -123,7 +123,7 @@
     25144.3008
    ],
    "bars": 76,
-   "last_bar_age_sec": 132082,
+   "last_bar_age_sec": 144592,
    "market_time": 1794564080,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -194,7 +194,7 @@
     61034.1016
    ],
    "bars": 76,
-   "last_bar_age_sec": 132083,
+   "last_bar_age_sec": 144592,
    "market_time": 1794564076,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -265,7 +265,7 @@
     81592.4531
    ],
    "bars": 76,
-   "last_bar_age_sec": 132083,
+   "last_bar_age_sec": 144592,
    "market_time": 1794564151,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -336,7 +336,7 @@
     7561.6699
    ],
    "bars": 79,
-   "last_bar_age_sec": 92483,
+   "last_bar_age_sec": 104993,
    "market_time": 1794606199,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -407,7 +407,7 @@
     25136.2734
    ],
    "bars": 79,
-   "last_bar_age_sec": 92483,
+   "last_bar_age_sec": 104993,
    "market_time": 1794608159,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -478,7 +478,7 @@
     1339.7
    ],
    "bars": 74,
-   "last_bar_age_sec": 132384,
+   "last_bar_age_sec": 144893,
    "market_time": 1794563884,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -549,7 +549,7 @@
     804.0
    ],
    "bars": 74,
-   "last_bar_age_sec": 132384,
+   "last_bar_age_sec": 144894,
    "market_time": 1794563884,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -620,7 +620,7 @@
     2407.5
    ],
    "bars": 74,
-   "last_bar_age_sec": 132384,
+   "last_bar_age_sec": 144894,
    "market_time": 1794563889,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -691,7 +691,7 @@
     1080.0
    ],
    "bars": 74,
-   "last_bar_age_sec": 132384,
+   "last_bar_age_sec": 144894,
    "market_time": 1794563889,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -762,7 +762,7 @@
     1141.5
    ],
    "bars": 74,
-   "last_bar_age_sec": 132385,
+   "last_bar_age_sec": 144895,
    "market_time": 1794563892,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -833,7 +833,7 @@
     1583.6
    ],
    "bars": 73,
-   "last_bar_age_sec": 132385,
+   "last_bar_age_sec": 144895,
    "market_time": 1794563884,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -904,7 +904,7 @@
     1117.0
    ],
    "bars": 74,
-   "last_bar_age_sec": 132385,
+   "last_bar_age_sec": 144895,
    "market_time": 1794563884,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -975,7 +975,7 @@
     2688.0
    ],
    "bars": 73,
-   "last_bar_age_sec": 132385,
+   "last_bar_age_sec": 144896,
    "market_time": 1794563889,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1046,7 +1046,7 @@
     285.0
    ],
    "bars": 73,
-   "last_bar_age_sec": 132386,
+   "last_bar_age_sec": 144896,
    "market_time": 1794563885,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1117,7 +1117,7 @@
     356.27
    ],
    "bars": 79,
-   "last_bar_age_sec": 92486,
+   "last_bar_age_sec": 104996,
    "market_time": 1794603601,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1188,7 +1188,7 @@
     390.22
    ],
    "bars": 79,
-   "last_bar_age_sec": 92486,
+   "last_bar_age_sec": 104997,
    "market_time": 1794603600,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1259,7 +1259,7 @@
     162.85
    ],
    "bars": 79,
-   "last_bar_age_sec": 92486,
+   "last_bar_age_sec": 104997,
    "market_time": 1794603601,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1330,7 +1330,7 @@
     754.37
    ],
    "bars": 79,
-   "last_bar_age_sec": 92487,
+   "last_bar_age_sec": 104997,
    "market_time": 1794603600,
    "src": "yahoo-q1",
    "has_bars": true,
