@@ -222,3 +222,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Actions for ARM32 Linux &#038; Windows retirement
 
 **Sabak:** **Show HN: Kasa, simplest budgeting app you can find**   Kasa ek light‑weight budgeting tool hai jo ek single-page app ke saath ho karta hai—SQL database ya backend ki jalta‑jalta zaroorat nahin.   Developer ke liye: Bootstrap/React ke saath ek minimal CRUD app banana seekho, aur user authentikasyon aur GraphQL API integration ki practice karo.  **Open Source Motorcycle Infotainment**   Is project me ek complete aftermarket infotainment system open‑source kiya gaya hai, jisme GPS, music, phone integration sab shamil hai.   Developer ke liye: Embedded ARM architecture, real‑time OS integration,
+
+## 2026-11-15 — seekha (14 cheezein)
+
+- Show HN: PongArena – Play Pong and see how tiny neural networks think
+- The Oldest Text in the Training Data
+- Why Is China Shipping Jensen Huang? [video]
+- The Riven Graph
+- IPv6 delegation, an unusually subtle failure mode
+- "Robots can't press call buttons": Hyundai tests API for robots using elevators
+- Catch Go Bugs That Fuzzing Misses with Gemini and a Constraint Solver
+- NY AI Rules: Confidential Reports, Daily Fines, and a Kill Switch Wish List
+- Archive: 2026 - GitHub Changelog
+- Upcoming deprecation of selected GitHub Copilot models in December
+- GitHub Enterprise Server support in the GitHub Copilot app
+- Gemini 4 Hydrogen in GitHub Copilot
+- Manage AI Scan for repositories using the REST API
+- Actions for ARM32 Linux &#038; Windows retirement
+
+**Sabak:** **1. Show HN: PongArena – Play Pong and see how tiny neural networks think**   > Naya: Ek simple Pong game jo 10‑node neural nets se chalaya ja raha hai, taaki hum dekh saken ki chhote models ka learning style kaisa hota hai.   > Dev ke liye: Agar aap reinforcement learning ya edge AI pe kaam kar rahe hain, to ek tangible demo milega jisse model complexity ko kaise balance karna hai samajh mein aayega.   > Take‑away: Experiment karo — custom env change karo, reward tweaks karo, aur dekho kaunsa architecture sabse efficient rehta hai.  **2. The Oldest Text in the Training Data**   > Naya: Resea
