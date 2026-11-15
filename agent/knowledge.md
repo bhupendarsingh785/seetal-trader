@@ -203,3 +203,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Actions for ARM32 Linux &#038; Windows retirement
 
 **Sabak:** **1. Once considered macabre, the consumption of roadkill is having a culinary moment**   - *What's new*: Foods made from roadkill are trending on social media, being marketed as eco‑friendly alternatives.   - *Developer takeaway*: NLP tools can help identify and moderate meme‑based food content; image‑recognition APIs can flag potentially controversial content automatically.    **2. Show HN: Light Sleep – Relax and Sleep**   - *What's new*: A minimal web app that logs sleep patterns and offers guided relaxation audio.   - *Developer takeaway*: Building simple trackers can showcase event‑drive
+
+## 2026-11-15 — seekha (14 cheezein)
+
+- Show HN: Kasa, simplest budgeting app you can find
+- Open Source Motorcycle Infotainment
+- Most of AI moats are just fuel
+- Gitly: lightweight, self-hosted GitHub/GitLab alternative written in V
+- A Pile of MCP Connectors Is Not a Context Engine
+- Leo gets a birthday bash, 75 years after clocking in
+- Turn any image into emoji art, in the browser
+- Show HN: Vantage-V-AI – 2-bit ternary KV-cache with attention sinks
+- Archive: 2026 - GitHub Changelog
+- Upcoming deprecation of selected GitHub Copilot models in December
+- GitHub Enterprise Server support in the GitHub Copilot app
+- Gemini 4 Hydrogen in GitHub Copilot
+- Manage AI Scan for repositories using the REST API
+- Actions for ARM32 Linux &#038; Windows retirement
+
+**Sabak:** **Show HN: Kasa, simplest budgeting app you can find**   Kasa ek light‑weight budgeting tool hai jo ek single-page app ke saath ho karta hai—SQL database ya backend ki jalta‑jalta zaroorat nahin.   Developer ke liye: Bootstrap/React ke saath ek minimal CRUD app banana seekho, aur user authentikasyon aur GraphQL API integration ki practice karo.  **Open Source Motorcycle Infotainment**   Is project me ek complete aftermarket infotainment system open‑source kiya gaya hai, jisme GPS, music, phone integration sab shamil hai.   Developer ke liye: Embedded ARM architecture, real‑time OS integration,
