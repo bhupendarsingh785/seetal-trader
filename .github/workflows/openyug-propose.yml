@@ -1,0 +1,49 @@
+name: OpenYug — sujhav (PR)
+
+# OpenYug khud sochta hai "behtar kaise ho sakta hun" aur sujhav ek PR me bhejta hai.
+# ** Code apne aap main me kabhi nahi jaata — Swag PR 'merge' kare tabhi. Auto-merge nahi. **
+
+on:
+  schedule:
+    - cron: "37 6 * * *"   # roz ek baar
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  propose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Paused hai?
+        id: chk
+        run: |
+          P=$(python3 -c "import json;print(json.load(open('agent/state.json')).get('paused', False))")
+          echo "paused=$P" >> $GITHUB_OUTPUT
+
+      - name: Sujhav banao
+        if: steps.chk.outputs.paused == 'False'
+        run: python3 agent/self_improve.py
+
+      - name: PR kholo (agar kuch naya hai)
+        if: steps.chk.outputs.paused == 'False'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "koi naya sujhav nahi — PR nahi khulega"
+            exit 0
+          fi
+          BR="openyug/sujhav-$(date -u +%Y%m%d-%H%M%S)"
+          git config user.name "OpenYug"
+          git config user.email "openyug@seetal.local"
+          git checkout -b "$BR"
+          git add agent/suggestions.md
+          git commit -m "openyug: naye sujhav $(date -u +%FT%TZ)"
+          git push origin "$BR"
+          gh pr create --base main --head "$BR" \
+            --title "OpenYug ke naye sujhav (review-gate)" \
+            --body "OpenYug ne ye khud socha. Theek lage to **merge** karo — tabhi badlaav aayega. Pasand na ho to band kar do. Auto-merge kabhi nahi hota."
