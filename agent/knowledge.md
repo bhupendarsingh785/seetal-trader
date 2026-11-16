@@ -279,3 +279,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Actions for ARM32 Linux &#038; Windows retirement
 
 **Sabak:** (free AI se sabak nahi bana — sirf headlines)
+
+## 2026-11-16 — seekha (14 cheezein)
+
+- Breach of a 3rd-party JavaScript host impacting high value websites
+- Test Your App on an iPhone Duo
+- Day 70 of selling free software
+- OpenCode Browse
+- Connecting Stock Market to Labor Market During AI Boom
+- A Robot Just Built a Structure in Space All on Its Own – For the First Time
+- Tetsuya Chiba Has Died
+- Show HN: Emergency-AI – Offline knowledge base and AI chat (with no Internet)
+- Archive: 2026 - GitHub Changelog
+- GitHub Copilot models deprecated on November 16, 2026
+- Bulk start AI Scan for repositories
+- Take GitHub Mobile with you on iPhone Duo
+- Upcoming deprecation of selected GitHub Copilot models in December
+- GitHub Enterprise Server support in the GitHub Copilot app
+
+**Sabak:** **1. Breach of a 3rd-party JavaScript host impacting high‑value websites**   Yeh breach dikhata hai ki third‑party scripts hamesha risky ho sakte hain—agar ek hi provider mein break hota hai toh saare dependent sites khatre mein pad sakti hain. Devs ke liye alert: har 3rd‑party script ko audit karna aur use stick to intentional CORS/Reliable CDNs. Agar security abhi tak undetected rahe, slow‑data leak to disturb day‑to‑day traffic and SEO.    **2. Test Your App on an iPhone Duo**   Apple ne iPhone Duo launch kiya, jo ek dual‑screen device hai jisme screen split hoga—developers ko UI/UX rethink
