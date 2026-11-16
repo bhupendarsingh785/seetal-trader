@@ -260,3 +260,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Actions for ARM32 Linux &#038; Windows retirement
 
 **Sabak:** **1. Dawn of the Super Agent**   - Naya “Super Agent” concept jo ek AI ko alag alag tasks ke liye train karta hai – jaise ki ek multitasking superhero.   - Yeh ek single model se complex workflows automate karega, jise integration simpler hoti hai.   - **Developer ke liye kaam ka**: Middleware likhna, APIs ke through multiple agents ko orchestrate karna aur trust‑worthy retraining pipelines set‑up karna.    **2. Tor Project Issues Rapid‑Response DoS‑Defense Fix Amid Sustained DDoS Attack**   - Tor ne ek patch deploy kiya jo incoming traffic ko filter karke DoS se bachata hai.   - Attack ka sca
+
+## 2026-11-16 — seekha (14 cheezein)
+
+- Running untrusted CMS plugins in WebAssembly
+- Six hours and a stack of .md files
+- LinkedIn Pinpoint Answer Today
+- Why Every Startup Needs an Origin Myth
+- We found 1,698 Internet-visible AI offensive-security endpoints
+- Mitchell Hashimoto's TUI – public beta waitlist
+- David Sacks Is Fucked Too
+- It's always DNS, so why are we running our own?
+- Archive: 2026 - GitHub Changelog
+- Upcoming deprecation of selected GitHub Copilot models in December
+- GitHub Enterprise Server support in the GitHub Copilot app
+- Gemini 4 Hydrogen in GitHub Copilot
+- Manage AI Scan for repositories using the REST API
+- Actions for ARM32 Linux &#038; Windows retirement
+
+**Sabak:** (free AI se sabak nahi bana — sirf headlines)
