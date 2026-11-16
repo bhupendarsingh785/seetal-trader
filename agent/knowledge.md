@@ -241,3 +241,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Actions for ARM32 Linux &#038; Windows retirement
 
 **Sabak:** **1. Show HN: PongArena – Play Pong and see how tiny neural networks think**   > Naya: Ek simple Pong game jo 10‑node neural nets se chalaya ja raha hai, taaki hum dekh saken ki chhote models ka learning style kaisa hota hai.   > Dev ke liye: Agar aap reinforcement learning ya edge AI pe kaam kar rahe hain, to ek tangible demo milega jisse model complexity ko kaise balance karna hai samajh mein aayega.   > Take‑away: Experiment karo — custom env change karo, reward tweaks karo, aur dekho kaunsa architecture sabse efficient rehta hai.  **2. The Oldest Text in the Training Data**   > Naya: Resea
+
+## 2026-11-16 — seekha (14 cheezein)
+
+- Dawn of the Super Agent
+- Tor Project Issues Rapid-Response DoS-Defense Fix Amid Sustained DDoS Attack
+- Making Websites in 2026
+- Perplexity partners with Nvidia to launch Portable Computer
+- CrowdGPT – AI Owned by Everyone
+- Itzma, an embedded vector database backed by object storage
+- Microsoft 365 outage leads to chlorine gas poisoning of 15 hotel guests
+- Skydio's asymmetrical F10 Lightrunner solves a problem with fixed-wing drones
+- Archive: 2026 - GitHub Changelog
+- Upcoming deprecation of selected GitHub Copilot models in December
+- GitHub Enterprise Server support in the GitHub Copilot app
+- Gemini 4 Hydrogen in GitHub Copilot
+- Manage AI Scan for repositories using the REST API
+- Actions for ARM32 Linux &#038; Windows retirement
+
+**Sabak:** **1. Dawn of the Super Agent**   - Naya “Super Agent” concept jo ek AI ko alag alag tasks ke liye train karta hai – jaise ki ek multitasking superhero.   - Yeh ek single model se complex workflows automate karega, jise integration simpler hoti hai.   - **Developer ke liye kaam ka**: Middleware likhna, APIs ke through multiple agents ko orchestrate karna aur trust‑worthy retraining pipelines set‑up karna.    **2. Tor Project Issues Rapid‑Response DoS‑Defense Fix Amid Sustained DDoS Attack**   - Tor ne ek patch deploy kiya jo incoming traffic ko filter karke DoS se bachata hai.   - Attack ka sca
