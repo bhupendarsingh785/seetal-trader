@@ -298,3 +298,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - GitHub Enterprise Server support in the GitHub Copilot app
 
 **Sabak:** **1. Breach of a 3rd-party JavaScript host impacting high‑value websites**   Yeh breach dikhata hai ki third‑party scripts hamesha risky ho sakte hain—agar ek hi provider mein break hota hai toh saare dependent sites khatre mein pad sakti hain. Devs ke liye alert: har 3rd‑party script ko audit karna aur use stick to intentional CORS/Reliable CDNs. Agar security abhi tak undetected rahe, slow‑data leak to disturb day‑to‑day traffic and SEO.    **2. Test Your App on an iPhone Duo**   Apple ne iPhone Duo launch kiya, jo ek dual‑screen device hai jisme screen split hoga—developers ko UI/UX rethink
+
+## 2026-11-17 — seekha (14 cheezein)
+
+- Deep Personalization: Unlocking Personalized Proactive Agents with Local Compute
+- Microsoft Post-Incident Report Is Up for the Exchange Online Outage
+- Gone Fishin': The Answer to JensenGate Is the Pond Principle
+- Robot Learning
+- GitHub Copilot models deprecated on November 16, 2026
+- I Rebuilt Google Drive on GitHub
+- Show HN: MillionShort – A search engine you can remove 1M sites
+- I Love "Elizabeth Holmes"
+- Archive: 2026 - GitHub Changelog
+- Dependabot alert dismissal requests now last one year
+- GitHub Copilot weekly releases — November 9
+- Budget limit increased to 40,000 budgets per account
+- Control where GitHub Copilot customizations come from
+- VS Code retires the Local harness in February 2027
+
+**Sabak:** **1. Deep Personalization: Unlocking Personalized Proactive Agents with Local Compute**   - Loka compute ka use karke agents ko real‑time mein user ke context pe tune karo, latency ko zero karo.   - Personalized responses ab sirf cloud mein hi nahin, device pe ache se chalegi, data privacy ka question bhi sambhal gaya.   - Developers ko ye feature sabse pehle mobile aur IoT apps mein test karna chahiye, jahaan edge computing pe reliance highest hai.    **2. Microsoft Post‑Incident Report Is Up for the Exchange Online Outage**   - Microsoft ne sab breakdown steps share kiye, jo future outages k
