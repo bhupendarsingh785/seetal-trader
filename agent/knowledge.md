@@ -317,3 +317,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - VS Code retires the Local harness in February 2027
 
 **Sabak:** **1. Deep Personalization: Unlocking Personalized Proactive Agents with Local Compute**   - Loka compute ka use karke agents ko real‑time mein user ke context pe tune karo, latency ko zero karo.   - Personalized responses ab sirf cloud mein hi nahin, device pe ache se chalegi, data privacy ka question bhi sambhal gaya.   - Developers ko ye feature sabse pehle mobile aur IoT apps mein test karna chahiye, jahaan edge computing pe reliance highest hai.    **2. Microsoft Post‑Incident Report Is Up for the Exchange Online Outage**   - Microsoft ne sab breakdown steps share kiye, jo future outages k
+
+## 2026-11-17 — seekha (14 cheezein)
+
+- Show HN: SigMap, an AR Wi-Fi Heatmap for iPhone
+- Nvidia Recommits to FP64 with a New GPU, the Rubin HPC
+- Grok Bot took unapproved actions, ignored orders to stop, and then denied it
+- Tropical Rainforests Species may be surprisingly young
+- Nvidia and Lambda disclose first production co-packaged optics cluster
+- In Praise of Bureaucracy
+- What happens if we build it and nobody dies?
+- Where to spend search compute: depth, stages, or width in reranked retrieval [pdf]
+- Archive: 2026 - GitHub Changelog
+- Dependabot alert dismissal requests now last one year
+- GitHub Copilot weekly releases — November 9
+- Budget limit increased to 40,000 budgets per account
+- GitHub Copilot models deprecated on November 16, 2026
+- Control where GitHub Copilot customizations come from
+
+**Sabak:** **1. Show HN: SigMap, an AR Wi‑Fi Heatmap for iPhone**   > *Naya:* SigMap ek AR interface banata hai jo aapko live Wi‑Fi coverage dikhata hai, sirf iPhone se.   > *Developer ke liye:* Agar aap app dev ya IoT par kaam kar rahe hain, to ye ek powerful visual debugging aur user‑friendly network tuning ka mauka de sakta hai—ARKit + CoreLocation ke combo ko apne projects me integrate karne ka time aa gaya hai.    **2. Nvidia Recommits to FP64 with a New GPU, the Rubin HPC**   > *Naya:* Nvidia ab bhi FP64 ko support kar raha hai, aur Rubin HPC ek high‑performance compute GPU release kar raha hai.   
