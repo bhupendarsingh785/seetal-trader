@@ -367,3 +367,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - MAI Code 2 and MAI Code 2 Flash in GitHub Copilot
 
 **Sabak:** (free AI se sabak nahi bana — sirf headlines)
+
+## 2026-11-18 — seekha (14 cheezein)
+
+- RIP Ken St. Andre (1947–2026)
+- DaisyRose-27B: 1,200-task RL took Qwen3.8 from 5.6% to 12% on Terminal-Bench 4.1
+- Sellas marks 9-month survival benefit in late-stage leukemia vaccine study
+- GitHub Redesign (2019)
+- Fed Chair: Inflation is "headed in the wrong direction, and it's spreading out"
+- C64 Basic Dungeon Crawler: Fog of War and the Need for Speed (Part 13)
+- Eclipse Foundation (Adoptium Temurin) Omitted from OpenJDK Vulnerability Group
+- TCBP-JOBS: GPU-Accelerated Quantum Error Correction
+- Archive: 2026 - GitHub Changelog
+- Security risk assessments run automatically on GitHub Team
+- Customize GitHub Copilot for your team
+- OpenAI&#8217;s GPT-6.2 Astra and GPT-6.2 Sol now available
+- GitHub Copilot Fusion updates: more availability, benchmarks, and models
+- GitHub Copilot app, Microsoft Ignite releases
+
+**Sabak:** **RIP Ken St. Andre (1947–2026)**   1. Misaal: “Kahin bhi chhota hero hota hai, aap jhoomte hain, lekin uski khamiyaan sochne ka lihaaz bhi zaroori hai.”   2. Naya jaankari: Unke life se milti hai ek sikh – tezi aur talent bhara life sikhe, par talent ke saath thoda humility aur self‑reflection zaroor rakhiye.   3. Developer ke liye kaam ka: Code likhne ke dauran “breakfast of champions” – jaisa `try‑catch‑finally` – ka ek hisaab rakho; jab koi bug slip kare, usse introspect karke decide karo ke kam ho ya improvement.  ---  **DaisyRose‑27B: 1,200‑task RL took Qwen3.8 from 5.6 % to 12 % on Term
