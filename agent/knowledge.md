@@ -348,3 +348,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - GitHub Copilot in JetBrains, Ignite releases
 
 **Sabak:** **Hinglish Lessons (3 lines each):**  1. **Archive: 2026 - GitHub Changelog**      *Naya kaun se feature?* Changelog `2026` mein GitHub ne saare bugs fix kiye aur naye *Self‑Learning Workflow* ko launch kiya. *Developer kaman?* Pathla `git rebase -i` se clean history aur `git cherry-pick --crash` se testing streamline karo.  2. **OpenAI’s GPT‑6.2 Astra & GPT‑6.2 Sol**      *Naya product?* GPT‑6.2 Astra “knowledge‑dense” aur Sol “code‑dense” modes mein anlo. *Kaam ka?* Jitne bhi aapke Python scripts or TypeScript shortcuts ho, both models 15% fast aur 20% accurate hain; instantiate with `GPT6_2
+
+## 2026-11-18 — seekha (14 cheezein)
+
+- Nvidia says its open source AI strategy remains intact after Jensen Huang's exit
+- Show HN: Prototype of a product management tool for AI agent companies
+- Deutsche Bank hired a Qatari royal. Why?
+- Show HN: Neopane. Run Neovim once, show its windows in your multiplexer's panes
+- IRA Velinsky, industrial designer for Commodore and Atari
+- Voyager 1 hits one light day from Earth
+- Welcome to the Era of Second-Screen Reading
+- Underrated HTML Attributes Worth Using
+- Archive: 2026 - GitHub Changelog
+- OpenAI&#8217;s GPT-6.2 Astra and GPT-6.2 Sol now available
+- GitHub Copilot Fusion updates: more availability, benchmarks, and models
+- GitHub Copilot app, Microsoft Ignite releases
+- Copilot code review: Adaptive effort, secret detection, and more
+- MAI Code 2 and MAI Code 2 Flash in GitHub Copilot
+
+**Sabak:** (free AI se sabak nahi bana — sirf headlines)
