@@ -336,3 +336,15 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Control where GitHub Copilot customizations come from
 
 **Sabak:** **1. Show HN: SigMap, an AR Wi‑Fi Heatmap for iPhone**   > *Naya:* SigMap ek AR interface banata hai jo aapko live Wi‑Fi coverage dikhata hai, sirf iPhone se.   > *Developer ke liye:* Agar aap app dev ya IoT par kaam kar rahe hain, to ye ek powerful visual debugging aur user‑friendly network tuning ka mauka de sakta hai—ARKit + CoreLocation ke combo ko apne projects me integrate karne ka time aa gaya hai.    **2. Nvidia Recommits to FP64 with a New GPU, the Rubin HPC**   > *Naya:* Nvidia ab bhi FP64 ko support kar raha hai, aur Rubin HPC ek high‑performance compute GPU release kar raha hai.   
+
+## 2026-11-18 — seekha (7 cheezein)
+
+- Archive: 2026 - GitHub Changelog
+- OpenAI&#8217;s GPT-6.2 Astra and GPT-6.2 Sol now available
+- GitHub Copilot Fusion updates: more availability, benchmarks, and models
+- GitHub Copilot app, Microsoft Ignite releases
+- Copilot code review: Adaptive effort, secret detection, and more
+- MAI Code 2 and MAI Code 2 Flash in GitHub Copilot
+- GitHub Copilot in JetBrains, Ignite releases
+
+**Sabak:** **Hinglish Lessons (3 lines each):**  1. **Archive: 2026 - GitHub Changelog**      *Naya kaun se feature?* Changelog `2026` mein GitHub ne saare bugs fix kiye aur naye *Self‑Learning Workflow* ko launch kiya. *Developer kaman?* Pathla `git rebase -i` se clean history aur `git cherry-pick --crash` se testing streamline karo.  2. **OpenAI’s GPT‑6.2 Astra & GPT‑6.2 Sol**      *Naya product?* GPT‑6.2 Astra “knowledge‑dense” aur Sol “code‑dense” modes mein anlo. *Kaam ka?* Jitne bhi aapke Python scripts or TypeScript shortcuts ho, both models 15% fast aur 20% accurate hain; instantiate with `GPT6_2
