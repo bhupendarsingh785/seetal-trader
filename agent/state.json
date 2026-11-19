@@ -1,8 +1,8 @@
 {
   "paused": false,
-  "learn_count": 22,
-  "last_learn": "2026-11-19T02:08:59Z",
-  "score": 66,
+  "learn_count": 23,
+  "last_learn": "2026-11-19T10:57:33Z",
+  "score": 68,
   "history": [
     {
       "at": "2026-11-11T21:40:21Z",
@@ -111,6 +111,11 @@
     },
     {
       "at": "2026-11-19T02:08:59Z",
+      "headlines": 14,
+      "sabak": true
+    },
+    {
+      "at": "2026-11-19T10:57:33Z",
       "headlines": 14,
       "sabak": true
     }

@@ -405,3 +405,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Customize GitHub Copilot for your team
 
 **Sabak:** **Why Google Antigravity eats weekly quota fast and what I measured**   1. Google ka Antigravity feature infra ke horizontal scaling ko aise handle karta hai ki yeh har week high traffic ko “gravity” ki tarah absorb karta.   2. Maine dekhya ki yeh GPU time aur memory bandwidth ko kaafi high level pe consume kar raha hai, jiski wajah se per‑request cost 5-7× badh jati hai.   3. Devs ko apne observability stack (Prometheus + Grafana) me custom metrics set karni chahiye to track “gravity churn” and set alerts early.  **What football will look like in the future**   1. AI‑powered analytics, automa
+
+## 2026-11-19 — seekha (14 cheezein)
+
+- Cloudflare releases weights of Clairic, its AI that reads invoices and receipts
+- A football API that publishes its own log loss, misses included
+- I Hated Running a VPN on Android, So I Built My Own Zero Trust Infra Instead
+- DeepSeek Limits Free Service Usage via Chat
+- Ubuntu 26.10 Stonking Stingray
+- AI Questions (Benedict Evans' Bi-Annual, Nov 2026) [pdf]
+- Show HN: RISC-V emulator booting 256-hart SMP Linux/uClibc/BusyBox on RTX3060
+- Sounds of the Adriatic – a sound map of the Croatian coast
+- Archive: 2026 - GitHub Changelog
+- S3 audit log streaming with OpenID Connect expands to GHE.com
+- Wait for pull request events with GitHub CLI
+- Connect Supabase, Box, Calendly, and more to Copilot
+- Gemini 4 Neon in GitHub Copilot
+- Security risk assessments run automatically on GitHub Team
+
+**Sabak:** 1️⃣ **Cloudflare’s Clairic** – Invoice‑reading AI ready for mass deployment. *Developer tip*: grab the weight files, hook them into your billing micro‑service, and test multilingual receipts; remember to keep the model updated with new formats.  2️⃣ **Football API with log‑loss reporting** – Now it even flags missed goals. *Developer angle*: use the loss metric to refine your match‑prediction models or train a custom event‑detection layer that learns from real errors.  3️⃣ **Zero‑trust infra on Android (no VPN)** – DIY secure network stack built on a custom kernel patch. *Dev takeaway*: study 
