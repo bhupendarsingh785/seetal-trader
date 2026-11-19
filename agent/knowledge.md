@@ -386,3 +386,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - GitHub Copilot app, Microsoft Ignite releases
 
 **Sabak:** **RIP Ken St. Andre (1947–2026)**   1. Misaal: “Kahin bhi chhota hero hota hai, aap jhoomte hain, lekin uski khamiyaan sochne ka lihaaz bhi zaroori hai.”   2. Naya jaankari: Unke life se milti hai ek sikh – tezi aur talent bhara life sikhe, par talent ke saath thoda humility aur self‑reflection zaroor rakhiye.   3. Developer ke liye kaam ka: Code likhne ke dauran “breakfast of champions” – jaisa `try‑catch‑finally` – ka ek hisaab rakho; jab koi bug slip kare, usse introspect karke decide karo ke kam ho ya improvement.  ---  **DaisyRose‑27B: 1,200‑task RL took Qwen3.8 from 5.6 % to 12 % on Term
+
+## 2026-11-19 — seekha (14 cheezein)
+
+- Why Google Antigravity eats weekly quota fast and what I measured
+- What football will look like in the future
+- Sources say FAA had little oversight of work that led to nationwide ground stop
+- Hacker to Hire
+- AI Will Not Make You Rich (2025)
+- Microsoft kills To Do. It paid up 200M for Wunderlist, later killed it
+- The Invisible Shape
+- Incidents in the News
+- Archive: 2026 - GitHub Changelog
+- Wait for pull request events with GitHub CLI
+- Connect Supabase, Box, Calendly, and more to Copilot
+- Gemini 4 Neon in GitHub Copilot
+- Security risk assessments run automatically on GitHub Team
+- Customize GitHub Copilot for your team
+
+**Sabak:** **Why Google Antigravity eats weekly quota fast and what I measured**   1. Google ka Antigravity feature infra ke horizontal scaling ko aise handle karta hai ki yeh har week high traffic ko “gravity” ki tarah absorb karta.   2. Maine dekhya ki yeh GPU time aur memory bandwidth ko kaafi high level pe consume kar raha hai, jiski wajah se per‑request cost 5-7× badh jati hai.   3. Devs ko apne observability stack (Prometheus + Grafana) me custom metrics set karni chahiye to track “gravity churn” and set alerts early.  **What football will look like in the future**   1. AI‑powered analytics, automa
