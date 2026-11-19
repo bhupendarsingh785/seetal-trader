@@ -424,3 +424,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Security risk assessments run automatically on GitHub Team
 
 **Sabak:** 1️⃣ **Cloudflare’s Clairic** – Invoice‑reading AI ready for mass deployment. *Developer tip*: grab the weight files, hook them into your billing micro‑service, and test multilingual receipts; remember to keep the model updated with new formats.  2️⃣ **Football API with log‑loss reporting** – Now it even flags missed goals. *Developer angle*: use the loss metric to refine your match‑prediction models or train a custom event‑detection layer that learns from real errors.  3️⃣ **Zero‑trust infra on Android (no VPN)** – DIY secure network stack built on a custom kernel patch. *Dev takeaway*: study 
+
+## 2026-11-19 — seekha (14 cheezein)
+
+- Visualizing a Ledger with Pgledger-UI
+- BetterOffice: Open-source office suite, native OOXML engines in Rust
+- The Cost of Native Calls in GraalVM's SQLite Runtime
+- Ask HN: Safety Bully Anthropic right steward of our enterprise AI
+- AI Memorized the Internet. That's Not Intelligence. – Yann LeCun [video]
+- Agent orchestration patterns backed by research
+- I benchmarked 22 local LLMs looking for the Qwen 3.8 35B we didn't get
+- Where hurricanes get their spin: Angular momentum versus kinetic energy
+- Archive: 2026 - GitHub Changelog
+- Enterprise Live Migrations from Azure DevOps generally available
+- Red Hat Enterprise Linux runner images now generally available
+- S3 audit log streaming with OpenID Connect expands to GHE.com
+- Wait for pull request events with GitHub CLI
+- Connect Supabase, Box, Calendly, and more to Copilot
+
+**Sabak:** **Visualizing a Ledger with Pgledger‑UI**   - नया फ़ीचर: आपके PostgreSQL‑आधारित लेखांकन डेटाबेस के लिए तेज़, इंटरैक्टिव दृश्य।   - डेवलपर काबिलियत: PostgreSQL, React/TS की समझ + UI/UX कौशल।   - काम का असर: रिपोर्टिंग टूल्स की ज़रूरत वाले SaaS और फिन‑टेक स्टार्टअप्स में क्लाइंट फ़ीडबैक तुरंत सुधारता है।    **BetterOffice: Open‑source office suite, native OOXML engines in Rust**   - नवाचार: 100 % Rust-आधारित OOXML इंजन, बाइट‑साइज कम, सुरक्षा और गति पर फोकस।   - डेवलपर काम: Rust, Wasm, CLI‑इंटीग्रेशन — यह उन टीमों के लिए है जो ऑफ़िस प्रोडक्ट्स को कस्टमाइज़ कर रही हैं।   - असर: प्रक्रिया स्वचालन, ड
