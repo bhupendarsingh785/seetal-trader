@@ -481,3 +481,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Wait for pull request events with GitHub CLI
 
 **Sabak:** **1. Spy court:**   - UK court ne confirm kiya ke unhone Apple ke liye backdoor banwa di thi.   - Software developers ko dhyaan rakhna chahiye ki security features kab bhi legal pressure ke liye khod ja sakte hain.   - Jab bhi security bugs fix kar rahe ho, ensure karo ke wo external exploitation se bacha rahe, otherwise compliance issues badh sakte hain.    **2. November 2026 Top500 New Systems:**   - 2026 mein Top500 list mein niche ke naye supercomputers ka count kam raha.   - Developers jinka focus data‑parallel workloads par hai, unhe ye realize karna hoga ki newer, cheaper GPUs se zyada 
+
+## 2026-11-20 — seekha (14 cheezein)
+
+- Who gambles in the stock market? (2009)
+- Kernarium: Run real Linux kernel natively on iOS
+- Show HN: Name Sayer – authoritative DNS with support to blocklist
+- Woman entered hibernation-like state during winter for more than 30 years
+- Q4 2026 AI Patterns
+- Trump says he still has confidence in Lutnick
+- Minerva Archive (382 TB)
+- Imps in a Jar
+- Archive: 2026 - GitHub Changelog
+- Pin your favorite repositories to your dashboard
+- GitHub Desktop now supports multiple accounts per host
+- Improvements on the pull request overview in public preview
+- Enterprise Live Migrations from Azure DevOps generally available
+- Red Hat Enterprise Linux runner images now generally available
+
+**Sabak:** **Headline‑ka 3‑line sabak (developer‑friendly kaun)**    1. **"Who gambles in the stock market?" (2009)** – Notebook par humne pehle dekha jab investors *risk prediction* ko ek game samajhte the. **Developer takeaway:** *AI‑driven sentiment analysis* aur *predictive modelling* ab finance apps mein kaafi demand mein—the stack ke liye ‘TensorFlow + NLTK’ build kar ke dekho!    2. **"Kernarium: Run real Linux kernel natively on iOS"** – Apple ki sandbox ko todte hue kaunsa kernel? Yeh open‑source project iOS 17+ pe pure Linux kernel run karne ka promise deta hai. **Developer future:** Porting le
