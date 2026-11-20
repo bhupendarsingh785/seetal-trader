@@ -443,3 +443,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Connect Supabase, Box, Calendly, and more to Copilot
 
 **Sabak:** **Visualizing a Ledger with Pgledger‑UI**   - नया फ़ीचर: आपके PostgreSQL‑आधारित लेखांकन डेटाबेस के लिए तेज़, इंटरैक्टिव दृश्य।   - डेवलपर काबिलियत: PostgreSQL, React/TS की समझ + UI/UX कौशल।   - काम का असर: रिपोर्टिंग टूल्स की ज़रूरत वाले SaaS और फिन‑टेक स्टार्टअप्स में क्लाइंट फ़ीडबैक तुरंत सुधारता है।    **BetterOffice: Open‑source office suite, native OOXML engines in Rust**   - नवाचार: 100 % Rust-आधारित OOXML इंजन, बाइट‑साइज कम, सुरक्षा और गति पर फोकस।   - डेवलपर काम: Rust, Wasm, CLI‑इंटीग्रेशन — यह उन टीमों के लिए है जो ऑफ़िस प्रोडक्ट्स को कस्टमाइज़ कर रही हैं।   - असर: प्रक्रिया स्वचालन, ड
+
+## 2026-11-20 — seekha (14 cheezein)
+
+- Show HN: SSH OS – an SSH-only operating system for the 1987 Macintosh SE
+- Computer Networks from Scratch
+- Thousands of UK fridges secured in secret nationwide operation
+- 'Companies don't care about you' is a parse error
+- Top White House Cybersecurity Official Steps Down
+- Serial: The Port That Won't Die
+- WebTape – Record browser demos to GIF/MP4 from a plain-text script
+- Show HN: Tyche, An intelligent interface that clicks, books, and shops on iPhone
+- Archive: 2026 - GitHub Changelog
+- Improvements on the pull request overview in public preview
+- Enterprise Live Migrations from Azure DevOps generally available
+- Red Hat Enterprise Linux runner images now generally available
+- S3 audit log streaming with OpenID Connect expands to GHE.com
+- Wait for pull request events with GitHub CLI
+
+**Sabak:** **Show HN: SSH OS – an SSH‑only operating system for the 1987 Macintosh SE**   - *Kya naya:* 80‑s ke Mac pe modern SSH server rakha, out‑of‑the‑box remote control ka mauka.   - *Kya kaam ka:* Legacy hardware ke security patching aur remote management ke liye perfect starter kit—ab old devices ko bhi network‑ready bana sakte ho.    **Computer Networks from Scratch**   - *Kya naya:* Naufash bhari bazeng “scratch se network” guide 6‑weeks ka modular course, zero networking knowledge se shuru.   - *Kya kaam ka:* Tight onboarding tool; team ke andar se network expert banao aur boilerplate troublesh
