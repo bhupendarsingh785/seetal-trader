@@ -462,3 +462,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Wait for pull request events with GitHub CLI
 
 **Sabak:** **Show HN: SSH OS – an SSH‑only operating system for the 1987 Macintosh SE**   - *Kya naya:* 80‑s ke Mac pe modern SSH server rakha, out‑of‑the‑box remote control ka mauka.   - *Kya kaam ka:* Legacy hardware ke security patching aur remote management ke liye perfect starter kit—ab old devices ko bhi network‑ready bana sakte ho.    **Computer Networks from Scratch**   - *Kya naya:* Naufash bhari bazeng “scratch se network” guide 6‑weeks ka modular course, zero networking knowledge se shuru.   - *Kya kaam ka:* Tight onboarding tool; team ke andar se network expert banao aur boilerplate troublesh
+
+## 2026-11-20 — seekha (14 cheezein)
+
+- Spy court: U.K. must admit it ordered an Apple backdoor
+- November 2026 Top500 New Systems Are Few and Far Between – ServeTheHome
+- Thoughts from Before and After AI
+- The Myth of the "One Shot"
+- Codeberg.org domain unavailable – investigation and post-mortem
+- Greece's PM Mitsotakis and Greek AI Founders [video]
+- Google Officially Rolls Out Collapsible Sidebar on Search
+- AI Is Making China's Jobs Slump Worse
+- Archive: 2026 - GitHub Changelog
+- Improvements on the pull request overview in public preview
+- Enterprise Live Migrations from Azure DevOps generally available
+- Red Hat Enterprise Linux runner images now generally available
+- S3 audit log streaming with OpenID Connect expands to GHE.com
+- Wait for pull request events with GitHub CLI
+
+**Sabak:** **1. Spy court:**   - UK court ne confirm kiya ke unhone Apple ke liye backdoor banwa di thi.   - Software developers ko dhyaan rakhna chahiye ki security features kab bhi legal pressure ke liye khod ja sakte hain.   - Jab bhi security bugs fix kar rahe ho, ensure karo ke wo external exploitation se bacha rahe, otherwise compliance issues badh sakte hain.    **2. November 2026 Top500 New Systems:**   - 2026 mein Top500 list mein niche ke naye supercomputers ka count kam raha.   - Developers jinka focus data‑parallel workloads par hai, unhe ye realize karna hoga ki newer, cheaper GPUs se zyada 
