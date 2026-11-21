@@ -538,3 +538,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Improvements on the pull request overview in public preview
 
 **Sabak:** **1.** *Leaked Files Show Deutsche Bank Protected Russian Profits Despite Warnings*   - DB ne apne clients ki wealth hide karne ke liye advanced encryption use ki, chips se zyada secure locking.   - Yahi dikhata hai ki compliance policies ko quietly loophole karna naimaan hai—legal loophole ka bada price!   - **Dev ka kaam:** Risky data flows detect karne ke liye audit trails aur anomaly‑detection models banao, para pehly security ka “lint” bhi saaf shuru.  ---  **2.** *Ask HN: What is your current hardware set up?*   - Devs sab check karte hain ki CPU, GPU, RAM, network kya hote hain, aur cha
+
+## 2026-11-21 — seekha (14 cheezein)
+
+- AHM Statement on the Announced Proof of the Riemann Hypothesis
+- Fiona the Hippo Died After Eating a Hat. But How Does a Hat Kill a Hippo?
+- Forkwise – AI engineer that runs in your terminal
+- Claude: TV Repair Man
+- Loom: Shared memory, document search, and code indexing for AI agents
+- Help Web Attackers Self Report
+- A log field became an Elasticsearch command
+- You will be like angels
+- Archive: 2026 - GitHub Changelog
+- Security advisory permissions are now generally available
+- GitHub Enterprise Server 3.23 release candidate
+- Pin your favorite repositories to your dashboard
+- GitHub Desktop now supports multiple accounts per host
+- Improvements on the pull request overview in public preview
+
+**Sabak:** **1. AHM Statement on the Announced Proof of the Riemann Hypothesis**   Kya naya? Ek bold claim ka naam AHM ne Riemann Hypothesis ko “prove” karne ka diya, lekin math ke gurus kehte hain ke proof abhi tak complete nahi hua. Developer ke liye kaam: Big number crunching aur symbolic computation libraries use karke numerical experiments chale. Agar tumhai number theory me interest ho, ye ek gold mine hai—try exploring with Python, Scala, ya Julia.  **2. Fiona the Hippo Died After Eating a Hat. But How Does a Hat Kill a Hippo?**   Cycle, probability, and yum logic: A hat made of a metal that leach
