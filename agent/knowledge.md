@@ -519,3 +519,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Improvements on the pull request overview in public preview
 
 **Sabak:** **1. Why Does Windows Use Backslash as Path Separator? (2019)**   📌 *Kya naya hai:* Windows ne 8-9 bachpan se backslash (`\`) ka use kiya hai, lekin ab woh log clarify kar rahe hain ki ye legacy decision hai aur Microsoft ne ek detailed rationale diya.   🛠️ *Developer ke liye:* Path karne ke liye `pathlib` ya `os.path` ka istemal karo, nahin to hard‑coded slash se bug aayenge; cross‑platform scripts likhne ke liye sharch better hai.   👀 *Tip:* Windows vs. Unix path handling ka ab clarity aayi, toh agar funghi ko dekh rahe ho, use `os.path.join()` to avoid `C:\\Users\me` error.  ---  **2. Show 
+
+## 2026-11-21 — seekha (14 cheezein)
+
+- Leaked Files Show Deutsche Bank Protected Russian Profits Despite Warnings
+- Ask HN: What is your current hardware set up?
+- GL.iNet Router and KVM Security Incident (Nov 20 2026)
+- Show HN: Stop applying to jobs using AI-generated resume
+- Sk HN: Solo dev at an early-stage startup (4 YoE) – How to land mid-level roles?
+- Verify OpenAI-Generated Content
+- MRAM Basics: How Magnetic Memory Is Replacing Embedded Flash
+- Visible Autorouter for KiCad by Imsaiguy
+- Archive: 2026 - GitHub Changelog
+- Security advisory permissions are now generally available
+- GitHub Enterprise Server 3.23 release candidate
+- Pin your favorite repositories to your dashboard
+- GitHub Desktop now supports multiple accounts per host
+- Improvements on the pull request overview in public preview
+
+**Sabak:** **1.** *Leaked Files Show Deutsche Bank Protected Russian Profits Despite Warnings*   - DB ne apne clients ki wealth hide karne ke liye advanced encryption use ki, chips se zyada secure locking.   - Yahi dikhata hai ki compliance policies ko quietly loophole karna naimaan hai—legal loophole ka bada price!   - **Dev ka kaam:** Risky data flows detect karne ke liye audit trails aur anomaly‑detection models banao, para pehly security ka “lint” bhi saaf shuru.  ---  **2.** *Ask HN: What is your current hardware set up?*   - Devs sab check karte hain ki CPU, GPU, RAM, network kya hote hain, aur cha
