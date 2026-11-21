@@ -500,3 +500,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Red Hat Enterprise Linux runner images now generally available
 
 **Sabak:** **Headline‑ka 3‑line sabak (developer‑friendly kaun)**    1. **"Who gambles in the stock market?" (2009)** – Notebook par humne pehle dekha jab investors *risk prediction* ko ek game samajhte the. **Developer takeaway:** *AI‑driven sentiment analysis* aur *predictive modelling* ab finance apps mein kaafi demand mein—the stack ke liye ‘TensorFlow + NLTK’ build kar ke dekho!    2. **"Kernarium: Run real Linux kernel natively on iOS"** – Apple ki sandbox ko todte hue kaunsa kernel? Yeh open‑source project iOS 17+ pe pure Linux kernel run karne ka promise deta hai. **Developer future:** Porting le
+
+## 2026-11-21 — seekha (14 cheezein)
+
+- Why Does Windows Use Backslash as Path Separator? (2019)
+- Show HN: AbcTab – Native Swift 6 macOS ⌘-Tab Switcher Without Screen Recording
+- Show HN: Name the World – An Atlas Quiz
+- Pint – Windows NT 4.0 Ported to Raspberry Pi
+- Show HN: Find and serve fast LLM config for your GPU
+- Show HN: yavcpdf - A keyboard-driven, vibecoded PDF viewer
+- Anthropic's IPO bank closed position meant to stabilize stock, removing support
+- Show HN: Voxstead – Live captions and bilingual call assistance for macOS
+- Archive: 2026 - GitHub Changelog
+- Security advisory permissions are now generally available
+- GitHub Enterprise Server 3.23 release candidate
+- Pin your favorite repositories to your dashboard
+- GitHub Desktop now supports multiple accounts per host
+- Improvements on the pull request overview in public preview
+
+**Sabak:** **1. Why Does Windows Use Backslash as Path Separator? (2019)**   📌 *Kya naya hai:* Windows ne 8-9 bachpan se backslash (`\`) ka use kiya hai, lekin ab woh log clarify kar rahe hain ki ye legacy decision hai aur Microsoft ne ek detailed rationale diya.   🛠️ *Developer ke liye:* Path karne ke liye `pathlib` ya `os.path` ka istemal karo, nahin to hard‑coded slash se bug aayenge; cross‑platform scripts likhne ke liye sharch better hai.   👀 *Tip:* Windows vs. Unix path handling ka ab clarity aayi, toh agar funghi ko dekh rahe ho, use `os.path.join()` to avoid `C:\\Users\me` error.  ---  **2. Show 
