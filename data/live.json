@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-11-21T00:24:01+00:00",
- "generated_epoch": 1795220641,
+ "generated_at": "2026-11-21T07:33:35+00:00",
+ "generated_epoch": 1795246415,
  "source": "multi-provider: Yahoo q1/q2, Moneycontrol, Stooq (+ purana cache)",
  "providers": {
   "yahoo-q1": {
@@ -38,7 +38,7 @@
   "nasdaq": {
    "ok": true,
    "symbol": "AAPL",
-   "price": 344.62
+   "price": 349.21
   },
   "twelvedata": {
    "ok": false,
@@ -65,9 +65,9 @@
    "exchange": "NSE",
    "is_index": true,
    "last": 25800.6,
-   "prev_close": 25227.9,
-   "change": 572.7,
-   "change_pct": 2.27,
+   "prev_close": 25514.3,
+   "change": 286.3,
+   "change_pct": 1.12,
    "or_high": 25490.75,
    "or_low": 25353.85,
    "or_mid": 25422.3,
@@ -123,7 +123,7 @@
     25800.5996
    ],
    "bars": 76,
-   "last_bar_age_sec": 51835,
+   "last_bar_age_sec": 77610,
    "market_time": 1795168875,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -136,9 +136,9 @@
    "exchange": "NSE",
    "is_index": true,
    "last": 64635.2,
-   "prev_close": 62038.6,
-   "change": 2596.6,
-   "change_pct": 4.19,
+   "prev_close": 63063.0,
+   "change": 1572.2,
+   "change_pct": 2.49,
    "or_high": 63047.65,
    "or_low": 62605.3,
    "or_mid": 62826.47,
@@ -194,7 +194,7 @@
     64635.1992
    ],
    "bars": 76,
-   "last_bar_age_sec": 51835,
+   "last_bar_age_sec": 77611,
    "market_time": 1795168875,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -207,9 +207,9 @@
    "exchange": "BSE",
    "is_index": true,
    "last": 83919.71,
-   "prev_close": 82031.8,
-   "change": 1887.91,
-   "change_pct": 2.3,
+   "prev_close": 83021.75,
+   "change": 897.96,
+   "change_pct": 1.08,
    "or_high": 82934.38,
    "or_low": 82479.52,
    "or_mid": 82706.95,
@@ -265,7 +265,7 @@
     83919.7109
    ],
    "bars": 76,
-   "last_bar_age_sec": 51836,
+   "last_bar_age_sec": 77611,
    "market_time": 1795168949,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -336,7 +336,7 @@
     6910.3901
    ],
    "bars": 79,
-   "last_bar_age_sec": 12236,
+   "last_bar_age_sec": 38011,
    "market_time": 1795210554,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -407,7 +407,7 @@
     22617.7324
    ],
    "bars": 79,
-   "last_bar_age_sec": 12236,
+   "last_bar_age_sec": 38011,
    "market_time": 1795212959,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -478,7 +478,7 @@
     1377.5
    ],
    "bars": 73,
-   "last_bar_age_sec": 52136,
+   "last_bar_age_sec": 77912,
    "market_time": 1795168690,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -549,7 +549,7 @@
     846.0
    ],
    "bars": 74,
-   "last_bar_age_sec": 52137,
+   "last_bar_age_sec": 77912,
    "market_time": 1795168690,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -620,7 +620,7 @@
     2376.2
    ],
    "bars": 74,
-   "last_bar_age_sec": 52137,
+   "last_bar_age_sec": 77912,
    "market_time": 1795168691,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -691,7 +691,7 @@
     1165.1
    ],
    "bars": 73,
-   "last_bar_age_sec": 52137,
+   "last_bar_age_sec": 77912,
    "market_time": 1795168690,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -762,7 +762,7 @@
     1098.0
    ],
    "bars": 74,
-   "last_bar_age_sec": 52138,
+   "last_bar_age_sec": 77913,
    "market_time": 1795168690,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -833,7 +833,7 @@
     1640.0
    ],
    "bars": 74,
-   "last_bar_age_sec": 52138,
+   "last_bar_age_sec": 77913,
    "market_time": 1795168690,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -904,7 +904,7 @@
     1122.0
    ],
    "bars": 74,
-   "last_bar_age_sec": 52138,
+   "last_bar_age_sec": 77913,
    "market_time": 1795168685,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -975,7 +975,7 @@
     2709.0
    ],
    "bars": 74,
-   "last_bar_age_sec": 52139,
+   "last_bar_age_sec": 77913,
    "market_time": 1795168685,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1046,7 +1046,7 @@
     299.1
    ],
    "bars": 74,
-   "last_bar_age_sec": 52139,
+   "last_bar_age_sec": 77914,
    "market_time": 1795168690,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1117,7 +1117,7 @@
     342.56
    ],
    "bars": 79,
-   "last_bar_age_sec": 12239,
+   "last_bar_age_sec": 38014,
    "market_time": 1795208402,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1188,7 +1188,7 @@
     345.82
    ],
    "bars": 79,
-   "last_bar_age_sec": 12240,
+   "last_bar_age_sec": 38014,
    "market_time": 1795208401,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1259,7 +1259,7 @@
     125.53
    ],
    "bars": 79,
-   "last_bar_age_sec": 12240,
+   "last_bar_age_sec": 38015,
    "market_time": 1795208401,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1330,7 +1330,7 @@
     689.81
    ],
    "bars": 79,
-   "last_bar_age_sec": 12240,
+   "last_bar_age_sec": 38015,
    "market_time": 1795208404,
    "src": "yahoo-q1",
    "has_bars": true,
