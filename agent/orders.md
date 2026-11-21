@@ -3,7 +3,7 @@
 Naya kaam neeche jodo — ek line me. Khatam hone par OpenYug `[x]` kar dega.
 
 - [x] Har baar: saare tests chalao aur report do
-- [ ] Har baar: data kitna purana hai batao
+- [x] Har baar: data kitna purana hai batao
 - [x] Har baar: teeno site (Pages/Netlify/Vercel) + Cloudflare API check karo
 - [x] Har baar: mirror check karo — GitHub, GitLab, Codeberg, Bitbucket
 
