@@ -557,3 +557,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Improvements on the pull request overview in public preview
 
 **Sabak:** **1. AHM Statement on the Announced Proof of the Riemann Hypothesis**   Kya naya? Ek bold claim ka naam AHM ne Riemann Hypothesis ko “prove” karne ka diya, lekin math ke gurus kehte hain ke proof abhi tak complete nahi hua. Developer ke liye kaam: Big number crunching aur symbolic computation libraries use karke numerical experiments chale. Agar tumhai number theory me interest ho, ye ek gold mine hai—try exploring with Python, Scala, ya Julia.  **2. Fiona the Hippo Died After Eating a Hat. But How Does a Hat Kill a Hippo?**   Cycle, probability, and yum logic: A hat made of a metal that leach
+
+## 2026-11-22 — seekha (14 cheezein)
+
+- The first conceptually aware space-time information platform
+- Send Something to 2050
+- ProDOS, Briefly: Checking a ProDOS volume's directory tree against its bitmap
+- GitHub's "Security Advisory Permissions" a win for OSS security sustainability
+- Yuccas of the World
+- Tesla launches FSD v15, targets its biggest weaknesses, from signs to potholes
+- Derivative Flipping
+- European Purpose: European alternatives to US tech
+- Archive: 2026 - GitHub Changelog
+- Security advisory permissions are now generally available
+- GitHub Enterprise Server 3.23 release candidate
+- Pin your favorite repositories to your dashboard
+- GitHub Desktop now supports multiple accounts per host
+- Improvements on the pull request overview in public preview
+
+**Sabak:** **1. The first conceptually aware space‑time information platform**   - *Naya*: Har data ko time‑space ke quirks ke ساتھ integrate karta hai—बुद्धिमान predictions ke liye machine‑learning ke साथ।   - *Developer ka kaam*: Devise APIs jo temporal graphs ko query kare aur real‑time event streams handle kare; schema ko graphX/neo4j type models में evolve karna पड़ेगा।   - *Sabak*: SaaS builders ko “time‑aware” darshikon ko adopt karna chai‑ye, otherwise ya toh redundancy ya inaccurate forecasts!    ---  **2. Send Something to 2050**   - *Naya*: 2050 में greeting cards, music, ya time‑capsule ज़रूर
