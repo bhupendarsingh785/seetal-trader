@@ -576,3 +576,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Improvements on the pull request overview in public preview
 
 **Sabak:** **1. The first conceptually aware space‑time information platform**   - *Naya*: Har data ko time‑space ke quirks ke ساتھ integrate karta hai—बुद्धिमान predictions ke liye machine‑learning ke साथ।   - *Developer ka kaam*: Devise APIs jo temporal graphs ko query kare aur real‑time event streams handle kare; schema ko graphX/neo4j type models में evolve karna पड़ेगा।   - *Sabak*: SaaS builders ko “time‑aware” darshikon ko adopt karna chai‑ye, otherwise ya toh redundancy ya inaccurate forecasts!    ---  **2. Send Something to 2050**   - *Naya*: 2050 में greeting cards, music, ya time‑capsule ज़रूर
+
+## 2026-11-22 — seekha (14 cheezein)
+
+- Wellness and Body Image
+- Name Constraint vs. CN / DNS matching issues
+- Show HN: Agent Doctor – let domain experts tune your agent without code changes
+- Scientists Discover New and Horrible Eagle-Based Way Our Ancestors Died
+- An anti-slavery sugar bowl (2024)
+- BepiColombo reaches Mercury after eight-year odyssey
+- Lumissil and BMW run power line communication on Gen6 pack
+- View from the Top: Craig Federighi (2019) [video]
+- Archive: 2026 - GitHub Changelog
+- Security advisory permissions are now generally available
+- GitHub Enterprise Server 3.23 release candidate
+- Pin your favorite repositories to your dashboard
+- GitHub Desktop now supports multiple accounts per host
+- Improvements on the pull request overview in public preview
+
+**Sabak:** **Wellness and Body Image**   - *New:* Long‑term study says mindful eating beats fad diets for body‑confidence boost.   - *Developer take‑away:* Good UI for nutrition trackers should show *real* progress, not arbitrary “ideal” curves—use user‑centric metrics, not shiny “ideal body” meters.    **Name Constraint vs. CN / DNS Matching Issues**   - *New:* Cert‑Authority advisory on tightening name‑constraint expiry logic to dodge “CN‑mismatch” headaches.   - *Developer take‑away:* If you’re issuing certs, make sure the `SubjectAltName` list mirrors domain names exactly—you’ll avoid silent outages 
