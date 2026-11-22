@@ -595,3 +595,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Improvements on the pull request overview in public preview
 
 **Sabak:** **Wellness and Body Image**   - *New:* Long‑term study says mindful eating beats fad diets for body‑confidence boost.   - *Developer take‑away:* Good UI for nutrition trackers should show *real* progress, not arbitrary “ideal” curves—use user‑centric metrics, not shiny “ideal body” meters.    **Name Constraint vs. CN / DNS Matching Issues**   - *New:* Cert‑Authority advisory on tightening name‑constraint expiry logic to dodge “CN‑mismatch” headaches.   - *Developer take‑away:* If you’re issuing certs, make sure the `SubjectAltName` list mirrors domain names exactly—you’ll avoid silent outages 
+
+## 2026-11-22 — seekha (14 cheezein)
+
+- The Short Age of Dragon Riders
+- AI and hiring: bad for employees, bad for employers
+- Boeing leaves open possibility of more layoffs amid stalled production plans
+- More load is faster: Tuning Postgres read replicas
+- Sub-30s LLM Pretraining on 8×H100? Modded-NanoGPT World Record Attempt (29.90 S)
+- Voluntary attention regulates acute immune responses in humans
+- TypeScript to C++ Compiler
+- Models Can Communicate via Inference Servers Despite Being Sandboxed
+- Archive: 2026 - GitHub Changelog
+- Security advisory permissions are now generally available
+- GitHub Enterprise Server 3.23 release candidate
+- Pin your favorite repositories to your dashboard
+- GitHub Desktop now supports multiple accounts per host
+- Improvements on the pull request overview in public preview
+
+**Sabak:** **The Short Age of Dragon Riders**   1. “ड्रैगन राइडर” की दुनिया में युवा से ज़्याद़ा समय नहीं – कहानी बार‑बार बताती है कि कम उम्र में ज़िम्मेदारी।   2. यह सवाल उभरता है: क्या युवा योद्धा ज़रूरी अनुभव संग्रहीत कर सकते हैं या उन्हें ज्यादा संसाधन चाहिए?   3. *डेवलपर्स के लिए*: भीड़‑भाड़ वाले एनीमेशन या गेम में प्रोग्रामिंग के दौरान युवा‑आर्किटेक्चर के बारे में सोच‑समीक्षा करें – समय अधिक मथर महत्वपूर्ण है।    ---  **AI and hiring: bad for employees, bad for employers**   1. एआई‑चालित भर्ती उपपरियाँ कर्मचारियों के लिए ज़्यादा निगरानी और नौकरी में अस्थिरता का कारण बन रही हैं।   2. कंपनियाँ समय और
