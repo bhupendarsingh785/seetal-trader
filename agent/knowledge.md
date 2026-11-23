@@ -652,3 +652,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Improvements on the pull request overview in public preview
 
 **Sabak:** **Mitchell Hashimoto Talks Rex – TheStandup**   - Hashimoto shows how a simple, well‑written benchmark (Rex) pulls a team together to solve complex problems and cut corners.   - Developers should keep an eye on informal “side‑project” garages where real‑world optimisation sparks innovation.   - Push open‑source benchmarks to discover hidden performance bottlenecks before they become critical.  **Back when we rented game consoles**   - The article reminds us that user experience thrives on convenience; the past model was all‑in‑one hardware access.   - As developers, think mobile or web service
+
+## 2026-11-23 — seekha (14 cheezein)
+
+- Bay Flood Watch App, Watch Duty for El Nino
+- A New Frontier of Self-Improving AIs
+- U.S. Imposes Sanctions on Singaporean Firm at Center of Nvidia Scandal
+- Matching Sonnet 5.5 on medical chart review at 3% of the cost
+- The Beauty of Artists' Studios
+- US to blacklist Asian AI firm Megaspeed
+- Show HN: Amni-CAD – parametric CAD with stress and flow simulation in a browser
+- How to build a low-tech website? (2018)
+- Archive: 2026 - GitHub Changelog
+- Issue statuses and repository boards are in public preview
+- Secret scanning reduces false positives for Slack
+- Code coverage uploads now flag invalid report formats
+- Usage reports will include a user ID column starting December 1
+- Security advisory permissions are now generally available
+
+**Sabak:** **1. Bay Flood Watch App, Watch Duty for El Nino**   Kya naya? Ek app launch hua jo Bay Area ke logon ko real‑time flood alerts deta hai – El Nino ki wajah se bada paani ka khatra.   Developer ka kaam? Android/iOS SDK integrate karna, geospatial APIs aur push‑notification services ka pyar se tune‑up karna.    **2. A New Frontier of Self‑Improving AIs**   Ab AIs apni training loops automate karke khud ko better banate pa rahe hain – human tuning ka data aur resources kam lagate.   Developer ke liye? RLHF aur meta‑learning frameworks (PyTorch, TensorFlow) ka deep‑dive, aur experimentation playgr
