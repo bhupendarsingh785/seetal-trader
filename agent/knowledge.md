@@ -614,3 +614,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Improvements on the pull request overview in public preview
 
 **Sabak:** **The Short Age of Dragon Riders**   1. “ड्रैगन राइडर” की दुनिया में युवा से ज़्याद़ा समय नहीं – कहानी बार‑बार बताती है कि कम उम्र में ज़िम्मेदारी।   2. यह सवाल उभरता है: क्या युवा योद्धा ज़रूरी अनुभव संग्रहीत कर सकते हैं या उन्हें ज्यादा संसाधन चाहिए?   3. *डेवलपर्स के लिए*: भीड़‑भाड़ वाले एनीमेशन या गेम में प्रोग्रामिंग के दौरान युवा‑आर्किटेक्चर के बारे में सोच‑समीक्षा करें – समय अधिक मथर महत्वपूर्ण है।    ---  **AI and hiring: bad for employees, bad for employers**   1. एआई‑चालित भर्ती उपपरियाँ कर्मचारियों के लिए ज़्यादा निगरानी और नौकरी में अस्थिरता का कारण बन रही हैं।   2. कंपनियाँ समय और
+
+## 2026-11-23 — seekha (14 cheezein)
+
+- I can't tell the difference between all these coding models
+- Cyberpunk Reading Map
+- What we learned operating auth for 1k APIs
+- The Riemann Hypothesis Is Proved. Here Is the Whole Proof
+- You Had a Gun Background Check? Here's Why the FBI Hack Matters [video]
+- U.S. Tracked Alice Huang's Contacts with China Spy Agency During Nvidia Affair
+- What 47,000 Companies' Disclosures Reveal About the AI Stack
+- 2026 Asia Power Index: A precarious balance
+- Archive: 2026 - GitHub Changelog
+- Security advisory permissions are now generally available
+- GitHub Enterprise Server 3.23 release candidate
+- Pin your favorite repositories to your dashboard
+- GitHub Desktop now supports multiple accounts per host
+- Improvements on the pull request overview in public preview
+
+**Sabak:** **Headline Highlights in Hinglish**   1️⃣ *I can’t tell the difference between all these coding models* – Naya: AI techniques har field merge ho rahi hain, embeddings, LLMs, diffusion — aur ek clear taxonomy miss hai.   2️⃣ *What 47,000 Companies' Disclosures Reveal About the AI Stack* – Insight: Most firms code in open‑source libs, but proprietary infra still dominates (GPU networking, private fine‑tuning) – developers should audit dependencies for licensing & security.    **Sabak (Lesson)**   - *Code models mein confusion:* ek consistent naming scheme aur version control create karo, otherwi
