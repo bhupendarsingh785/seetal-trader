@@ -633,3 +633,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Improvements on the pull request overview in public preview
 
 **Sabak:** **Headline Highlights in Hinglish**   1️⃣ *I can’t tell the difference between all these coding models* – Naya: AI techniques har field merge ho rahi hain, embeddings, LLMs, diffusion — aur ek clear taxonomy miss hai.   2️⃣ *What 47,000 Companies' Disclosures Reveal About the AI Stack* – Insight: Most firms code in open‑source libs, but proprietary infra still dominates (GPU networking, private fine‑tuning) – developers should audit dependencies for licensing & security.    **Sabak (Lesson)**   - *Code models mein confusion:* ek consistent naming scheme aur version control create karo, otherwi
+
+## 2026-11-23 — seekha (14 cheezein)
+
+- Mitchell Hashimoto Talks Rex – TheStandup [video]
+- Back when we rented game consoles
+- Europe Rallies for a Free and Competitive Web on iOS
+- Orphaned Films from Internet Archive
+- Voice as a Passwword
+- Show HN: Photo Museum – Walk around a tiny 3D museum made of your photos
+- New material gets stronger the more it bends
+- Show HN: RepoHype – GitHub repos people are talking about
+- Archive: 2026 - GitHub Changelog
+- Security advisory permissions are now generally available
+- GitHub Enterprise Server 3.23 release candidate
+- Pin your favorite repositories to your dashboard
+- GitHub Desktop now supports multiple accounts per host
+- Improvements on the pull request overview in public preview
+
+**Sabak:** **Mitchell Hashimoto Talks Rex – TheStandup**   - Hashimoto shows how a simple, well‑written benchmark (Rex) pulls a team together to solve complex problems and cut corners.   - Developers should keep an eye on informal “side‑project” garages where real‑world optimisation sparks innovation.   - Push open‑source benchmarks to discover hidden performance bottlenecks before they become critical.  **Back when we rented game consoles**   - The article reminds us that user experience thrives on convenience; the past model was all‑in‑one hardware access.   - As developers, think mobile or web service
