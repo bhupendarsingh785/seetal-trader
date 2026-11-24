@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-11-23T22:29:25+00:00",
- "generated_epoch": 1795472965,
+ "generated_at": "2026-11-24T06:19:20+00:00",
+ "generated_epoch": 1795501160,
  "source": "multi-provider: Yahoo q1/q2, Moneycontrol, Stooq (+ purana cache)",
  "providers": {
   "yahoo-q1": {
@@ -13,17 +13,17 @@
   "tencent": {
    "ok": true,
    "symbol": "600519.SS",
-   "price": 1439.0
+   "price": 1461.59
   },
   "sina": {
    "ok": true,
    "symbol": "600519.SS",
-   "price": 1439.0
+   "price": 1461.8
   },
   "eastmoney": {
    "ok": true,
    "symbol": "600519.SS",
-   "price": 1439.0
+   "price": 1461.98
   },
   "moneycontrol": {
    "ok": false,
@@ -38,7 +38,7 @@
   "nasdaq": {
    "ok": true,
    "symbol": "AAPL",
-   "price": 349.7955
+   "price": 342.56
   },
   "twelvedata": {
    "ok": false,
@@ -123,7 +123,7 @@
     25349.6504
    ],
    "bars": 76,
-   "last_bar_age_sec": 44959,
+   "last_bar_age_sec": 73156,
    "market_time": 1795428079,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -194,7 +194,7 @@
     62585.3516
    ],
    "bars": 76,
-   "last_bar_age_sec": 44959,
+   "last_bar_age_sec": 73156,
    "market_time": 1795428079,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -265,7 +265,7 @@
     82435.9922
    ],
    "bars": 76,
-   "last_bar_age_sec": 44960,
+   "last_bar_age_sec": 73156,
    "market_time": 1795428146,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -336,7 +336,7 @@
     7237.1699
    ],
    "bars": 79,
-   "last_bar_age_sec": 5360,
+   "last_bar_age_sec": 33557,
    "market_time": 1795470153,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -349,8 +349,8 @@
    "exchange": "Nasdaq GIDS",
    "is_index": true,
    "last": 24089.56,
-   "prev_close": 22617.73,
-   "change": 1471.83,
+   "prev_close": 22617.7,
+   "change": 1471.86,
    "change_pct": 6.51,
    "or_high": 24242.1,
    "or_low": 23794.96,
@@ -407,7 +407,7 @@
     24089.5586
    ],
    "bars": 79,
-   "last_bar_age_sec": 5360,
+   "last_bar_age_sec": 33557,
    "market_time": 1795472159,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -478,7 +478,7 @@
     1351.0
    ],
    "bars": 74,
-   "last_bar_age_sec": 45260,
+   "last_bar_age_sec": 73457,
    "market_time": 1795427974,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -549,7 +549,7 @@
     817.8
    ],
    "bars": 74,
-   "last_bar_age_sec": 45261,
+   "last_bar_age_sec": 73457,
    "market_time": 1795427974,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -620,7 +620,7 @@
     2460.0
    ],
    "bars": 74,
-   "last_bar_age_sec": 45261,
+   "last_bar_age_sec": 73458,
    "market_time": 1795427974,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -691,7 +691,7 @@
     1132.65
    ],
    "bars": 74,
-   "last_bar_age_sec": 45262,
+   "last_bar_age_sec": 73458,
    "market_time": 1795427974,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -762,7 +762,7 @@
     1103.4
    ],
    "bars": 74,
-   "last_bar_age_sec": 45262,
+   "last_bar_age_sec": 73458,
    "market_time": 1795427974,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -833,7 +833,7 @@
     1585.5
    ],
    "bars": 74,
-   "last_bar_age_sec": 45262,
+   "last_bar_age_sec": 73458,
    "market_time": 1795427974,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -904,7 +904,7 @@
     1095.5
    ],
    "bars": 73,
-   "last_bar_age_sec": 45263,
+   "last_bar_age_sec": 73459,
    "market_time": 1795427974,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -975,7 +975,7 @@
     2677.8999
    ],
    "bars": 73,
-   "last_bar_age_sec": 45263,
+   "last_bar_age_sec": 73459,
    "market_time": 1795427981,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1046,7 +1046,7 @@
     301.0
    ],
    "bars": 74,
-   "last_bar_age_sec": 45263,
+   "last_bar_age_sec": 73459,
    "market_time": 1795427980,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1117,7 +1117,7 @@
     349.08
    ],
    "bars": 79,
-   "last_bar_age_sec": 5363,
+   "last_bar_age_sec": 33559,
    "market_time": 1795467601,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1188,7 +1188,7 @@
     385.46
    ],
    "bars": 79,
-   "last_bar_age_sec": 5364,
+   "last_bar_age_sec": 33560,
    "market_time": 1795467600,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1259,7 +1259,7 @@
     165.05
    ],
    "bars": 79,
-   "last_bar_age_sec": 5364,
+   "last_bar_age_sec": 33560,
    "market_time": 1795467601,
    "src": "yahoo-q1",
    "has_bars": true,
@@ -1330,7 +1330,7 @@
     722.29
    ],
    "bars": 79,
-   "last_bar_age_sec": 5364,
+   "last_bar_age_sec": 33560,
    "market_time": 1795467600,
    "src": "yahoo-q1",
    "has_bars": true,
