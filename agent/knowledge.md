@@ -671,3 +671,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Security advisory permissions are now generally available
 
 **Sabak:** **1. Bay Flood Watch App, Watch Duty for El Nino**   Kya naya? Ek app launch hua jo Bay Area ke logon ko real‑time flood alerts deta hai – El Nino ki wajah se bada paani ka khatra.   Developer ka kaam? Android/iOS SDK integrate karna, geospatial APIs aur push‑notification services ka pyar se tune‑up karna.    **2. A New Frontier of Self‑Improving AIs**   Ab AIs apni training loops automate karke khud ko better banate pa rahe hain – human tuning ka data aur resources kam lagate.   Developer ke liye? RLHF aur meta‑learning frameworks (PyTorch, TensorFlow) ka deep‑dive, aur experimentation playgr
+
+## 2026-11-24 — seekha (14 cheezein)
+
+- VP ≠ VNP over Every Field [pdf]
+- Show HN: Try living a random life, 1 in 8B
+- PCIe Peer-to-Peer Unlocks Full GPU VRAM Access on Consumer Nvidia RTX Cards
+- World First 3M+ Particle .SVG WebGL FPS/TPS Game Engine
+- Show HN: Envcheck – a small Python .env file checker
+- Starting Strong: How to Build Clarity and Mometum
+- Evidence-Based AI Risk Ratings from CSAI
+- Show HN: Rchive – Every drive I've owned since the 90s, searchable in one window
+- Archive: 2026 - GitHub Changelog
+- Issue statuses and repository boards are in public preview
+- Secret scanning reduces false positives for Slack
+- Code coverage uploads now flag invalid report formats
+- Usage reports will include a user ID column starting December 1
+- Security advisory permissions are now generally available
+
+**Sabak:** **VP ≠ VNP over Every Field**   1. "VP ya VNP bole toh jyada clarity chahiye—board ya module ka labelling gaand chora mat ho."   2. Kisi bhi field mein kaun punchline chala rahe hain, intent pe focus karo—wanp/context decide karta hai result.   3. Dev ke liye: jab code likho, frequencies aur ambiguities ke liye naam anchor raho, varargs, templates ya variadic functions mein confusion se bachho.  ---  **Show HN: Try living a random life, 1 in 8B**   1. "Random code ke through naya perspective gain kar sakte ho—har ek line unpredictable try."   2. GitHub pr build abhi time travel karte hue exper
