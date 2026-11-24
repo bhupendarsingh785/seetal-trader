@@ -690,3 +690,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Security advisory permissions are now generally available
 
 **Sabak:** **VP ≠ VNP over Every Field**   1. "VP ya VNP bole toh jyada clarity chahiye—board ya module ka labelling gaand chora mat ho."   2. Kisi bhi field mein kaun punchline chala rahe hain, intent pe focus karo—wanp/context decide karta hai result.   3. Dev ke liye: jab code likho, frequencies aur ambiguities ke liye naam anchor raho, varargs, templates ya variadic functions mein confusion se bachho.  ---  **Show HN: Try living a random life, 1 in 8B**   1. "Random code ke through naya perspective gain kar sakte ho—har ek line unpredictable try."   2. GitHub pr build abhi time travel karte hue exper
+
+## 2026-11-24 — seekha (14 cheezein)
+
+- Army says detonation of lead explosives in Iowa will proceed on Wednesday
+- Cognition Introduces SWE 2.1
+- Wearable cryptographic watermark to stop deepfakes
+- Show HN: Decoding 63 years of Canadian Prime Ministers' secret telegrams
+- Wash the Mud of a Pig
+- Natural LANGUAGE: a programmer, a mantis god, and one question [video]
+- From CUDA and Jax to TorchTPU: Lessons from a Cayley Graph Solver
+- Microsoft declares 'Code Red' after historic outage, internal memos show
+- Archive: 2026 - GitHub Changelog
+- More predictable notifications on GitHub.com
+- Issue statuses and repository boards are in public preview
+- Secret scanning reduces false positives for Slack
+- Code coverage uploads now flag invalid report formats
+- Usage reports will include a user ID column starting December 1
+
+**Sabak:** **1. Army says detonation of lead explosives in Iowa will proceed on Wednesday**   - **Kya naya:** Army ko idea mili ke lead bombs ko ek particular din phodne se earthquake‑like ping ho sakta hai.   - **Developer ke liye kaam ka:** Sensors, real‑time data streaming, aur anomaly detection ka test kalam hai — ek mauka IoT/probability model ko peena.   - **Tip:** Logon ke alarm systems ka design karne mein seedha mushkil simulation nikal sakti hai.  **2. Cognition Introduces SWE 2.0**   - **Kya naya:** New version of their Syntax‑aware Word Embedding (SWE) training kit, 30 % faster and better at 
