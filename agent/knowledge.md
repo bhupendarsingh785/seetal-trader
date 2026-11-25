@@ -709,3 +709,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Usage reports will include a user ID column starting December 1
 
 **Sabak:** **1. Army says detonation of lead explosives in Iowa will proceed on Wednesday**   - **Kya naya:** Army ko idea mili ke lead bombs ko ek particular din phodne se earthquake‑like ping ho sakta hai.   - **Developer ke liye kaam ka:** Sensors, real‑time data streaming, aur anomaly detection ka test kalam hai — ek mauka IoT/probability model ko peena.   - **Tip:** Logon ke alarm systems ka design karne mein seedha mushkil simulation nikal sakti hai.  **2. Cognition Introduces SWE 2.0**   - **Kya naya:** New version of their Syntax‑aware Word Embedding (SWE) training kit, 30 % faster and better at 
+
+## 2026-11-25 — seekha (14 cheezein)
+
+- StarPulse – a native macOS menu bar monitor for Starlink
+- Show HN: Open Modeling – multidimensional modeling engine in the browser
+- Figma employee sues, alleging company forced her to confront harassers
+- Bypassing Android Hardware Attestation from the Analyst's Chair
+- Inverted Rook – A New Wargame for a New Kind of Crisis
+- A faster algorithm for extracting hexadecimal digits of π
+- Serving Qwen via AWS Lambdas for fun and 80x negative profit
+- Button Sounds – collection of professionally-recorded button clicks and presses
+- Archive: 2026 - GitHub Changelog
+- More predictable notifications on GitHub.com
+- Issue statuses and repository boards are in public preview
+- Secret scanning reduces false positives for Slack
+- Code coverage uploads now flag invalid report formats
+- Usage reports will include a user ID column starting December 1
+
+**Sabak:** **1. StarPulse – a native macOS menu bar monitor for Starlink**   StarPulse kaafi useful lag raha hai!) Ye ek lightweight app hai jo directly mac menu bar se Starlink ke signal quality aur latency pata chalta hai. Builders ke liye perfect tool hai – quick diagnostics ke liye, bina extra dashboards kholne ki zaroorat. Agar aap Satellite apps ya connectivity tools pe kaam karte ho, yeh ek **watchdog** ban sakta hai codebase ke reliability ke liye.  ---  **2. Show HN: Open Modeling – multidimensional modeling engine in the browser**   Open Modeling browser‑centric engine “data‑hubbed visualizatio
