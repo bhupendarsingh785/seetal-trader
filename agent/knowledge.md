@@ -728,3 +728,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Usage reports will include a user ID column starting December 1
 
 **Sabak:** **1. StarPulse – a native macOS menu bar monitor for Starlink**   StarPulse kaafi useful lag raha hai!) Ye ek lightweight app hai jo directly mac menu bar se Starlink ke signal quality aur latency pata chalta hai. Builders ke liye perfect tool hai – quick diagnostics ke liye, bina extra dashboards kholne ki zaroorat. Agar aap Satellite apps ya connectivity tools pe kaam karte ho, yeh ek **watchdog** ban sakta hai codebase ke reliability ke liye.  ---  **2. Show HN: Open Modeling – multidimensional modeling engine in the browser**   Open Modeling browser‑centric engine “data‑hubbed visualizatio
+
+## 2026-11-25 — seekha (14 cheezein)
+
+- Data of 1.2M Flemings from 82 municipalities stolen
+- Oldest known quasar formed 630M years after the big bang
+- The Match Act could hand China the keys to advanced lithography
+- Secure AI agents with hazmat suits, not self-defense classes
+- KubeOrbit – Read-only multi-cloud K8s portal with masked Helm diffs
+- Rejection Will Have Consequences': Inside Team Trump's Takeover of Intel
+- Apple is holding the iPad back at our expense
+- Just Learn Goddamn Kubernetes
+- Archive: 2026 - GitHub Changelog
+- More predictable notifications on GitHub.com
+- Issue statuses and repository boards are in public preview
+- Secret scanning reduces false positives for Slack
+- Code coverage uploads now flag invalid report formats
+- Usage reports will include a user ID column starting December 1
+
+**Sabak:** **1. Data of 1.2M Flemings from 82 municipalities stolen**   - Data lūṭne se sirf log bhool gaye ki unki privacy kitni jokhima — ek bura lesson.   - Juni ko 2–3 steps pehar karo: Encryption + Zero‑Trust, kyunki cyber attack sabse pehle data ki ghunghat hata deta hai.   - Developer ke liye rule hai: sensitive data ko lokally nahi, cloud pe secure key vaults se handle karo aur audit logs bhi maintain raho.    **2. Oldest known quasar formed 630M years after the big bang**   - Brhānī — the universe ka chill ke chance, aur itna pehle quasar hi ek kal ki machine ban kar awaza.   - Ye science ka rem
