@@ -747,3 +747,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Usage reports will include a user ID column starting December 1
 
 **Sabak:** **1. Data of 1.2M Flemings from 82 municipalities stolen**   - Data lūṭne se sirf log bhool gaye ki unki privacy kitni jokhima — ek bura lesson.   - Juni ko 2–3 steps pehar karo: Encryption + Zero‑Trust, kyunki cyber attack sabse pehle data ki ghunghat hata deta hai.   - Developer ke liye rule hai: sensitive data ko lokally nahi, cloud pe secure key vaults se handle karo aur audit logs bhi maintain raho.    **2. Oldest known quasar formed 630M years after the big bang**   - Brhānī — the universe ka chill ke chance, aur itna pehle quasar hi ek kal ki machine ban kar awaza.   - Ye science ka rem
+
+## 2026-11-26 — seekha (14 cheezein)
+
+- Plato's Key: A single rotation lets LLMs use each other's representations
+- Wendell Berry interviewed by Bill Moyers [video]
+- Nvidia Replaces Enron On S&P 500 (2001)
+- Wayback Machine Labs
+- Can AI break public key cryptography before Quantum Computers?
+- Ask HN: Is there something that made your life feel more "real"?
+- Bizarre Material May Herald the Future of Computer Chips
+- UC Berkeley's quiet, decades-long ties to the secretive Bohemian Club
+- Archive: 2026 - GitHub Changelog
+- Copilot code review billing will default to the organization
+- More predictable notifications on GitHub.com
+- Issue statuses and repository boards are in public preview
+- Secret scanning reduces false positives for Slack
+- Code coverage uploads now flag invalid report formats
+
+**Sabak:** **Plato's Key** – One clever rotation lets you swap the hidden layers of two large language models, so they can “borrow” each other’s linguistic skills.   **Lesson:** Think of model architectures as modular furniture – a single tweak can let you mix components and get a fresh view. Developers should experiment with layer‑level adapters; a tiny change, a new capability.  ---  **Wendell Berry on Bill Moyers** – The farmer‑philosopher talks about simple, sustainable living and the deep ties between land stewardship and community.   **Lesson:** Simplicity can be powerful. If you’re building tech, 
