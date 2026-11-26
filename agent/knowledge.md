@@ -785,3 +785,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Code coverage uploads now flag invalid report formats
 
 **Sabak:** **Starmind (Satellite)**   - Starmind ne ek naya satellite launch kiya, jisme AI-driven coordination features hai.   - Is se real‑time global knowledge sharing aur decision‑making accelerate hoti hai.   - Developers ke liye: Docker ya Kubernetes ka use karke on‑board data pipelines deploy karne ka mauka.  **Sports Krillion Game**   - Krillion ek mahfil‑style sports app hai jo blockchains aur NFT rewards integrate karta hai.   - Game ke dauraan player ke actions instantly tokenized hote hain, global community ke saath share hota hai.   - Code level pe: smart contracts aur gamified micro‑transac
+
+## 2026-11-26 — seekha (14 cheezein)
+
+- Wild Market Swings Are Colliding with a Fed Bent on Taming Inflation
+- Conway's law just hit your software factory
+- Show HN: Décor does HTML widgets for the Mac (you know, like in the old days)
+- How the Trump admin determined Jensen Huang is not a national security threat
+- Reverse engineered Samsung Gear VR controller
+- The condensed Lean proof of RH and GRH: a reading [pdf]
+- Show HN: Explore the 17M-line Lean proof of the Riemann Hypothesis
+- Signs of AI Writing, Backed by Data
+- Archive: 2026 - GitHub Changelog
+- Copilot code review billing will default to the organization
+- More predictable notifications on GitHub.com
+- Issue statuses and repository boards are in public preview
+- Secret scanning reduces false positives for Slack
+- Code coverage uploads now flag invalid report formats
+
+**Sabak:** **1. Wild Market Swings Are Colliding with a Fed Bent on Taming Inflation**   - Bubbling markets and a hawkish Fed ka combo ek unpredictable ride hai.   - Naye traders ko volatility se bachne ke liye “stop‑loss” aur “hedge” set rakhna chahiye.   - Devaas ke liye ye signal hai: *emotional aur algorithmic trading ki training dono zaroori hai*.    **2. Conway's law just hit your software factory**   - “Design a team, design a system” ka rule aapki teams ko bhi shape dega.   - Agar structure ambiguous ho, toh architecture bhi chaotic ho jayega.   - Developers ko team architecture ko optimize karne
