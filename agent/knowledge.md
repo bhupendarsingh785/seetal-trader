@@ -766,3 +766,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Code coverage uploads now flag invalid report formats
 
 **Sabak:** **Plato's Key** – One clever rotation lets you swap the hidden layers of two large language models, so they can “borrow” each other’s linguistic skills.   **Lesson:** Think of model architectures as modular furniture – a single tweak can let you mix components and get a fresh view. Developers should experiment with layer‑level adapters; a tiny change, a new capability.  ---  **Wendell Berry on Bill Moyers** – The farmer‑philosopher talks about simple, sustainable living and the deep ties between land stewardship and community.   **Lesson:** Simplicity can be powerful. If you’re building tech, 
+
+## 2026-11-26 — seekha (14 cheezein)
+
+- Starmind (Satellite)
+- Sports Krillion Game
+- Show HN: Design Directly in the Code
+- How Software Engineering Is Changing – An Essay Challenge
+- Show HN: A textbook on the Lean proof of GRH in lsernau/grh-lean, for students
+- Agents check slides with LibreOffice. LO renders them wrong
+- Amazon ruled to have discriminated against engineer over Iranian citizenship
+- US approves SpaceX plan to send a million data satellites to space
+- Archive: 2026 - GitHub Changelog
+- Copilot code review billing will default to the organization
+- More predictable notifications on GitHub.com
+- Issue statuses and repository boards are in public preview
+- Secret scanning reduces false positives for Slack
+- Code coverage uploads now flag invalid report formats
+
+**Sabak:** **Starmind (Satellite)**   - Starmind ne ek naya satellite launch kiya, jisme AI-driven coordination features hai.   - Is se real‑time global knowledge sharing aur decision‑making accelerate hoti hai.   - Developers ke liye: Docker ya Kubernetes ka use karke on‑board data pipelines deploy karne ka mauka.  **Sports Krillion Game**   - Krillion ek mahfil‑style sports app hai jo blockchains aur NFT rewards integrate karta hai.   - Game ke dauraan player ke actions instantly tokenized hote hain, global community ke saath share hota hai.   - Code level pe: smart contracts aur gamified micro‑transac
