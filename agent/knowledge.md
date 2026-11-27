@@ -823,3 +823,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Code coverage uploads now flag invalid report formats
 
 **Sabak:** GTA 6 ke unofficial PC port par Take-Two ki karvai, Google ki solo Android devs ki contact details dikhane ki policy, aur chhe din tak 2°C se upar global warming—tech ke saath legal, privacy aur climate risks bhi headlines mein hain.   Developer kaam ki cheezein: Necrometer Rust/WASM se GitHub repo decay audit karta hai, Sqrin Mac par screen sharing behtar banata hai; Riemann home ke 41 independent validators bhi verification par nazar rakhne layak hain.   “Singularity Clock” aur Citroën Hydraulic System alag-alag curiosities hain—par bada sabak: tools chunne se pehle unka use-case samjho, aur
+
+## 2026-11-27 — seekha (14 cheezein)
+
+- Ask HN: What languages and frameworks encourage minimal amounts of dependencies?
+- Show HN: Browser-CLI – coding agents in your own signed-in browser
+- Scale-dependent algorithms and intelligence explosions
+- A Website Should Make Its Own Mouse
+- Two-sided ruler geometry constructions
+- Credit card skimming scripts using WebRTC found on popular shopping sites
+- Freud – Lightweight Workflow Orchestrator
+- Show HN: A 1999 small-business website for a New Jersey collections crew
+- Archive: 2026 - GitHub Changelog
+- Copilot code review billing will default to the organization
+- More predictable notifications on GitHub.com
+- Issue statuses and repository boards are in public preview
+- Secret scanning reduces false positives for Slack
+- Code coverage uploads now flag invalid report formats
+
+**Sabak:** Naya: dependency-light stacks ki demand, signed-in browser me coding agents, aur lightweight workflow orchestrators par kaam chal raha hai; saath hi WebRTC se credit-card skimming ka real-world khatra saamne aaya hai.   Developer ke kaam ka: kam dependencies se supply-chain risk ghatao, browser agents ko permissions ke saath sandbox karo, aur checkout pages par unexpected scripts/WebRTC activity monitor karo.   Baaki links—mouse-friendly web design, ruler geometry, intelligence-explosion models aur retro business sites—interface ideas aur curiosity ke liye hain; apne project ke hisaab se chuno
