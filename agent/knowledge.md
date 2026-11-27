@@ -804,3 +804,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Code coverage uploads now flag invalid report formats
 
 **Sabak:** **1. Wild Market Swings Are Colliding with a Fed Bent on Taming Inflation**   - Bubbling markets and a hawkish Fed ka combo ek unpredictable ride hai.   - Naye traders ko volatility se bachne ke liye “stop‑loss” aur “hedge” set rakhna chahiye.   - Devaas ke liye ye signal hai: *emotional aur algorithmic trading ki training dono zaroori hai*.    **2. Conway's law just hit your software factory**   - “Design a team, design a system” ka rule aapki teams ko bhi shape dega.   - Agar structure ambiguous ho, toh architecture bhi chaotic ho jayega.   - Developers ko team architecture ko optimize karne
+
+## 2026-11-27 — seekha (14 cheezein)
+
+- Take-Two Battles Unofficial GTA 6 PC Port Work
+- The Singularity Clock
+- Google will show solo Android developers' phone numbers and addresses
+- Riemann home reaches 41 independent validators
+- Citroën Hydraulic System
+- World records six straight days above 2C warming threshold
+- Necrometer – Zero-back end Rust/WASM audit for GitHub repo decay
+- Show HN: Sqrin – A better screen share for Mac
+- Archive: 2026 - GitHub Changelog
+- Copilot code review billing will default to the organization
+- More predictable notifications on GitHub.com
+- Issue statuses and repository boards are in public preview
+- Secret scanning reduces false positives for Slack
+- Code coverage uploads now flag invalid report formats
+
+**Sabak:** GTA 6 ke unofficial PC port par Take-Two ki karvai, Google ki solo Android devs ki contact details dikhane ki policy, aur chhe din tak 2°C se upar global warming—tech ke saath legal, privacy aur climate risks bhi headlines mein hain.   Developer kaam ki cheezein: Necrometer Rust/WASM se GitHub repo decay audit karta hai, Sqrin Mac par screen sharing behtar banata hai; Riemann home ke 41 independent validators bhi verification par nazar rakhne layak hain.   “Singularity Clock” aur Citroën Hydraulic System alag-alag curiosities hain—par bada sabak: tools chunne se pehle unka use-case samjho, aur
