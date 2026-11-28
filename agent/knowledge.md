@@ -842,3 +842,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Code coverage uploads now flag invalid report formats
 
 **Sabak:** Naya: dependency-light stacks ki demand, signed-in browser me coding agents, aur lightweight workflow orchestrators par kaam chal raha hai; saath hi WebRTC se credit-card skimming ka real-world khatra saamne aaya hai.   Developer ke kaam ka: kam dependencies se supply-chain risk ghatao, browser agents ko permissions ke saath sandbox karo, aur checkout pages par unexpected scripts/WebRTC activity monitor karo.   Baaki links—mouse-friendly web design, ruler geometry, intelligence-explosion models aur retro business sites—interface ideas aur curiosity ke liye hain; apne project ke hisaab se chuno
+
+## 2026-11-28 — seekha (14 cheezein)
+
+- Show HN: HardCall – Test 52ms raw RTP vs. 920ms WebSocket barge-in in browser
+- Show HN: Plain-Auth an open-source authentication library for Go
+- Science, startups and beer drinking predict 92% of a country's HN readership
+- Game-Changing Move Just Gave America the Edge over China in AI
+- Show HN: Far Worlds, a co-op voxel RPG that runs in the browser on WebGPU/WebRTC
+- Poland signs contract with Palantir worth $300M over 5 years
+- Happy 60th Birthday to PDP-10, running ITS and Zork
+- Discord: Important Policy Updates
+- Archive: 2026 - GitHub Changelog
+- Copilot code review billing will default to the organization
+- More predictable notifications on GitHub.com
+- Issue statuses and repository boards are in public preview
+- Secret scanning reduces false positives for Slack
+- Code coverage uploads now flag invalid report formats
+
+**Sabak:** Naya: Browser real-time voice me raw RTP (52ms) WebSocket (920ms) se kaafi tez dikhta hai; WebGPU/WebRTC par co-op voxel RPG bhi aa gaya, aur Go ke liye open-source auth library hai.   Developer kaam: latency-sensitive apps me RTP/WebRTC test karo, Go projects me Plain-Auth evaluate karo, aur browser gaming ke liye WebGPU ki compatibility/performance jaancho.   Baaki headlines—AI me US-China edge, Palantir ka Poland contract, HN readership ke predictors, PDP-10 ka 60va birthday aur Discord policy updates—context hain; AI/Discord wali details headline se aage verify karna.
