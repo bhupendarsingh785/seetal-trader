@@ -861,3 +861,22 @@ _Ye file OpenYug khud bharta hai. Har run par naya hissa neeche judta hai._
 - Code coverage uploads now flag invalid report formats
 
 **Sabak:** Naya: Browser real-time voice me raw RTP (52ms) WebSocket (920ms) se kaafi tez dikhta hai; WebGPU/WebRTC par co-op voxel RPG bhi aa gaya, aur Go ke liye open-source auth library hai.   Developer kaam: latency-sensitive apps me RTP/WebRTC test karo, Go projects me Plain-Auth evaluate karo, aur browser gaming ke liye WebGPU ki compatibility/performance jaancho.   Baaki headlines—AI me US-China edge, Palantir ka Poland contract, HN readership ke predictors, PDP-10 ka 60va birthday aur Discord policy updates—context hain; AI/Discord wali details headline se aage verify karna.
+
+## 2026-11-28 — seekha (14 cheezein)
+
+- Nations Must Die
+- Ask HN: Distribution Is the Hardest Part
+- Bare-metal Type-1 AMD SVM hypervisor (Ring -1) running beneath Linux kernel
+- The Last Man: In 1826, Mary Shelley imagined humanity's end in the 21st century
+- Every child in America will receive two SpaceX shares
+- Show HN: I built a tool that helps in marketing on Reddit without getting banned
+- Show HN: Coinsole – turn your Mac into an arcade console
+- PCloud confirms password manager hack after suspicious login alerts
+- Archive: 2026 - GitHub Changelog
+- Copilot code review billing will default to the organization
+- More predictable notifications on GitHub.com
+- Issue statuses and repository boards are in public preview
+- Secret scanning reduces false positives for Slack
+- Code coverage uploads now flag invalid report formats
+
+**Sabak:** “Distribution Is the Hardest Part” yaad dilata hai: product banana aadha kaam hai—sahi users tak pahunchna bhi engineering jaisa planned effort maangta hai.   Bare-metal AMD SVM hypervisor aur Mac ko arcade console banane wale projects naye experiments dikhate hain; developer ke liye low-level systems aur creative tooling dono inspiration hain.   Reddit marketing tool aur pCloud password-manager hack se seedha takeaway: growth ko platform rules ke saath design karo, aur security alerts ko kabhi halka mat lo.
